@@ -272,6 +272,28 @@ app.get('/api/pedidos', (req, res) => {
     }
 });
 
+// Adicione esta rota no seu server.js
+app.put('/api/pedidos/:id/status', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        
+        const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+        const pedido = pedidos.find(p => p.idPedido === id);
+        
+        if (!pedido) {
+            return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado' });
+        }
+        
+        pedido.status = status;
+        fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
+        
+        res.json({ sucesso: true, mensagem: `Status atualizado para ${status}` });
+    } catch (error) {
+        res.status(500).json({ sucesso: false, mensagem: error.message });
+    }
+});
+
 // ==========================================
 // INICIAR SERVIDOR
 // ==========================================
