@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voltz Gear | Tech Premium & Minimalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .product-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05);
+        }
+        #cart-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        #cart-sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        /* Máscara para campos de cartão */
+        .card-input {
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR INFORMATIVO -->
+    <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
+        <span>FRETE GRÁTIS EM COMPRAS ACIMA DE R$ 199</span>
+        <span class="hidden md:inline">•</span>
+        <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 6X SEM JUROS NO CARTÃO</span>
+    </div>
+
+    <!-- HEADER / NAVEGAÇÃO -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- LOGO E MENU -->
+                <div class="flex items-center gap-8">
+                    <a href="#" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
+                        VOLTZ<span class="text-blue-600">GEAR</span>
+                    </a>
+                    
+                    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+                        <a href="#" class="hover:text-blue-600 transition">Início</a>
+                        <a href="#catalogo" class="hover:text-blue-600 transition">Produtos</a>
+                        <a href="#" class="hover:text-blue-600 transition">Novidades</a>
+                        <a href="#" class="hover:text-blue-600 transition">Suporte</a>
+                    </nav>
+                </div>
+
+                <!-- BARRA DE PESQUISA -->
+                <div class="flex-1 max-w-md mx-4 relative hidden sm:block">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos tech premium..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                </div>
+
+                <!-- CARRINHO -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleCart()" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- BARRA DE PESQUISA MÓVEL -->
+            <div class="pb-4 sm:hidden">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    </span>
+                    <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER HERO CLEAN -->
+    <section class="bg-gradient-to-b from-blue-50 to-transparent py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-blue-600 text-xs font-bold tracking-widest uppercase mb-3 inline-block">Curadoria Exclusiva</span>
+            <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Acessórios que Elevam a sua Produtividade</h2>
+            <p class="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">Tecnologia minimalista, design funcional e frete seguro direto para a sua casa.</p>
+        </div>
+    </section>
+
+    <!-- PRODUTOS -->
+    <main id="catalogo" class="max-w-7xl mx-auto px-4 py-12 scroll-mt-24">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-gray-200 pb-4">
+            <h3 class="text-2xl font-bold text-gray-900 tracking-tight">Nosso Catálogo</h3>
+            <span id="results-count" class="text-sm text-gray-500">Mostrando todos os produtos</span>
+        </div>
+        
+        <div id="grid-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Injeção dos produtos -->
+        </div>
+    </main>
+
+    <!-- CARRINHO LATERAL PREMIUM -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+            <h3 class="text-lg font-bold text-gray-900">Sua Sacola</h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-900 text-2xl p-1">&times;</button>
+        </div>
+
+        <div id="cart-items" class="flex-1 space-y-4 overflow-y-auto pr-1 mb-4">
+            <p class="text-gray-400 text-center py-8 text-sm">Sua sacola está vazia.</p>
+        </div>
+
+        <div class="border-t border-gray-100 pt-4">
+            <div class="flex flex-col mb-4">
+                <div class="flex justify-between text-base font-bold text-gray-900">
+                    <span>Subtotal:</span>
+                    <span id="cart-total" class="text-blue-600">R$ 0,00</span>
+                </div>
+                <div id="cart-installments" class="text-right text-xs text-green-600 font-medium mt-1">
+                    <!-- Parcelamento calculado dinamicamente -->
+                </div>
+            </div>
+
+            <button id="btn-next-step" onclick="showCheckoutForm()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-full transition-all tracking-wide hidden">
+                Continuar para Entrega
+            </button>
+        </div>
+
+        <!-- FORMULÁRIO DE ENTREGA & PAGAMENTO -->
+        <div id="checkout-form" class="hidden border-t border-gray-100 pt-6 mt-6 pb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
+                <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Informações de Envio</h4>
+            </div>
+            
+            <div class="space-y-3 text-sm mb-6">
+                <input type="text" id="cli-nome" placeholder="Nome Completo" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="email" id="cli-email" placeholder="E-mail principal (Para receber o código de rastreio)" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="text" id="cli-whatsapp" placeholder="WhatsApp com DDD" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="cli-cep" placeholder="CEP" onblur="buscarCEP()" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" id="cli-numero" placeholder="Número" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                </div>
+                
+                <input type="text" id="cli-rua" placeholder="Endereço / Rua" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                <input type="text" id="cli-bairro" placeholder="Bairro" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="cli-cidade" placeholder="Cidade" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="cli-estado" placeholder="UF" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <!-- FEEDBACK VISUAL DE FRETE -->
+                <div id="frete-info" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-lg flex justify-between items-center text-xs text-blue-800">
+                    <span class="font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-truck-fast"></i> Método de Envio:
+                    </span>
+                    <span id="frete-valor" class="font-bold">Calculando...</span>
+                </div>
+            </div>
+
+            <!-- SEÇÃO DE OPÇÕES DE PAGAMENTO -->
+            <div class="border-t border-gray-100 pt-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
+                    <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Forma de Pagamento</h4>
+                </div>
+                
+                <!-- Opções Alternáveis (Pills) -->
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button type="button" onclick="selecionarMetodo('pix')" id="btn-metodo-pix" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200">
+                        <i class="fa-brands fa-pix text-lg mb-1"></i>
+                        <span class="text-xs font-bold">Pix Instantâneo</span>
+                        <span class="text-[9px] text-green-600 font-medium">Aprovação imediata</span>
+                    </button>
+                    <button type="button" onclick="selecionarMetodo('cartao')" id="btn-metodo-cartao" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200">
+                        <i class="fa-solid fa-credit-card text-lg mb-1"></i>
+                        <span class="text-xs font-bold">Cartão de Crédito</span>
+                        <span class="text-[9px] text-gray-500 font-medium">Até 6x sem juros</span>
+                    </button>
+                </div>
+
+                <!-- Campos Dinâmicos do Cartão de Crédito -->
+                <div id="campos-cartao" class="hidden space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 transition-all">
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 block mb-1">Número do Cartão</label>
+                        <div class="relative">
+                            <input type="text" id="card-num" placeholder="0000 0000 0000 0000" maxlength="19" class="card-input w-full bg-white border border-gray-300 p-2.5 pl-9 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                            <i class="fa-regular fa-credit-card absolute left-3 top-3.5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 block mb-1">Nome Impresso no Cartão</label>
+                        <input type="text" id="card-nome" placeholder="COMO ESTÁ ESCRITO NO CARTÃO" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 uppercase">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs font-bold text-gray-600 block mb-1">Validade</label>
+                            <input type="text" id="card-validade" placeholder="MM/AA" maxlength="5" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-600 block mb-1">CVV</label>
+                            <input type="text" id="card-cvv" placeholder="123" maxlength="4" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 block mb-1">Opções de Parcelamento</label>
+                        <select id="card-parcelas" class="w-full bg-white border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 font-medium">
+                            <!-- Preenchido dinamicamente via JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESUMO DO PEDIDO ANTES DE PAGAR -->
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mt-6 text-sm text-gray-700 space-y-2">
+                <div class="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span id="summary-subtotal" class="font-semibold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Frete:</span>
+                    <span id="summary-frete" class="font-semibold text-green-600">Grátis</span>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-extrabold text-gray-900">
+                    <span>Total Final:</span>
+                    <span id="summary-total" class="text-blue-600">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- BOTÃO DE PAGAMENTO PROFISSIONAL -->
+            <button id="btn-finalizar" onclick="processarPagamento()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock"></i>
+                <span id="btn-text">Confirmar e Gerar Pix Real</span>
+            </button>
+
+            <!-- SELOS DE SEGURANÇA -->
+            <div class="mt-6 text-center space-y-3">
+                <div class="flex justify-center items-center gap-2 text-xs text-green-700 font-bold bg-green-50 py-2 rounded-lg border border-green-100">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>AMBIENTE 100% SEGURO E CRIPTOGRAFADO</span>
+                </div>
+                <div class="flex justify-center items-center gap-3 text-gray-400 text-lg">
+                    <i class="fa-brands fa-cc-visa"></i>
+                    <i class="fa-brands fa-cc-mastercard"></i>
+                    <i class="fa-brands fa-cc-diners-club"></i>
+                    <i class="fa-brands fa-cc-amex"></i>
+                    <i class="fa-brands fa-pix text-base"></i>
+                </div>
+                <p class="text-[10px] text-gray-400">Processado com tecnologia de segurança de ponta.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO PIX -->
+    <div id="pix-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white border border-gray-200 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-circle-check text-green-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Seu pedido foi reservado!</h3>
+            <p class="text-gray-500 text-xs mb-6">Pague via Pix para garantir o envio automático do produto.</p>
+            
+            <img id="pix-qr-img" src="" alt="QR Code Pix" class="mx-auto w-44 h-44 mb-6 border border-gray-200 rounded-xl p-1 bg-gray-50">
+            
+            <div class="mb-6">
+                <input type="text" id="pix-copia-cola" readonly class="w-full bg-gray-100 text-[10px] text-gray-600 p-3 rounded-lg border border-gray-200 select-all mb-2 text-center">
+                <button onclick="copiarPix()" class="text-xs text-blue-600 hover:text-blue-700 font-bold">
+                    <i class="fa-regular fa-copy mr-1"></i> Copiar Código Pix
+                </button>
+            </div>
+
+            <button onclick="fecharModalPix()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full transition-all text-sm">
+                Voltar à Loja
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // BANCO DE DADOS DE PRODUTOS
+        // ==========================================
+        const produtos = [
+            { 
+                id: 1, 
+                nome: "Power Bank 20000mAh Lanterna", 
+                preco: 129.90, 
+                desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", 
+                tag: "Mais Vendido", 
+                img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+                aliexpressId: "1005010755900045"
+            },
+            { 
+                id: 2, 
+                nome: "Mini Projetor Portátil Smart", 
+                preco: 289.90, 
+                desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", 
+                tag: "Super Novidade", 
+                img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500",
+                aliexpressId: "1005005886477123"
+            },
+            { 
+                id: 3, 
+                nome: "Carregador Magnético Sem Fio 3 em 1", 
+                preco: 169.90, 
+                desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", 
+                tag: "Destaque", 
+                img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500",
+                aliexpressId: "1005006123456789"
+            },
+            { 
+                id: 4, 
+                nome: "Mini Ventilador de Celular Gamer", 
+                preco: 79.90, 
+                desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", 
+                tag: "Edição Limitada", 
+                img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500",
+                aliexpressId: "1005006090123456"
+            },
+            { 
+                id: 5, 
+                nome: "Umidificador Difusor Nuvem de Chuva", 
+                preco: 149.90, 
+                desc: "Estilo e conforto acústico para o seu setup. Efeito visual relaxante de chuva com luzes LED customizáveis.", 
+                tag: "Viral TikTok", 
+                img: "https://images.unsplash.com/photo-1519183071298-a2962feb14f4?w=500",
+                aliexpressId: "1005005777123456"
+            },
+            { 
+                id: 6, 
+                nome: "Teclado Mecânico RGB Compacto", 
+                preco: 199.90, 
+                desc: "Switches macios de alta resposta tátil, conexão rápida e iluminação dinâmica que reage aos seus comandos.", 
+                tag: "Melhor Preço", 
+                img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
+                aliexpressId: "1005005999999999"
+            },
+            { 
+                id: 7, 
+                nome: "Fone de Ouvido Noise Cancelling", 
+                preco: 189.90, 
+                desc: "Foco total onde quer que esteja. Isolamento acústico ativo e bateria de longa duração para o dia todo.", 
+                tag: "Premium", 
+                img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
+                aliexpressId: "1005005666666666"
+            },
+            { 
+                id: 8, 
+                nome: "Barra de Luz Monitor LED Smart", 
+                preco: 119.90, 
+                desc: "Iluminação profissional e assimétrica para o seu espaço de trabalho que reduz a fadiga ocular em telas.", 
+                tag: "Ergonômico", 
+                img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500",
+                aliexpressId: "1005005555555555"
+            },
+            { 
+                id: 9, 
+                nome: "Suporte Veicular Carregador Sem Fio", 
+                preco: 99.90, 
+                desc: "Fixação automática inteligente por sensor de presença e carregamento rápido para suas viagens e deslocamentos.", 
+                tag: "Mais Vendido", 
+                img: "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=500",
+                aliexpressId: "1005005444444444"
+            },
+            { 
+                id: 10, 
+                nome: "Mouse Gamer Wireless Ergonômico", 
+                preco: 139.90, 
+                desc: "Sem fios, sem atrasos. Precisão cirúrgica de DPI ajustável e design ergonômico anatômico para uso prolongado.", 
+                tag: "Novidade", 
+                img: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500",
+                aliexpressId: "1005005333333333"
+            }
+        ];
+
+        // ==========================================
+        // VARIÁVEIS GLOBAIS
+        // ==========================================
+        let carrinho = [];
+        let metodoSelecionado = 'pix';
+
+        // ==========================================
+        // RENDERIZAR PRODUTOS
+        // ==========================================
+        function renderProdutos(listaFiltrada = produtos) {
+            const grid = document.getElementById('grid-produtos');
+            const countSpan = document.getElementById('results-count');
+            
+            if (listaFiltrada.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fa-solid fa-circle-info text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-gray-500">Nenhum produto foi localizado com esse nome.</p>
+                    </div>`;
+                countSpan.innerText = "Nenhum resultado";
+                return;
+            }
+
+            countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
+            grid.innerHTML = listaFiltrada.map(p => {
+                const valorParcela = (p.preco / 6).toFixed(2).replace('.', ',');
+                return `
+                    <div class="product-card rounded-2xl overflow-hidden flex flex-col h-full">
+                        <div class="relative bg-gray-100">
+                            <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
+                            <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
+                        </div>
+                        <div class="p-6 flex flex-col flex-1">
+                            <h3 class="text-lg font-bold mb-2 text-gray-900">${p.nome}</h3>
+                            <p class="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">${p.desc}</p>
+                            <div class="mt-auto">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-xl font-black text-gray-900">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                                    <button onclick="adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">
+                                        Adicionar
+                                    </button>
+                                </div>
+                                <p class="text-xs text-green-600 font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-credit-card text-[10px]"></i> ou 6x de R$ ${valorParcela} sem juros
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // SELECIONAR MÉTODO DE PAGAMENTO
+        // ==========================================
+        function selecionarMetodo(metodo) {
+            metodoSelecionado = metodo;
+            const btnPix = document.getElementById('btn-metodo-pix');
+            const btnCartao = document.getElementById('btn-metodo-cartao');
+            const camposCartao = document.getElementById('campos-cartao');
+            const btnText = document.getElementById('btn-text');
+            const btnFinalizar = document.getElementById('btn-finalizar');
+
+            if (metodo === 'pix') {
+                btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
+                btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
+                camposCartao.classList.add('hidden');
+                btnText.innerText = "Confirmar e Gerar Pix Real";
+                btnFinalizar.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
+            } else {
+                btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
+                btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
+                camposCartao.classList.remove('hidden');
+                btnText.innerText = "Confirmar e Pagar com Cartão";
+                btnFinalizar.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
+                calcularParcelasDropdown();
+            }
+            atualizarResumoValores();
+        }
+
+        // ==========================================
+        // CALCULAR PARCELAS
+        // ==========================================
+        function calcularParcelasDropdown() {
+            const totalMercadorias = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const frete = totalMercadorias >= 199 ? 0 : 14.90;
+            const totalFinal = totalMercadorias + frete;
+            const select = document.getElementById('card-parcelas');
+            select.innerHTML = '';
+
+            for (let i = 1; i <= 6; i++) {
+                const valorParcela = (totalFinal / i).toFixed(2).replace('.', ',');
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = `${i}x de R$ ${valorParcela} sem juros`;
+                select.appendChild(option);
+            }
+        }
+
+        // ==========================================
+        // FILTRAR PRODUTOS
+        // ==========================================
+        function filtrarProdutos() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderProdutos(filtrados);
+        }
+
+        function filtrarProdutosMobile() {
+            const query = document.getElementById('search-input-mobile').value.toLowerCase();
+            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderProdutos(filtrados);
+        }
+
+        // ==========================================
+        // FUNÇÕES DO CARRINHO
+        // ==========================================
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        function adicionarAoCarrinho(id) {
+            const prod = produtos.find(p => p.id === id);
+            carrinho.push(prod);
+            atualizarCarrinho();
+            
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+            }
+        }
+
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const container = document.getElementById('cart-items');
+            const totalSpan = document.getElementById('cart-total');
+            const installmentsSpan = document.getElementById('cart-installments');
+            const countSpan = document.getElementById('cart-count');
+            const btnNext = document.getElementById('btn-next-step');
+
+            countSpan.innerText = carrinho.length;
+
+            if (carrinho.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8 text-sm">Sua sacola está vazia.</p>';
+                totalSpan.innerText = "R$ 0,00";
+                installmentsSpan.innerText = "";
+                btnNext.classList.add('hidden');
+                document.getElementById('checkout-form').classList.add('hidden');
+                return;
+            }
+
+            container.innerHTML = carrinho.map((p, index) => {
+                const valorParcelaProd = (p.preco / 6).toFixed(2).replace('.', ',');
+                return `
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.img}" class="w-12 h-12 object-cover rounded-lg border border-gray-100">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900 max-w-[180px] truncate">${p.nome}</h4>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-blue-600 font-semibold">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                                    <span class="text-[10px] text-green-600">6x de R$ ${valorParcelaProd}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="removerDoCarrinho(${index})" class="text-red-500 hover:text-red-600 text-xs font-bold">Excluir</button>
+                    </div>
+                `;
+            }).join('');
+
+            const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const totalParcela = (total / 6).toFixed(2).replace('.', ',');
+
+            totalSpan.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            installmentsSpan.innerHTML = `<i class="fa-solid fa-credit-card text-[10px] mr-1"></i> ou em até 6x de R$ ${totalParcela} sem juros`;
+            
+            btnNext.classList.remove('hidden');
+            atualizarResumoValores();
+        }
+
+        function showCheckoutForm() {
+            document.getElementById('checkout-form').classList.remove('hidden');
+            document.getElementById('btn-next-step').classList.add('hidden');
+            atualizarResumoValores();
+        }
+
+        // ==========================================
+        // ATUALIZAR RESUMO DE VALORES
+        // ==========================================
+        function atualizarResumoValores() {
+            const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const frete = subtotal >= 199 ? 0 : 14.90;
+            const totalFinal = subtotal + frete;
+
+            document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            
+            const infoFrete = document.getElementById('frete-info');
+            const valorFreteTxt = document.getElementById('frete-valor');
+            const summaryFrete = document.getElementById('summary-frete');
+
+            if (carrinho.length > 0) {
+                infoFrete.classList.remove('hidden');
+                if (frete === 0) {
+                    valorFreteTxt.innerHTML = `<span class="text-green-600 font-bold">GRÁTIS (Desconto Aplicado)</span>`;
+                    summaryFrete.innerText = "Grátis";
+                    summaryFrete.className = "font-semibold text-green-600";
+                } else {
+                    valorFreteTxt.innerText = `R$ 14,90 (Envio Premium Correios)`;
+                    summaryFrete.innerText = "R$ 14,90";
+                    summaryFrete.className = "font-semibold text-gray-700";
+                }
+            } else {
+                infoFrete.classList.add('hidden');
+            }
+
+            document.getElementById('summary-total').innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+            
+            if (metodoSelecionado === 'cartao') {
+                calcularParcelasDropdown();
+            }
+        }
+
+        // ==========================================
+        // BUSCAR CEP (VIA VIA CEP)
+        // ==========================================
+        async function buscarCEP() {
+            const cepInput = document.getElementById('cli-cep').value.replace(/\D/g, '');
+            if (cepInput.length !== 8) return;
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cepInput}/json/`);
+                const data = await response.json();
+                if (!data.erro) {
+                    document.getElementById('cli-rua').value = data.logradouro;
+                    document.getElementById('cli-bairro').value = data.bairro;
+                    document.getElementById('cli-cidade').value = data.localidade;
+                    document.getElementById('cli-estado').value = data.uf;
+                    document.getElementById('cli-numero').focus();
+                    atualizarResumoValores();
+                }
+            } catch (err) {
+                console.error("Falha ao buscar CEP.", err);
+            }
+        }
+
+        // ==========================================
+        // PROCESSAR PAGAMENTO
+        // ==========================================
+        async function processarPagamento() {
+            const nome = document.getElementById('cli-nome').value;
+            const email = document.getElementById('cli-email').value;
+            const whatsapp = document.getElementById('cli-whatsapp').value;
+            const cep = document.getElementById('cli-cep').value;
+            const numero = document.getElementById('cli-numero').value;
+            const rua = document.getElementById('cli-rua').value;
+            const bairro = document.getElementById('cli-bairro').value;
+            const cidade = document.getElementById('cli-cidade').value;
+            const estado = document.getElementById('cli-estado').value;
+
+            if (!nome || !email || !cep || !numero) {
+                alert("Por favor, preencha todos os dados de entrega antes de finalizar!");
+                return;
+            }
+
+            if (metodoSelecionado === 'cartao') {
+                const cardNum = document.getElementById('card-num').value;
+                const cardNome = document.getElementById('card-nome').value;
+                const cardValidade = document.getElementById('card-validade').value;
+                const cardCvv = document.getElementById('card-cvv').value;
+
+                if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
+                    alert("Por favor, preencha todos os dados do cartão de crédito para processar o pagamento seguro!");
+                    return;
+                }
+            }
+
+            const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const frete = subtotal >= 199 ? 0 : 14.90;
+            const total = subtotal + frete;
+
+            const payload = {
+                cliente: { nome, email, whatsapp },
+                endereco: { cep, numero, rua, bairro, cidade, estado },
+                itens: carrinho.map(item => ({
+                    id: item.id,
+                    nome: item.nome,
+                    preco: item.preco,
+                    aliexpressId: item.aliexpressId
+                })),
+                total: total.toFixed(2),
+                metodoPagamento: metodoSelecionado,
+                detalhesCartao: metodoSelecionado === 'cartao' ? {
+                    parcelas: document.getElementById('card-parcelas').value
+                } : null
+            };
+
+            try {
+                const btnFinalizar = document.getElementById('btn-finalizar');
+                const btnText = document.getElementById('btn-text');
+                btnText.innerText = "Processando pagamento seguro...";
+                btnFinalizar.disabled = true;
+
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const resData = await response.json();
+
+                if (resData.sucesso) {
+                    if (metodoSelecionado === 'pix') {
+                        document.getElementById('pix-qr-img').src = resData.pixQRCode;
+                        document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
+                        document.getElementById('pix-modal').classList.remove('hidden');
+                    } else {
+                        alert("✅ Pagamento aprovado com sucesso! Um recibo foi enviado ao seu e-mail.");
+                        fecharModalPix();
+                    }
+                } else {
+                    alert("❌ Atenção: " + resData.mensagem);
+                }
+
+                btnFinalizar.disabled = false;
+                selecionarMetodo(metodoSelecionado);
+
+            } catch (err) {
+                alert("❌ Falha de conexão com o gateway de segurança.");
+                console.error(err);
+                document.getElementById('btn-finalizar').disabled = false;
+                selecionarMetodo(metodoSelecionado);
+            }
+        }
+
+        // ==========================================
+        // FUNÇÕES DO PIX
+        // ==========================================
+        function copiarPix() {
+            const input = document.getElementById('pix-copia-cola');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            alert("Código Pix copiado com sucesso!");
+        }
+
+        function fecharModalPix() {
+            document.getElementById('pix-modal').classList.add('hidden');
+            carrinho = [];
+            atualizarCarrinho();
+            toggleCart();
+        }
+
+        // ==========================================
+        // INICIAR LOJA
+        // ==========================================
+        renderProdutos();
+
+        // Máscara para números de cartão (espaço a cada 4 dígitos)
+        document.getElementById('card-num').addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 16) value = value.slice(0, 16);
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            this.value = formatted;
+        });
+
+        // Máscara para validade (MM/AA)
+        document.getElementById('card-validade').addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            if (value.length >= 2) {
+                this.value = value.slice(0, 2) + '/' + value.slice(2);
+            } else {
+                this.value = value;
+            }
+        });
+    </script>
+</body>
+</html>
