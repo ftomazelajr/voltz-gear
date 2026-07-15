@@ -32,7 +32,6 @@
         .card-input { letter-spacing: 1px; }
         .star-rating { color: #f59e0b; }
         
-        /* Página de produto */
         .product-detail-image {
             width: 100%;
             max-height: 500px;
@@ -68,32 +67,6 @@
             text-align: center;
         }
 
-        /* Pedidos */
-        .pedido-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
-        }
-        .pedido-card:hover {
-            border-color: #3b82f6;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-        .status-pendente { background: #fef3c7; color: #92400e; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-pago { background: #d1fae5; color: #065f46; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-enviado { background: #dbeafe; color: #1e40af; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-entrege { background: #e0e7ff; color: #3730a3; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-simulado { background: #fce4ec; color: #c62828; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        
-        /* Admin Login */
-        .admin-login-overlay {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-        }
-
-        /* Responsividade */
         @media (max-width: 640px) {
             .product-detail-image { max-height: 300px; }
             .quantity-selector { padding: 4px 12px; }
@@ -103,18 +76,14 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
     <!-- TOPBAR -->
-    <!-- ========================================== -->
     <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
         <span>🚀 FRETE GRÁTIS ACIMA DE R$ 199</span>
         <span class="hidden md:inline">•</span>
         <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 6X SEM JUROS</span>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER - SEM LINK DE PEDIDOS -->
-    <!-- ========================================== -->
+    <!-- HEADER - SEM LINK DE PEDIDOS E SEM LOGIN -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-20 gap-4">
@@ -148,9 +117,7 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
     <!-- PÁGINA HOME -->
-    <!-- ========================================== -->
     <section id="page-home" class="max-w-7xl mx-auto px-4 py-12">
         <div class="bg-gradient-to-b from-blue-50 to-transparent py-8 px-4 -mx-4 mb-8 rounded-3xl">
             <div class="max-w-4xl mx-auto text-center">
@@ -167,9 +134,7 @@
         <div id="grid-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </section>
 
-    <!-- ========================================== -->
     <!-- PÁGINA DE PRODUTO INDIVIDUAL -->
-    <!-- ========================================== -->
     <section id="page-produto" class="max-w-7xl mx-auto px-4 py-12 hidden">
         <button onclick="mostrarPagina('home')" class="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition">
             <i class="fa-solid fa-arrow-left"></i> Voltar para loja
@@ -253,64 +218,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- PÁGINA DE PEDIDOS (ADMIN) -->
-    <!-- ========================================== -->
-    <section id="page-pedidos" class="max-w-7xl mx-auto px-4 py-12 hidden">
-        <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
-            <div>
-                <h2 class="text-3xl font-bold text-gray-900">📋 Pedidos</h2>
-                <p class="text-gray-500 text-sm">Gerencie os pedidos da sua loja</p>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="carregarPedidos()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-rotate"></i> Atualizar
-                </button>
-                <button onclick="logoutAdmin()" class="bg-red-100 hover:bg-red-200 text-red-600 font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-        </div>
-
-        <div class="flex flex-wrap gap-2 mb-6">
-            <button onclick="filtrarPedidos('todos')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition" data-filtro="todos">Todos</button>
-            <button onclick="filtrarPedidos('pendente')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pendente">Pendentes</button>
-            <button onclick="filtrarPedidos('pago')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pago">Pagos</button>
-            <button onclick="filtrarPedidos('enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="enviado">Enviados</button>
-            <button onclick="filtrarPedidos('simulado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="simulado">Simulados</button>
-        </div>
-
-        <div id="lista-pedidos" class="space-y-4">
-            <div class="text-center py-12 text-gray-500">
-                <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
-                <p class="mt-2">Carregando pedidos...</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- ADMIN LOGIN (MODAL) -->
-    <!-- ========================================== -->
-    <div id="admin-login" class="admin-login-overlay fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border border-gray-200">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fa-solid fa-lock text-blue-600 text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900">Área Restrita</h2>
-                <p class="text-sm text-gray-500">Digite a senha para acessar os pedidos</p>
-            </div>
-            <form id="admin-login-form" onsubmit="fazerLogin(event)">
-                <input type="password" id="admin-senha" placeholder="Digite a senha..." class="w-full bg-gray-50 border border-gray-300 p-3 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 mb-4">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-full transition shadow-lg shadow-blue-200">Entrar</button>
-            </form>
-            <p class="text-xs text-gray-400 text-center mt-4">🔒 Apenas administradores autorizados</p>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
     <!-- CARRINHO LATERAL -->
-    <!-- ========================================== -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <h3 class="text-lg font-bold text-gray-900">Sua Sacola</h3>
@@ -434,9 +342,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- MODAL PIX -->
-    <!-- ========================================== -->
     <div id="pix-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 hidden">
         <div class="bg-white border border-gray-200 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -457,19 +363,10 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SCRIPTS COMPLETOS -->
-    <!-- ========================================== -->
+    <!-- SCRIPTS -->
     <script>
-        // ==========================================
-        // CONFIGURAÇÃO - URL DO BACKEND
-        // ==========================================
         const API_URL = 'https://voltz-gear.onrender.com';
-        const ADMIN_SENHA = 'voltz2026';
 
-        // ==========================================
-        // BANCO DE DADOS DE PRODUTOS
-        // ==========================================
         const produtos = [
             { id: 1, nome: "Power Bank 20000mAh Lanterna", preco: 129.90, desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", tag: "Mais Vendido", img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", aliexpressId: "1005010755900045" },
             { id: 2, nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
@@ -487,11 +384,7 @@
         let metodoSelecionado = 'pix';
         let produtoAtual = null;
         let quantidadeAtual = 1;
-        let filtroPedidoAtual = 'todos';
 
-        // ==========================================
-        // RENDERIZAR PRODUTOS
-        // ==========================================
         function renderProdutos(listaFiltrada = produtos) {
             const grid = document.getElementById('grid-produtos');
             const countSpan = document.getElementById('results-count');
@@ -523,14 +416,9 @@
             }).join('');
         }
 
-        // ==========================================
-        // NAVEGAÇÃO
-        // ==========================================
         function mostrarPagina(pagina) {
             document.getElementById('page-home').classList.add('hidden');
             document.getElementById('page-produto').classList.add('hidden');
-            document.getElementById('page-pedidos').classList.add('hidden');
-            
             if (pagina === 'home') {
                 document.getElementById('page-home').classList.remove('hidden');
                 renderProdutos();
@@ -538,21 +426,9 @@
             } else if (pagina === 'produto') {
                 document.getElementById('page-produto').classList.remove('hidden');
                 window.scrollTo(0, 0);
-            } else if (pagina === 'pedidos') {
-                const logado = sessionStorage.getItem('admin_logado');
-                if (logado === 'true') {
-                    document.getElementById('page-pedidos').classList.remove('hidden');
-                    carregarPedidos();
-                    window.scrollTo(0, 0);
-                } else {
-                    document.getElementById('admin-login').classList.remove('hidden');
-                }
             }
         }
 
-        // ==========================================
-        // PÁGINA DE PRODUTO
-        // ==========================================
         function abrirProduto(id) {
             const produto = produtos.find(p => p.id === id);
             if (!produto) return;
@@ -574,32 +450,22 @@
 
         function comprarAgora() {
             if (!produtoAtual) return;
-            for (let i = 0; i < quantidadeAtual; i++) {
-                carrinho.push(produtoAtual);
-            }
+            for (let i = 0; i < quantidadeAtual; i++) carrinho.push(produtoAtual);
             atualizarCarrinho();
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
             showCheckoutForm();
         }
 
-        // ==========================================
-        // FILTRO DE PRODUTOS
-        // ==========================================
         function filtrarProdutos() {
             const query = document.getElementById('search-input').value.toLowerCase();
-            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-            renderProdutos(filtrados);
+            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
         }
         function filtrarProdutosMobile() {
             const query = document.getElementById('search-input-mobile').value.toLowerCase();
-            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-            renderProdutos(filtrados);
+            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
         }
 
-        // ==========================================
-        // CARRINHO
-        // ==========================================
         function toggleCart() {
             document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
         }
@@ -668,9 +534,6 @@
             atualizarResumoValores();
         }
 
-        // ==========================================
-        // MÉTODO DE PAGAMENTO
-        // ==========================================
         function selecionarMetodo(metodo) {
             metodoSelecionado = metodo;
             const btnPix = document.getElementById('btn-metodo-pix');
@@ -711,9 +574,6 @@
             }
         }
 
-        // ==========================================
-        // BUSCAR CEP
-        // ==========================================
         async function buscarCEP() {
             const cepInput = document.getElementById('cli-cep').value.replace(/\D/g, '');
             if (cepInput.length !== 8) return;
@@ -731,9 +591,6 @@
             } catch (err) { console.error("Falha ao buscar CEP.", err); }
         }
 
-        // ==========================================
-        // ATUALIZAR RESUMO
-        // ==========================================
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const frete = subtotal >= 199 ? 0 : 14.90;
@@ -758,9 +615,6 @@
             if (metodoSelecionado === 'cartao') calcularParcelasDropdown();
         }
 
-        // ==========================================
-        // PROCESSAR PAGAMENTO
-        // ==========================================
         async function processarPagamento() {
             const nome = document.getElementById('cli-nome').value;
             const email = document.getElementById('cli-email').value;
@@ -772,20 +626,14 @@
             const cidade = document.getElementById('cli-cidade').value;
             const estado = document.getElementById('cli-estado').value;
 
-            if (!nome || !email || !cep || !numero) {
-                alert("Por favor, preencha todos os dados de entrega!");
-                return;
-            }
+            if (!nome || !email || !cep || !numero) { alert("Preencha todos os dados de entrega!"); return; }
 
             if (metodoSelecionado === 'cartao') {
                 const cardNum = document.getElementById('card-num').value;
                 const cardNome = document.getElementById('card-nome').value;
                 const cardValidade = document.getElementById('card-validade').value;
                 const cardCvv = document.getElementById('card-cvv').value;
-                if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
-                    alert("Por favor, preencha todos os dados do cartão!");
-                    return;
-                }
+                if (!cardNum || !cardNome || !cardValidade || !cardCvv) { alert("Preencha todos os dados do cartão!"); return; }
             }
 
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
@@ -795,17 +643,10 @@
             const payload = {
                 cliente: { nome, email, whatsapp },
                 endereco: { cep, numero, rua, bairro, cidade, estado },
-                itens: carrinho.map(item => ({
-                    id: item.id,
-                    nome: item.nome,
-                    preco: item.preco,
-                    aliexpressId: item.aliexpressId
-                })),
+                itens: carrinho.map(item => ({ id: item.id, nome: item.nome, preco: item.preco, aliexpressId: item.aliexpressId })),
                 total: total.toFixed(2),
                 metodoPagamento: metodoSelecionado,
-                detalhesCartao: metodoSelecionado === 'cartao' ? {
-                    parcelas: document.getElementById('card-parcelas').value
-                } : null
+                detalhesCartao: metodoSelecionado === 'cartao' ? { parcelas: document.getElementById('card-parcelas').value } : null
             };
 
             try {
@@ -848,9 +689,6 @@
             }
         }
 
-        // ==========================================
-        // PIX
-        // ==========================================
         function copiarPix() {
             const input = document.getElementById('pix-copia-cola');
             input.select();
@@ -864,130 +702,6 @@
             toggleCart();
         }
 
-        // ==========================================
-        // ADMIN - LOGIN
-        // ==========================================
-        function fazerLogin(event) {
-            event.preventDefault();
-            const senha = document.getElementById('admin-senha').value;
-            if (senha === ADMIN_SENHA) {
-                document.getElementById('admin-login').classList.add('hidden');
-                sessionStorage.setItem('admin_logado', 'true');
-                mostrarPagina('pedidos');
-            } else {
-                alert('❌ Senha incorreta! Tente novamente.');
-                document.getElementById('admin-senha').value = '';
-                document.getElementById('admin-senha').focus();
-            }
-        }
-
-        function logoutAdmin() {
-            sessionStorage.removeItem('admin_logado');
-            document.getElementById('admin-login').classList.remove('hidden');
-            document.getElementById('page-pedidos').classList.add('hidden');
-            mostrarPagina('home');
-        }
-
-        // ==========================================
-        // PEDIDOS - ADMIN
-        // ==========================================
-        async function carregarPedidos() {
-            const container = document.getElementById('lista-pedidos');
-            container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><p class="mt-2">Carregando pedidos...</p></div>`;
-
-            try {
-                const response = await fetch(`${API_URL}/api/pedidos`);
-                if (!response.ok) throw new Error('Erro ao carregar pedidos');
-                const data = await response.json();
-                
-                if (data.pedidos && data.pedidos.length > 0) {
-                    let pedidosFiltrados = data.pedidos;
-                    if (filtroPedidoAtual !== 'todos') {
-                        pedidosFiltrados = pedidosFiltrados.filter(p => p.status === filtroPedidoAtual);
-                    }
-                    
-                    if (pedidosFiltrados.length === 0) {
-                        container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido com status "${filtroPedidoAtual}"</p></div>`;
-                        return;
-                    }
-
-                    container.innerHTML = pedidosFiltrados.map(p => {
-                        const statusClass = p.status || 'pendente';
-                        return `<div class="pedido-card">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                    <div class="flex items-center gap-3 flex-wrap">
-                                        <span class="font-bold text-gray-900">#${p.idPedido}</span>
-                                        <span class="status-${statusClass}">${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}</span>
-                                        <span class="text-xs text-gray-400">${new Date(p.data).toLocaleDateString('pt-BR')} ${new Date(p.data).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
-                                    </div>
-                                    <div class="mt-1">
-                                        <p class="text-sm font-medium text-gray-900">${p.cliente.nome}</p>
-                                        <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp || 'N/A'}</p>
-                                        <p class="text-xs text-gray-400">${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.estado}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4 flex-wrap">
-                                    <div class="text-right">
-                                        <span class="text-lg font-bold text-blue-600">R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</span>
-                                        <p class="text-xs text-gray-400">${p.itens.length} item(ns)</p>
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        ${p.status !== 'pago' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}
-                                        ${p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>` : ''}
-                                        ${p.status === 'simulado' ? `<span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">🧪 Teste</span>` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-2 border-t border-gray-100 pt-2">
-                                <p class="text-xs text-gray-500">Produtos: ${p.itens.map(i => i.nome).join(', ')}</p>
-                            </div>
-                        </div>`;
-                    }).join('');
-                } else {
-                    container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido encontrado</p></div>`;
-                }
-            } catch (err) {
-                console.error('Erro ao carregar pedidos:', err);
-                container.innerHTML = `<div class="text-center py-12 text-red-500"><i class="fa-solid fa-exclamation-triangle text-2xl mb-2"></i><p>Erro ao carregar pedidos. Verifique se o backend está online.</p><p class="text-xs text-gray-400 mt-2">${err.message}</p></div>`;
-            }
-        }
-
-        function filtrarPedidos(status) {
-            filtroPedidoAtual = status;
-            document.querySelectorAll('.filtro-pedido').forEach(btn => {
-                btn.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition';
-            });
-            const btnSelecionado = document.querySelector(`.filtro-pedido[data-filtro="${status}"]`);
-            if (btnSelecionado) {
-                btnSelecionado.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition';
-            }
-            carregarPedidos();
-        }
-
-        async function atualizarStatus(idPedido, novoStatus) {
-            try {
-                const response = await fetch(`${API_URL}/api/pedidos/${idPedido}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: novoStatus })
-                });
-                const data = await response.json();
-                if (data.sucesso) {
-                    alert(`✅ Pedido atualizado para "${novoStatus}"`);
-                    carregarPedidos();
-                } else {
-                    alert('❌ Erro ao atualizar status: ' + data.mensagem);
-                }
-            } catch (err) {
-                alert('❌ Erro ao conectar com o servidor');
-                console.error(err);
-            }
-        }
-
-        // ==========================================
-        // MÁSCARAS
-        // ==========================================
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 16) value = value.slice(0, 16);
@@ -1009,21 +723,9 @@
             }
         });
 
-        // ==========================================
-        // INICIAR LOJA
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Verifica se já está logado
-            const logado = sessionStorage.getItem('admin_logado');
-            if (logado === 'true') {
-                document.getElementById('admin-login').classList.add('hidden');
-            }
-            renderProdutos();
-            console.log('🚀 Voltz Gear carregada!');
-            console.log('📡 Backend URL:', API_URL);
-            console.log('🔒 Senha Admin:', ADMIN_SENHA);
-            console.log('📋 Página de pedidos: Acesse via URL /admin.html');
-        });
+        renderProdutos();
+        console.log('🚀 Voltz Gear carregada!');
+        console.log('📡 Backend URL:', API_URL);
     </script>
 
 </body>
