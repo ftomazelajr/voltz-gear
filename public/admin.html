@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Voltz Gear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .pedido-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        .pedido-card:hover { border-color: #3b82f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .status-pendente { background: #fef3c7; color: #92400e; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-pago { background: #d1fae5; color: #065f46; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-enviado { background: #dbeafe; color: #1e40af; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-simulado { background: #fce4ec; color: #c62828; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .admin-login-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+        /* Esconde o link de pedidos do menu da loja principal */
+        .menu-pedidos { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- ADMIN LOGIN (MODAL) -->
+    <!-- ========================================== -->
+    <div id="admin-login" class="admin-login-overlay fixed inset-0 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border border-gray-200">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-lock text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Área Restrita</h2>
+                <p class="text-sm text-gray-500">Digite a senha para acessar</p>
+            </div>
+            <form id="admin-login-form" onsubmit="fazerLogin(event)">
+                <input type="password" id="admin-senha" placeholder="Digite a senha..." class="w-full bg-gray-50 border border-gray-300 p-3 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 mb-4">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-full transition shadow-lg shadow-blue-200">Entrar</button>
+            </form>
+            <p class="text-xs text-gray-400 text-center mt-4">🔒 Apenas administradores autorizados</p>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CONTEÚDO ADMIN (ESCONDIDO INICIALMENTE) -->
+    <!-- ========================================== -->
+    <div id="admin-content" class="hidden max-w-7xl mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">📋 Painel de Pedidos</h2>
+                <p class="text-gray-500 text-sm">Gerencie os pedidos da sua loja Voltz Gear</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="carregarPedidos()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> Atualizar
+                </button>
+                <button onclick="logoutAdmin()" class="bg-red-100 hover:bg-red-200 text-red-600 font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-sign-out-alt"></i> Sair
+                </button>
+                <a href="https://ftomazelajr.github.io/voltz-gear" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-store"></i> Ver Loja
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="filtrarPedidos('todos')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition" data-filtro="todos">Todos</button>
+            <button onclick="filtrarPedidos('pendente')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pendente">Pendentes</button>
+            <button onclick="filtrarPedidos('pago')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pago">Pagos</button>
+            <button onclick="filtrarPedidos('enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="enviado">Enviados</button>
+            <button onclick="filtrarPedidos('simulado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="simulado">Simulados</button>
+        </div>
+
+        <!-- Lista de Pedidos -->
+        <div id="lista-pedidos" class="space-y-4">
+            <div class="text-center py-12 text-gray-500">
+                <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+                <p class="mt-2">Carregando pedidos...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCRIPTS -->
+    <!-- ========================================== -->
+    <script>
+        // ==========================================
+        // CONFIGURAÇÃO
+        // ==========================================
+        const API_URL = 'https://voltz-gear.onrender.com';
+        const ADMIN_SENHA = 'voltz2026';
+
+        let filtroPedidoAtual = 'todos';
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+        function fazerLogin(event) {
+            event.preventDefault();
+            const senha = document.getElementById('admin-senha').value;
+            if (senha === ADMIN_SENHA) {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                sessionStorage.setItem('admin_logado', 'true');
+                carregarPedidos();
+            } else {
+                alert('❌ Senha incorreta!');
+                document.getElementById('admin-senha').value = '';
+                document.getElementById('admin-senha').focus();
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('admin_logado');
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('admin-content').classList.add('hidden');
+        }
+
+        // ==========================================
+        // CARREGAR PEDIDOS
+        // ==========================================
+        async function carregarPedidos() {
+            const container = document.getElementById('lista-pedidos');
+            container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><p class="mt-2">Carregando pedidos...</p></div>`;
+
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos`);
+                if (!response.ok) throw new Error('Erro ao carregar pedidos');
+                const data = await response.json();
+                
+                if (data.pedidos && data.pedidos.length > 0) {
+                    let pedidosFiltrados = data.pedidos;
+                    if (filtroPedidoAtual !== 'todos') {
+                        pedidosFiltrados = pedidosFiltrados.filter(p => p.status === filtroPedidoAtual);
+                    }
+                    
+                    if (pedidosFiltrados.length === 0) {
+                        container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido com status "${filtroPedidoAtual}"</p></div>`;
+                        return;
+                    }
+
+                    container.innerHTML = pedidosFiltrados.map(p => {
+                        const statusClass = p.status || 'pendente';
+                        return `<div class="pedido-card">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div>
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <span class="font-bold text-gray-900">#${p.idPedido}</span>
+                                        <span class="status-${statusClass}">${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}</span>
+                                        <span class="text-xs text-gray-400">${new Date(p.data).toLocaleDateString('pt-BR')} ${new Date(p.data).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
+                                    </div>
+                                    <div class="mt-1">
+                                        <p class="text-sm font-medium text-gray-900">${p.cliente.nome}</p>
+                                        <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp || 'N/A'}</p>
+                                        <p class="text-xs text-gray-400">${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.estado}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 flex-wrap">
+                                    <div class="text-right">
+                                        <span class="text-lg font-bold text-blue-600">R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</span>
+                                        <p class="text-xs text-gray-400">${p.itens.length} item(ns)</p>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        ${p.status !== 'pago' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}
+                                        ${p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>` : ''}
+                                        ${p.status === 'simulado' ? `<span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">🧪 Teste</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 border-t border-gray-100 pt-2">
+                                <p class="text-xs text-gray-500">Produtos: ${p.itens.map(i => i.nome).join(', ')}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido encontrado</p></div>`;
+                }
+            } catch (err) {
+                console.error('Erro ao carregar pedidos:', err);
+                container.innerHTML = `<div class="text-center py-12 text-red-500"><i class="fa-solid fa-exclamation-triangle text-2xl mb-2"></i><p>Erro ao carregar pedidos.</p><p class="text-xs text-gray-400 mt-2">${err.message}</p></div>`;
+            }
+        }
+
+        function filtrarPedidos(status) {
+            filtroPedidoAtual = status;
+            document.querySelectorAll('.filtro-pedido').forEach(btn => {
+                btn.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition';
+            });
+            const btnSelecionado = document.querySelector(`.filtro-pedido[data-filtro="${status}"]`);
+            if (btnSelecionado) {
+                btnSelecionado.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition';
+            }
+            carregarPedidos();
+        }
+
+        async function atualizarStatus(idPedido, novoStatus) {
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos/${idPedido}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: novoStatus })
+                });
+                const data = await response.json();
+                if (data.sucesso) {
+                    alert(`✅ Pedido atualizado para "${novoStatus}"`);
+                    carregarPedidos();
+                } else {
+                    alert('❌ Erro ao atualizar status: ' + data.mensagem);
+                }
+            } catch (err) {
+                alert('❌ Erro ao conectar com o servidor');
+                console.error(err);
+            }
+        }
+
+        // ==========================================
+        // AUTO-LOGIN (se já estiver logado)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const logado = sessionStorage.getItem('admin_logado');
+            if (logado === 'true') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                carregarPedidos();
+            }
+        });
+    </script>
+
+</body>
+</html>
