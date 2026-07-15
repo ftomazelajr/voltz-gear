@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * { box-sizing: border-box; }
         body {
             background-color: #f9fafb;
             color: #1f2937;
@@ -15,29 +16,23 @@
         .product-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            border-radius: 16px;
+            overflow: hidden;
         }
         .product-card:hover {
             border-color: #3b82f6;
             transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.15);
         }
         #cart-sidebar::-webkit-scrollbar { width: 4px; }
         #cart-sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
         .card-input { letter-spacing: 1px; }
         .star-rating { color: #f59e0b; }
-        .admin-badge {
-            background: #ef4444;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        /* Estilos para página de produto */
+        
+        /* Página de produto */
         .product-detail-image {
             width: 100%;
             max-height: 500px;
@@ -65,16 +60,15 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .quantity-selector button:hover {
-            background: #e5e7eb;
-        }
+        .quantity-selector button:hover { background: #e5e7eb; }
         .quantity-selector span {
             font-size: 18px;
             font-weight: bold;
             min-width: 30px;
             text-align: center;
         }
-        /* Estilos para página de pedidos */
+
+        /* Pedidos */
         .pedido-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -87,22 +81,40 @@
             border-color: #3b82f6;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        .status-pendente { background: #fef3c7; color: #92400e; }
-        .status-pago { background: #d1fae5; color: #065f46; }
-        .status-enviado { background: #dbeafe; color: #1e40af; }
-        .status-entrege { background: #e0e7ff; color: #3730a3; }
+        .status-pendente { background: #fef3c7; color: #92400e; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-pago { background: #d1fae5; color: #065f46; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-enviado { background: #dbeafe; color: #1e40af; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-entrege { background: #e0e7ff; color: #3730a3; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-simulado { background: #fce4ec; color: #c62828; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        
+        /* Admin Login */
+        .admin-login-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 640px) {
+            .product-detail-image { max-height: 300px; }
+            .quantity-selector { padding: 4px 12px; }
+            .quantity-selector button { width: 28px; height: 28px; font-size: 16px; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ========================================== -->
     <!-- TOPBAR -->
+    <!-- ========================================== -->
     <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
         <span>🚀 FRETE GRÁTIS ACIMA DE R$ 199</span>
         <span class="hidden md:inline">•</span>
         <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 6X SEM JUROS</span>
     </div>
 
+    <!-- ========================================== -->
     <!-- HEADER -->
+    <!-- ========================================== -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-20 gap-4">
@@ -113,8 +125,11 @@
                     <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
                         <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Início</a>
                         <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Produtos</a>
-                        <a href="#" onclick="mostrarPagina('pedidos')" class="hover:text-blue-600 transition flex items-center gap-1">
+                        <a href="#" onclick="abrirAdmin()" class="hover:text-blue-600 transition flex items-center gap-1">
                             <i class="fa-solid fa-clipboard-list"></i> Pedidos
+                        </a>
+                        <a href="#" onclick="logoutAdmin()" id="btn-logout" class="hidden text-red-500 hover:text-red-600 transition text-xs flex items-center gap-1">
+                            <i class="fa-solid fa-sign-out-alt"></i> Sair
                         </a>
                     </nav>
                 </div>
@@ -122,7 +137,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
                     </span>
-                    <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                 </div>
                 <div class="flex items-center gap-4">
                     <button onclick="toggleCart()" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition">
@@ -132,18 +147,18 @@
                 </div>
             </div>
             <div class="pb-4 sm:hidden">
-                <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
         </div>
     </header>
 
     <!-- ========================================== -->
-    <!-- PÁGINA HOME (CATÁLOGO) -->
+    <!-- PÁGINA HOME -->
     <!-- ========================================== -->
     <section id="page-home" class="max-w-7xl mx-auto px-4 py-12">
-        <div class="bg-gradient-to-b from-blue-50 to-transparent py-8 px-4 -mx-4 mb-8">
+        <div class="bg-gradient-to-b from-blue-50 to-transparent py-8 px-4 -mx-4 mb-8 rounded-3xl">
             <div class="max-w-4xl mx-auto text-center">
-                <span class="text-blue-600 text-xs font-bold tracking-widest uppercase mb-3 inline-block">Curadoria Exclusiva</span>
+                <span class="text-blue-600 text-xs font-bold tracking-widest uppercase mb-3 inline-block bg-blue-100 px-4 py-1.5 rounded-full">Curadoria Exclusiva</span>
                 <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Acessórios que Elevam a sua Produtividade</h2>
                 <p class="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">Tecnologia minimalista, design funcional e frete seguro direto para a sua casa.</p>
             </div>
@@ -165,12 +180,9 @@
         </button>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <!-- Imagem -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-4">
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
                 <img id="produto-imagem" src="" alt="Produto" class="product-detail-image">
             </div>
-            
-            <!-- Informações -->
             <div class="space-y-6">
                 <div>
                     <span id="produto-tag" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">Tag</span>
@@ -192,7 +204,7 @@
                 </div>
 
                 <div class="border-t border-gray-200 pt-6">
-                    <div class="flex items-end gap-4">
+                    <div class="flex items-end gap-4 flex-wrap">
                         <span id="produto-preco" class="text-3xl font-black text-blue-600">R$ 0,00</span>
                         <span class="text-sm text-green-600 font-medium">ou 6x sem juros</span>
                     </div>
@@ -205,60 +217,37 @@
                             <span id="produto-quantidade">1</span>
                             <button onclick="alterarQuantidade(1)">+</button>
                         </div>
-                        <button onclick="comprarAgora()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full transition shadow-lg shadow-blue-200 flex items-center gap-2">
+                        <button onclick="comprarAgora()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition shadow-lg shadow-blue-200 flex items-center gap-2">
                             <i class="fa-solid fa-bag-shopping"></i> Comprar Agora
                         </button>
-                        <button onclick="adicionarAoCarrinho(produtoAtual.id)" class="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 font-bold py-4 px-6 rounded-full transition flex items-center gap-2">
+                        <button onclick="adicionarAoCarrinho(produtoAtual?.id)" class="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 font-bold py-3 px-6 rounded-full transition flex items-center gap-2">
                             <i class="fa-solid fa-plus"></i> Carrinho
                         </button>
                     </div>
                 </div>
 
-                <!-- Benefícios -->
                 <div class="border-t border-gray-200 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div class="flex items-center gap-3 text-gray-600">
-                        <i class="fa-solid fa-truck-fast text-blue-600 text-xl"></i>
-                        <span>Frete Grátis*</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-gray-600">
-                        <i class="fa-solid fa-shield-halved text-blue-600 text-xl"></i>
-                        <span>Garantia 90 dias</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-gray-600">
-                        <i class="fa-solid fa-rotate-left text-blue-600 text-xl"></i>
-                        <span>Devolução fácil</span>
-                    </div>
+                    <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-truck-fast text-blue-600 text-xl"></i><span>Frete Grátis*</span></div>
+                    <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-shield-halved text-blue-600 text-xl"></i><span>Garantia 90 dias</span></div>
+                    <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-rotate-left text-blue-600 text-xl"></i><span>Devolução fácil</span></div>
                 </div>
             </div>
         </div>
 
-        <!-- Avaliações Simuladas -->
         <div class="border-t border-gray-200 mt-12 pt-8">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Avaliações dos Clientes</h3>
             <div class="space-y-4">
-                <div class="bg-white p-4 rounded-xl border border-gray-200">
-                    <div class="flex items-center gap-3">
-                        <div class="star-rating text-sm">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                        </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="star-rating text-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
                         <span class="font-medium text-gray-900">Carlos S.</span>
                         <span class="text-xs text-gray-400">Há 2 dias</span>
                     </div>
                     <p class="text-sm text-gray-600 mt-2">Produto excelente! Chegou antes do prazo e funciona perfeitamente. Recomendo!</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-200">
-                    <div class="flex items-center gap-3">
-                        <div class="star-rating text-sm">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                        </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="star-rating text-sm"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
                         <span class="font-medium text-gray-900">Mariana L.</span>
                         <span class="text-xs text-gray-400">Há 5 dias</span>
                     </div>
@@ -272,25 +261,29 @@
     <!-- PÁGINA DE PEDIDOS (ADMIN) -->
     <!-- ========================================== -->
     <section id="page-pedidos" class="max-w-7xl mx-auto px-4 py-12 hidden">
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
             <div>
                 <h2 class="text-3xl font-bold text-gray-900">📋 Pedidos</h2>
                 <p class="text-gray-500 text-sm">Gerencie os pedidos da sua loja</p>
             </div>
-            <button onclick="carregarPedidos()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
-                <i class="fa-solid fa-rotate"></i> Atualizar
-            </button>
+            <div class="flex gap-2">
+                <button onclick="carregarPedidos()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> Atualizar
+                </button>
+                <button onclick="logoutAdmin()" class="bg-red-100 hover:bg-red-200 text-red-600 font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
         </div>
 
-        <!-- Filtros -->
         <div class="flex flex-wrap gap-2 mb-6">
-            <button onclick="filtrarPedidos('todos')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white" data-filtro="todos">Todos</button>
-            <button onclick="filtrarPedidos('pendente')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300" data-filtro="pendente">Pendentes</button>
-            <button onclick="filtrarPedidos('pago')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300" data-filtro="pago">Pagos</button>
-            <button onclick="filtrarPedidos('enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300" data-filtro="enviado">Enviados</button>
+            <button onclick="filtrarPedidos('todos')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition" data-filtro="todos">Todos</button>
+            <button onclick="filtrarPedidos('pendente')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pendente">Pendentes</button>
+            <button onclick="filtrarPedidos('pago')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pago">Pagos</button>
+            <button onclick="filtrarPedidos('enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="enviado">Enviados</button>
+            <button onclick="filtrarPedidos('simulado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="simulado">Simulados</button>
         </div>
 
-        <!-- Lista de Pedidos -->
         <div id="lista-pedidos" class="space-y-4">
             <div class="text-center py-12 text-gray-500">
                 <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
@@ -300,7 +293,27 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- CARRINHO LATERAL (MANTIDO IGUAL) -->
+    <!-- ADMIN LOGIN (MODAL) -->
+    <!-- ========================================== -->
+    <div id="admin-login" class="admin-login-overlay fixed inset-0 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border border-gray-200">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-lock text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Área Restrita</h2>
+                <p class="text-sm text-gray-500">Digite a senha para acessar os pedidos</p>
+            </div>
+            <form id="admin-login-form" onsubmit="fazerLogin(event)">
+                <input type="password" id="admin-senha" placeholder="Digite a senha..." class="w-full bg-gray-50 border border-gray-300 p-3 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 mb-4">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-full transition shadow-lg shadow-blue-200">Entrar</button>
+            </form>
+            <p class="text-xs text-gray-400 text-center mt-4">🔒 Apenas administradores autorizados</p>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CARRINHO LATERAL -->
     <!-- ========================================== -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
@@ -323,19 +336,18 @@
             </button>
         </div>
 
-        <!-- CHECKOUT FORM -->
         <div id="checkout-form" class="hidden border-t border-gray-100 pt-6 mt-6 pb-8">
             <div class="flex items-center gap-2 mb-4">
                 <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
                 <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Informações de Envio</h4>
             </div>
             <div class="space-y-3 text-sm mb-6">
-                <input type="text" id="cli-nome" placeholder="Nome Completo" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
-                <input type="email" id="cli-email" placeholder="E-mail principal" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
-                <input type="text" id="cli-whatsapp" placeholder="WhatsApp com DDD" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                <input type="text" id="cli-nome" placeholder="Nome Completo" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="email" id="cli-email" placeholder="E-mail principal" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="text" id="cli-whatsapp" placeholder="WhatsApp com DDD" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="cli-cep" placeholder="CEP" onblur="buscarCEP()" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
-                    <input type="text" id="cli-numero" placeholder="Número" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="cli-cep" placeholder="CEP" onblur="buscarCEP()" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" id="cli-numero" placeholder="Número" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <input type="text" id="cli-rua" placeholder="Endereço / Rua" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
                 <input type="text" id="cli-bairro" placeholder="Bairro" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
@@ -349,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- PAGAMENTO -->
             <div class="border-t border-gray-100 pt-6">
                 <div class="flex items-center gap-2 mb-4">
                     <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">2</span>
@@ -396,7 +407,6 @@
                 </div>
             </div>
 
-            <!-- RESUMO -->
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mt-6 text-sm text-gray-700 space-y-2">
                 <div class="flex justify-between"><span>Subtotal:</span><span id="summary-subtotal" class="font-semibold">R$ 0,00</span></div>
                 <div class="flex justify-between"><span>Frete:</span><span id="summary-frete" class="font-semibold text-green-600">Grátis</span></div>
@@ -428,7 +438,9 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- MODAL PIX -->
+    <!-- ========================================== -->
     <div id="pix-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 hidden">
         <div class="bg-white border border-gray-200 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -450,14 +462,14 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS COMPLETOS -->
     <!-- ========================================== -->
     <script>
         // ==========================================
         // CONFIGURAÇÃO - URL DO BACKEND
         // ==========================================
-        // 🔥 MUDE ESTA URL PARA A URL DO SEU BACKEND NO RENDER!
-        const API_URL = 'https://voltz-gear.onrender.com'; // <-- SUBSTITUA PELA SUA URL
+        const API_URL = 'https://voltz-gear.onrender.com';
+        const ADMIN_SENHA = 'voltz2026';
 
         // ==========================================
         // BANCO DE DADOS DE PRODUTOS
@@ -482,7 +494,7 @@
         let filtroPedidoAtual = 'todos';
 
         // ==========================================
-        // RENDERIZAR PRODUTOS (HOME)
+        // RENDERIZAR PRODUTOS
         // ==========================================
         function renderProdutos(listaFiltrada = produtos) {
             const grid = document.getElementById('grid-produtos');
@@ -495,7 +507,7 @@
             countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
             grid.innerHTML = listaFiltrada.map(p => {
                 const valorParcela = (p.preco / 6).toFixed(2).replace('.', ',');
-                return `<div class="product-card rounded-2xl overflow-hidden flex flex-col h-full" onclick="abrirProduto(${p.id})">
+                return `<div class="product-card" onclick="abrirProduto(${p.id})">
                     <div class="relative bg-gray-100">
                         <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
                         <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
@@ -506,9 +518,7 @@
                         <div class="mt-auto">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-xl font-black text-gray-900">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
-                                <button onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">
-                                    Adicionar
-                                </button>
+                                <button onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">Adicionar</button>
                             </div>
                             <p class="text-xs text-green-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-credit-card text-[10px]"></i> ou 6x de R$ ${valorParcela} sem juros</p>
                         </div>
@@ -518,7 +528,7 @@
         }
 
         // ==========================================
-        // FUNÇÕES DE NAVEGAÇÃO
+        // NAVEGAÇÃO
         // ==========================================
         function mostrarPagina(pagina) {
             document.getElementById('page-home').classList.add('hidden');
@@ -533,29 +543,31 @@
                 document.getElementById('page-produto').classList.remove('hidden');
                 window.scrollTo(0, 0);
             } else if (pagina === 'pedidos') {
-                document.getElementById('page-pedidos').classList.remove('hidden');
-                carregarPedidos();
-                window.scrollTo(0, 0);
+                const logado = sessionStorage.getItem('admin_logado');
+                if (logado === 'true') {
+                    document.getElementById('page-pedidos').classList.remove('hidden');
+                    carregarPedidos();
+                    window.scrollTo(0, 0);
+                } else {
+                    document.getElementById('admin-login').classList.remove('hidden');
+                }
             }
         }
 
         // ==========================================
-        // PÁGINA DE PRODUTO INDIVIDUAL
+        // PÁGINA DE PRODUTO
         // ==========================================
         function abrirProduto(id) {
             const produto = produtos.find(p => p.id === id);
             if (!produto) return;
-            
             produtoAtual = produto;
             quantidadeAtual = 1;
-            
             document.getElementById('produto-imagem').src = produto.img;
             document.getElementById('produto-nome').textContent = produto.nome;
             document.getElementById('produto-desc').textContent = produto.desc;
             document.getElementById('produto-tag').textContent = produto.tag;
             document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             document.getElementById('produto-quantidade').textContent = '1';
-            
             mostrarPagina('produto');
         }
 
@@ -566,18 +578,12 @@
 
         function comprarAgora() {
             if (!produtoAtual) return;
-            
-            // Adiciona ao carrinho a quantidade selecionada
             for (let i = 0; i < quantidadeAtual; i++) {
                 carrinho.push(produtoAtual);
             }
             atualizarCarrinho();
-            
-            // Abre o checkout
             const sidebar = document.getElementById('cart-sidebar');
-            if (sidebar.classList.contains('translate-x-full')) {
-                sidebar.classList.remove('translate-x-full');
-            }
+            if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
             showCheckoutForm();
         }
 
@@ -596,29 +602,20 @@
         }
 
         // ==========================================
-        // FUNÇÕES DO CARRINHO
+        // CARRINHO
         // ==========================================
         function toggleCart() {
             document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
         }
 
         function adicionarAoCarrinho(id) {
+            if (!id) return;
             const prod = produtos.find(p => p.id === id);
+            if (!prod) return;
             carrinho.push(prod);
             atualizarCarrinho();
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
-            
-            // Feedback visual
-            const btn = event?.target;
-            if (btn) {
-                btn.textContent = '✓ Adicionado';
-                btn.style.background = '#059669';
-                setTimeout(() => {
-                    btn.textContent = 'Adicionar';
-                    btn.style.background = '';
-                }, 1500);
-            }
         }
 
         function removerDoCarrinho(index) {
@@ -676,7 +673,7 @@
         }
 
         // ==========================================
-        // SELEÇÃO DE MÉTODO DE PAGAMENTO
+        // MÉTODO DE PAGAMENTO
         // ==========================================
         function selecionarMetodo(metodo) {
             metodoSelecionado = metodo;
@@ -838,7 +835,6 @@
                         alert("✅ Pagamento aprovado!");
                         fecharModalPix();
                     }
-                    // Limpa carrinho
                     carrinho = [];
                     atualizarCarrinho();
                 } else {
@@ -857,7 +853,7 @@
         }
 
         // ==========================================
-        // FUNÇÕES DO PIX
+        // PIX
         // ==========================================
         function copiarPix() {
             const input = document.getElementById('pix-copia-cola');
@@ -873,7 +869,44 @@
         }
 
         // ==========================================
-        // PÁGINA DE PEDIDOS (ADMIN)
+        // ADMIN - LOGIN
+        // ==========================================
+        function fazerLogin(event) {
+            event.preventDefault();
+            const senha = document.getElementById('admin-senha').value;
+            if (senha === ADMIN_SENHA) {
+                document.getElementById('admin-login').classList.add('hidden');
+                sessionStorage.setItem('admin_logado', 'true');
+                document.getElementById('btn-logout').classList.remove('hidden');
+                mostrarPagina('pedidos');
+            } else {
+                alert('❌ Senha incorreta! Tente novamente.');
+                document.getElementById('admin-senha').value = '';
+                document.getElementById('admin-senha').focus();
+            }
+        }
+
+        function abrirAdmin() {
+            const logado = sessionStorage.getItem('admin_logado');
+            if (logado === 'true') {
+                document.getElementById('admin-login').classList.add('hidden');
+                mostrarPagina('pedidos');
+            } else {
+                document.getElementById('admin-login').classList.remove('hidden');
+                document.getElementById('page-pedidos').classList.add('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('admin_logado');
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('page-pedidos').classList.add('hidden');
+            document.getElementById('btn-logout').classList.add('hidden');
+            mostrarPagina('home');
+        }
+
+        // ==========================================
+        // PEDIDOS - ADMIN
         // ==========================================
         async function carregarPedidos() {
             const container = document.getElementById('lista-pedidos');
@@ -881,6 +914,7 @@
 
             try {
                 const response = await fetch(`${API_URL}/api/pedidos`);
+                if (!response.ok) throw new Error('Erro ao carregar pedidos');
                 const data = await response.json();
                 
                 if (data.pedidos && data.pedidos.length > 0) {
@@ -894,52 +928,57 @@
                         return;
                     }
 
-                    container.innerHTML = pedidosFiltrados.map(p => `
-                        <div class="pedido-card">
+                    container.innerHTML = pedidosFiltrados.map(p => {
+                        const statusClass = p.status || 'pendente';
+                        return `<div class="pedido-card">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <div class="flex items-center gap-3 flex-wrap">
                                         <span class="font-bold text-gray-900">#${p.idPedido}</span>
-                                        <span class="text-xs px-2 py-1 rounded-full status-${p.status || 'pendente'}">${p.status || 'Pendente'}</span>
-                                        <span class="text-xs text-gray-400">${new Date(p.data).toLocaleDateString('pt-BR')}</span>
+                                        <span class="status-${statusClass}">${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}</span>
+                                        <span class="text-xs text-gray-400">${new Date(p.data).toLocaleDateString('pt-BR')} ${new Date(p.data).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
                                     </div>
                                     <div class="mt-1">
                                         <p class="text-sm font-medium text-gray-900">${p.cliente.nome}</p>
-                                        <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp}</p>
+                                        <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp || 'N/A'}</p>
                                         <p class="text-xs text-gray-400">${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.estado}</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-4 flex-wrap">
                                     <div class="text-right">
                                         <span class="text-lg font-bold text-blue-600">R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</span>
                                         <p class="text-xs text-gray-400">${p.itens.length} item(ns)</p>
                                     </div>
                                     <div class="flex flex-col gap-1">
-                                        <button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>
-                                        <button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>
+                                        ${p.status !== 'pago' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}
+                                        ${p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>` : ''}
+                                        ${p.status === 'simulado' ? `<span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">🧪 Teste</span>` : ''}
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-2 border-t border-gray-100 pt-2">
                                 <p class="text-xs text-gray-500">Produtos: ${p.itens.map(i => i.nome).join(', ')}</p>
                             </div>
-                        </div>
-                    `).join('');
+                        </div>`;
+                    }).join('');
                 } else {
                     container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido encontrado</p></div>`;
                 }
             } catch (err) {
                 console.error('Erro ao carregar pedidos:', err);
-                container.innerHTML = `<div class="text-center py-12 text-red-500"><i class="fa-solid fa-exclamation-triangle text-2xl mb-2"></i><p>Erro ao carregar pedidos. Verifique o backend.</p></div>`;
+                container.innerHTML = `<div class="text-center py-12 text-red-500"><i class="fa-solid fa-exclamation-triangle text-2xl mb-2"></i><p>Erro ao carregar pedidos. Verifique se o backend está online.</p><p class="text-xs text-gray-400 mt-2">${err.message}</p></div>`;
             }
         }
 
         function filtrarPedidos(status) {
             filtroPedidoAtual = status;
             document.querySelectorAll('.filtro-pedido').forEach(btn => {
-                btn.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300';
+                btn.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition';
             });
-            document.querySelector(`.filtro-pedido[data-filtro="${status}"]`).className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white';
+            const btnSelecionado = document.querySelector(`.filtro-pedido[data-filtro="${status}"]`);
+            if (btnSelecionado) {
+                btnSelecionado.className = 'filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white transition';
+            }
             carregarPedidos();
         }
 
@@ -955,7 +994,7 @@
                     alert(`✅ Pedido atualizado para "${novoStatus}"`);
                     carregarPedidos();
                 } else {
-                    alert('❌ Erro ao atualizar status');
+                    alert('❌ Erro ao atualizar status: ' + data.mensagem);
                 }
             } catch (err) {
                 alert('❌ Erro ao conectar com o servidor');
@@ -964,7 +1003,7 @@
         }
 
         // ==========================================
-        // MÁSCARAS DE INPUT
+        // MÁSCARAS
         // ==========================================
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
@@ -990,10 +1029,20 @@
         // ==========================================
         // INICIAR LOJA
         // ==========================================
-        renderProdutos();
-        console.log('🚀 Voltz Gear carregada!');
-        console.log('📡 Backend URL:', API_URL);
-        console.log('📋 Página de pedidos: Clique em "Pedidos" no menu');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica se já está logado
+            const logado = sessionStorage.getItem('admin_logado');
+            if (logado === 'true') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('btn-logout').classList.remove('hidden');
+            }
+            renderProdutos();
+            console.log('🚀 Voltz Gear carregada!');
+            console.log('📡 Backend URL:', API_URL);
+            console.log('🔒 Senha Admin:', ADMIN_SENHA);
+            console.log('📋 Página de pedidos: Clique em "Pedidos" no menu');
+        });
     </script>
+
 </body>
 </html>
