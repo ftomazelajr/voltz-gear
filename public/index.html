@@ -695,12 +695,13 @@ function abrirProdutoDireto(produto) {
     
     // Verifica se o produto tem imagens para o carrossel
     if (produto.imagens && produto.imagens.length > 1) {
-        // Cria o carrossel
-        const container = document.querySelector('.carousel-container');
-        const track = document.getElementById('carousel-track');
-        const dotsContainer = document.getElementById('carousel-dots');
+        // Mostra o carrossel e esconde a imagem única
+        document.querySelector('.carousel-container').style.display = 'block';
+        document.getElementById('carousel-dots').style.display = 'flex';
+        document.getElementById('produto-imagem').style.display = 'none';
         
-        // Limpa o track
+        // Cria o carrossel
+        const track = document.getElementById('carousel-track');
         track.innerHTML = '';
         
         // Adiciona as imagens
@@ -711,21 +712,21 @@ function abrirProdutoDireto(produto) {
             track.appendChild(slide);
         });
         
+        // Cria os dots
+        criarDots();
+        
         // Reseta o slide index
         slideIndex = 0;
         irParaSlide(0);
-        
-        // Mostra o container e dots
-        container.style.display = 'block';
-        dotsContainer.style.display = 'flex';
         
         // Inicia o auto-play
         iniciarCarrossel();
     } else {
         // Usa imagem única
-        document.getElementById('produto-imagem').src = produto.img;
         document.querySelector('.carousel-container').style.display = 'none';
         document.getElementById('carousel-dots').style.display = 'none';
+        document.getElementById('produto-imagem').style.display = 'block';
+        document.getElementById('produto-imagem').src = produto.img;
     }
     
     document.getElementById('produto-nome').textContent = produto.nome;
@@ -1067,6 +1068,89 @@ function abrirProdutoDireto(produto) {
             console.log('📡 Backend URL:', API_URL);
             console.log('🛒 Produtos disponíveis:', produtos.length);
         });
+
+        // ==========================================
+// CARROSSEL DE IMAGENS
+// ==========================================
+let slideIndex = 0;
+let carrosselInterval = null;
+
+function irParaSlide(index) {
+    const track = document.getElementById('carousel-track');
+    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+    const totalSlides = slides.length;
+    
+    if (totalSlides === 0) return;
+    
+    // Ajusta o índice
+    if (index < 0) index = totalSlides - 1;
+    if (index >= totalSlides) index = 0;
+    slideIndex = index;
+    
+    // Move o track
+    if (track) {
+        track.style.transform = `translateX(-${slideIndex * 100}%)`;
+    }
+    
+    // Atualiza os dots
+    document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+        dot.className = 'carousel-dot' + (i === slideIndex ? ' active' : '');
+    });
+}
+
+function moverCarrossel(direcao) {
+    irParaSlide(slideIndex + direcao);
+    // Reseta o timer do auto-play
+    if (carrosselInterval) {
+        clearInterval(carrosselInterval);
+        iniciarCarrossel();
+    }
+}
+
+function iniciarCarrossel() {
+    // Para o intervalo anterior se existir
+    if (carrosselInterval) {
+        clearInterval(carrosselInterval);
+    }
+    
+    const track = document.getElementById('carousel-track');
+    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+    if (slides.length <= 1) return;
+    
+    // Inicia o auto-play a cada 4 segundos
+    carrosselInterval = setInterval(() => {
+        // Verifica se a página de produto está visível
+        const pageProduto = document.getElementById('page-produto');
+        if (pageProduto && !pageProduto.classList.contains('hidden')) {
+            moverCarrossel(1);
+        }
+    }, 4000);
+}
+
+function criarDots() {
+    const dotsContainer = document.getElementById('carousel-dots');
+    if (!dotsContainer) return;
+    
+    const track = document.getElementById('carousel-track');
+    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+    const totalSlides = slides.length;
+    
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('data-index', i);
+        dot.onclick = function() {
+            irParaSlide(i);
+            // Reseta o timer
+            if (carrosselInterval) {
+                clearInterval(carrosselInterval);
+                iniciarCarrossel();
+            }
+        };
+        dotsContainer.appendChild(dot);
+    }
+}
     </script>
 
 </body>
