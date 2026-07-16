@@ -102,6 +102,87 @@
             background: #1557b0;
             transform: scale(1.02);
         }
+
+        /* Carrossel de imagens */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #f3f4f6;
+}
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+.carousel-slide {
+    min-width: 100%;
+    aspect-ratio: 1/1;
+}
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+    z-index: 10;
+}
+.carousel-btn:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.carousel-btn.prev { left: 12px; }
+.carousel-btn.next { right: 12px; }
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d1d5db;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.carousel-dot.active {
+    background: #3b82f6;
+    width: 24px;
+    border-radius: 5px;
+}
+.carousel-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ef4444;
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    z-index: 10;
+    animation: pulse-badge 2s infinite;
+}
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
     </style>
 </head>
 <body>
@@ -170,10 +251,20 @@
             <i class="fa-solid fa-arrow-left"></i> Voltar para loja
         </button>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-                <img id="produto-imagem" src="" alt="Produto" class="product-detail-image">
-            </div>
+<div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+    <!-- CARROSSEL DE IMAGENS -->
+    <div class="carousel-container" style="display:none;">
+        <div class="carousel-track" id="carousel-track">
+            <!-- As imagens serão injetadas via JavaScript -->
+        </div>
+        <button class="carousel-btn prev" onclick="moverCarrossel(-1)">‹</button>
+        <button class="carousel-btn next" onclick="moverCarrossel(1)">›</button>
+        <div class="carousel-badge">🔥 +500 vendidos</div>
+    </div>
+    <div class="carousel-dots" id="carousel-dots" style="display:none;"></div>
+    <!-- IMAGEM ÚNICA (fallback) -->
+    <img id="produto-imagem" src="" alt="Produto" class="product-detail-image" style="display:none;">
+</div>
             <div class="space-y-6">
                 <div>
                     <span id="produto-tag" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">Tag</span>
@@ -410,17 +501,24 @@
         // ==========================================
         // BANCO DE DADOS DE PRODUTOS COM SLUGS
         // ==========================================
-        const produtos = [
-            { 
-    id: 1, 
-    slug: "power-bank-20000mah", 
-    nome: "Power Bank 20000mAh com Lanterna", 
-    preco: 129.90, 
-    desc: "⚡ BATERIA MONSTRA! Carregue 3+ dispositivos simultaneamente com 20.000mAh de autonomia. Com lanterna LED integrada e tela digital de carga. Perfeito para viagens, trabalho e emergências. Não fique sem bateria nunca mais! 🔋", 
-    tag: "🔥 MAIS VENDIDO", 
-    img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", 
-    aliexpressId: "1005010755900045",
-    descricaoCompleta: `
+        
+   const produtos = [
+    { 
+        id: 1, 
+        slug: "power-bank-20000mah", 
+        nome: "Power Bank 20000mAh com Lanterna", 
+        preco: 129.90, 
+        desc: "⚡ BATERIA MONSTRA! Carregue 3+ dispositivos simultaneamente com 20.000mAh de autonomia. Com lanterna LED integrada e tela digital de carga. Perfeito para viagens, trabalho e emergências. Não fique sem bateria nunca mais! 🔋", 
+        tag: "🔥 MAIS VENDIDO",
+        img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+        aliexpressId: "1005010755900045",
+        // IMAGENS ADICIONAIS PARA O CARROSSEL
+        imagens: [
+            "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+            "https://ae-pic-a1.aliexpress-media.com/kf/S006983eea656469f95f94c78c9e14dc2c.jpg",
+            "https://ae-pic-a1.aliexpress-media.com/kf/S50ca9ca3711d406b8deae8cf645d4b55Y.jpg"
+        ],
+        descricaoCompleta: `
 <div class="space-y-4 text-gray-700">
 
 <h3 class="text-xl font-bold text-gray-900">⚡ Power Bank 20000mAh com Lanterna</h3>
@@ -455,7 +553,8 @@
 </div>
 </div>
     `
-},
+    },
+
             { id: 2, slug: "mini-projetor-portatil", nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
             { id: 3, slug: "carregador-magnetico-3-em-1", nome: "Carregador Magnético Sem Fio 3 em 1", preco: 169.90, desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", tag: "Destaque", img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500", aliexpressId: "1005006123456789" },
             { id: 4, slug: "mini-ventilador-gamer", nome: "Mini Ventilador de Celular Gamer", preco: 79.90, desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", tag: "Edição Limitada", img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500", aliexpressId: "1005006090123456" },
@@ -590,24 +689,56 @@
             }
         }
 
-        function abrirProdutoDireto(produto) {
-            produtoAtual = produto;
-            quantidadeAtual = 1;
-            
-            document.getElementById('produto-imagem').src = produto.img;
-            document.getElementById('produto-nome').textContent = produto.nome;
-           // Na função abrirProdutoDireto ou onde a descrição é carregada
-document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
-            document.getElementById('produto-tag').textContent = produto.tag;
-            document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-            document.getElementById('produto-quantidade').textContent = '1';
-            
-            // Mostra a página de produto
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-produto').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
+function abrirProdutoDireto(produto) {
+    produtoAtual = produto;
+    quantidadeAtual = 1;
+    
+    // Verifica se o produto tem imagens para o carrossel
+    if (produto.imagens && produto.imagens.length > 1) {
+        // Cria o carrossel
+        const container = document.querySelector('.carousel-container');
+        const track = document.getElementById('carousel-track');
+        const dotsContainer = document.getElementById('carousel-dots');
+        
+        // Limpa o track
+        track.innerHTML = '';
+        
+        // Adiciona as imagens
+        produto.imagens.forEach((img, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
+            track.appendChild(slide);
+        });
+        
+        // Reseta o slide index
+        slideIndex = 0;
+        irParaSlide(0);
+        
+        // Mostra o container e dots
+        container.style.display = 'block';
+        dotsContainer.style.display = 'flex';
+        
+        // Inicia o auto-play
+        iniciarCarrossel();
+    } else {
+        // Usa imagem única
+        document.getElementById('produto-imagem').src = produto.img;
+        document.querySelector('.carousel-container').style.display = 'none';
+        document.getElementById('carousel-dots').style.display = 'none';
+    }
+    
+    document.getElementById('produto-nome').textContent = produto.nome;
+    document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
+    document.getElementById('produto-tag').textContent = produto.tag;
+    document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+    document.getElementById('produto-quantidade').textContent = '1';
+    
+    // Mostra a página de produto
+    document.getElementById('page-home').classList.add('hidden');
+    document.getElementById('page-produto').classList.remove('hidden');
+    window.scrollTo(0, 0);
+}
         // ==========================================
         // FUNÇÕES ORIGINAIS (mantidas)
         // ==========================================
