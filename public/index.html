@@ -389,7 +389,6 @@
 
     <!-- CARRINHO LATERAL -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
-        <!-- (mantido igual - todo o carrinho e checkout) -->
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <h3 class="text-lg font-bold text-gray-900">Sua Sacola</h3>
             <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-900 text-2xl p-1">&times;</button>
@@ -411,7 +410,6 @@
         </div>
 
         <div id="checkout-form" class="hidden border-t border-gray-100 pt-6 mt-6 pb-8">
-            <!-- (mantido igual - checkout completo) -->
             <div class="flex items-center gap-2 mb-4">
                 <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
                 <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Informações de Envio</h4>
@@ -423,6 +421,10 @@
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="cli-cep" placeholder="CEP" onblur="buscarCEP()" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                     <input type="text" id="cli-numero" placeholder="Número" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                </div>
+                <!-- 🆕 CAMPO CPF ADICIONADO -->
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="cli-cpf" placeholder="CPF (apenas números)" maxlength="14" oninput="mascaraCPF(this)" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <input type="text" id="cli-rua" placeholder="Endereço / Rua" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
                 <input type="text" id="cli-bairro" placeholder="Bairro" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
@@ -529,7 +531,8 @@
                 </button>
             </div>
             <button onclick="fecharModalPix()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full transition-all text-sm">
-                Voltar à Loja            </button>
+                Voltar à Loja
+            </button>
         </div>
     </div>
 
@@ -651,6 +654,20 @@
             } else {
                 navigator.clipboard.writeText(url).then(() => alert('🔗 Link copiado! Compartilhe com seus amigos.')).catch(() => prompt('Copie o link do produto:', url));
             }
+        }
+
+        // 🆕 MÁSCARA DE CPF
+        function mascaraCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 9) {
+                value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6, 9) + '-' + value.slice(9);
+            } else if (value.length > 6) {
+                value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6);
+            } else if (value.length > 3) {
+                value = value.slice(0, 3) + '.' + value.slice(3);
+            }
+            input.value = value;
         }
 
         function carregarProdutoPorSlug() {
@@ -835,7 +852,7 @@
 
         function calcularParcelasDropdown() {
             const totalMercadorias = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = totalMercadorias >= 199 ? 0 : 14.90;
+            const frete = totalMercadorias >= 199 ? 0 : 1.90;
             const totalFinal = totalMercadorias + frete;
             const select = document.getElementById('card-parcelas');
             select.innerHTML = '';
@@ -867,7 +884,7 @@
 
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = subtotal >= 199 ? 0 : 14.90;
+            const frete = subtotal >= 199 ? 0 : 1.90;
             const totalFinal = subtotal + frete;
             document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             const infoFrete = document.getElementById('frete-info');
@@ -912,17 +929,51 @@
             renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
         }
 
+        // 🆕 FUNÇÃO PARA VERIFICAR STATUS DO PAGAMENTO
+        function iniciarVerificacaoPagamento(pedidoId) {
+            let tentativas = 0;
+            const maxTentativas = 60; // 60 tentativas = 5 minutos
+            
+            const verificar = setInterval(async () => {
+                tentativas++;
+                
+                try {
+                    const response = await fetch(`${API_URL}/api/pedidos/${pedidoId}/status`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'pago') {
+                        clearInterval(verificar);
+                        // Redireciona para a página de sucesso
+                        window.location.href = `/success?pedido=${pedidoId}&total=${data.total}`;
+                    }
+                } catch (err) {
+                    console.log('Aguardando confirmação do pagamento...');
+                }
+                
+                if (tentativas >= maxTentativas) {
+                    clearInterval(verificar);
+                    // Se passou 5 minutos, oferece a opção
+                    if (confirm('⏳ O pagamento ainda está sendo processado. Deseja verificar o status do seu pedido?')) {
+                        window.location.href = `/success?pedido=${pedidoId}`;
+                    }
+                }
+            }, 5000); // Verifica a cada 5 segundos
+        }
+
         async function processarPagamento() {
             const nome = document.getElementById('cli-nome').value;
             const email = document.getElementById('cli-email').value;
             const whatsapp = document.getElementById('cli-whatsapp').value;
             const cep = document.getElementById('cli-cep').value;
             const numero = document.getElementById('cli-numero').value;
+            const cpf = document.getElementById('cli-cpf').value.replace(/\D/g, '');
             const rua = document.getElementById('cli-rua').value;
             const bairro = document.getElementById('cli-bairro').value;
             const cidade = document.getElementById('cli-cidade').value;
             const estado = document.getElementById('cli-estado').value;
+            
             if (!nome || !email || !cep || !numero) { alert("Preencha todos os dados de entrega!"); return; }
+            
             if (metodoSelecionado === 'cartao') {
                 const cardNum = document.getElementById('card-num').value;
                 const cardNome = document.getElementById('card-nome').value;
@@ -930,40 +981,57 @@
                 const cardCvv = document.getElementById('card-cvv').value;
                 if (!cardNum || !cardNome || !cardValidade || !cardCvv) { alert("Preencha todos os dados do cartão!"); return; }
             }
+            
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = subtotal >= 199 ? 0 : 14.90;
+            const frete = subtotal >= 199 ? 0 : 1.90;
             const total = subtotal + frete;
+            
             const payload = {
-                cliente: { nome, email, whatsapp },
+                cliente: { 
+                    nome, 
+                    email, 
+                    whatsapp, 
+                    cpf: cpf || "00000000000"
+                },
                 endereco: { cep, numero, rua, bairro, cidade, estado },
                 itens: carrinho.map(item => ({ id: item.id, nome: item.nome, preco: item.preco, aliexpressId: item.aliexpressId })),
                 total: total.toFixed(2),
                 metodoPagamento: metodoSelecionado,
                 detalhesCartao: metodoSelecionado === 'cartao' ? { parcelas: document.getElementById('card-parcelas').value } : null
             };
+            
             try {
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
                 btnText.innerText = "Processando...";
                 btnFinalizar.disabled = true;
+                
                 const response = await fetch(`${API_URL}/api/checkout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                
                 const resData = await response.json();
+                
                 if (resData.sucesso) {
                     if (metodoSelecionado === 'pix') {
                         document.getElementById('pix-qr-img').src = resData.pixQRCode;
                         document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
                         document.getElementById('pix-modal').classList.remove('hidden');
+                        
+                        // 🆕 INICIA VERIFICAÇÃO DO PAGAMENTO
+                        iniciarVerificacaoPagamento(resData.idPedido);
                     } else {
                         alert("✅ Pagamento aprovado!");
                         fecharModalPix();
                     }
                     carrinho = [];
                     atualizarCarrinho();
-                } else { alert("❌ " + resData.mensagem); }
+                } else { 
+                    alert("❌ " + resData.mensagem); 
+                }
+                
                 btnFinalizar.disabled = false;
                 selecionarMetodo(metodoSelecionado);
             } catch (err) {
