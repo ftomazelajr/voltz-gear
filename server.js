@@ -19,7 +19,10 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    timeout: 30000,
+    connectionTimeout: 30000,
+    socketTimeout: 30000
 });
 
 // ==========================================
@@ -29,7 +32,6 @@ async function enviarEmailConfirmacao(pedido) {
     try {
         const { cliente, idPedido, itens, total, endereco } = pedido;
         
-        // Formata os produtos
         const produtosLista = itens.map(item => 
             `<tr>
                 <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.nome}</td>
@@ -230,6 +232,7 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`💰 Valor: R$ ${valorTotal}`);
         console.log(`🆔 Pedido: ${idPedido}`);
         console.log(`📧 Email: ${cliente.email}`);
+        console.log(`📋 CPF: ${cliente.cpf || 'Não informado'}`);
 
         const paymentData = {
             transaction_amount: valorTotal,
@@ -241,7 +244,7 @@ app.post('/api/checkout', async (req, res) => {
                 last_name: cliente.nome ? cliente.nome.split(' ').slice(1).join(' ') : 'Teste',
                 identification: {
                     type: "CPF",
-                    number: "00000000000"
+                    number: cliente.cpf || "00000000000"
                 },
                 address: {
                     zip_code: endereco.cep ? endereco.cep.replace(/\D/g, '') : '00000000',
@@ -394,6 +397,46 @@ app.post('/api/checkout', async (req, res) => {
                 mensagem: 'Erro interno: ' + error.message
             });
         }
+    }
+});
+
+// ==========================================
+// WEBHOOK DO MERCADO PAGO
+// ==========================================
+app.post('/api/webhook/mercadopago', async (req, res) => {
+    try {
+        console.log('📨 Webhook recebido:', JSON.stringify(req.body, null, 2));
+        
+        const { data, type } = req.body;
+        
+        if (type === 'payment') {
+            const paymentId = data.id;
+            
+            const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
+                }
+            });
+            
+            const payment = response.data;
+            
+            if (payment.status === 'approved') {
+                const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+                const pedido = pedidos.find(p => p.mercadoPagoId === paymentId);
+                
+                if (pedido) {
+                    pedido.status = 'pago';
+                    pedido.dataPagamento = new Date().toISOString();
+                    fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
+                    console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
+                }
+            }
+        }
+        
+        res.status(200).json({ sucesso: true });
+    } catch (error) {
+        console.error('❌ Erro no webhook:', error.message);
+        res.status(500).json({ sucesso: false, erro: error.message });
     }
 });
 
