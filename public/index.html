@@ -727,6 +727,99 @@
         console.log('🚀 Voltz Gear carregada!');
         console.log('📡 Backend URL:', API_URL);
     </script>
+// ==========================================
+// DETECTAR PÁGINA DE PRODUTO PELA URL
+// ==========================================
+async function carregarProdutoPorSlug() {
+    // Pega o caminho da URL
+    const path = window.location.pathname;
+    
+    // Verifica se está em uma página de produto
+    const match = path.match(/\/produto\/(.+)/);
+    if (match) {
+        const slug = match[1];
+        
+        try {
+            const response = await fetch(`/api/produto/${slug}`);
+            const data = await response.json();
+            
+            if (data.sucesso) {
+                // Abre a página do produto
+                abrirProdutoPorSlug(data.produto);
+            } else {
+                console.error('Produto não encontrado');
+                mostrarPagina('home');
+            }
+        } catch (err) {
+            console.error('Erro ao carregar produto:', err);
+            mostrarPagina('home');
+        }
+    }
+}
 
+function abrirProdutoPorSlug(produto) {
+    // Define o produto atual
+    produtoAtual = produto;
+    quantidadeAtual = 1;
+    
+    // Preenche os dados da página de produto
+    document.getElementById('produto-imagem').src = produto.img;
+    document.getElementById('produto-nome').textContent = produto.nome;
+    document.getElementById('produto-desc').textContent = produto.desc;
+    document.getElementById('produto-tag').textContent = produto.tag;
+    document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+    document.getElementById('produto-quantidade').textContent = '1';
+    
+    // Mostra a página de produto
+    mostrarPagina('produto');
+}
+
+// ==========================================
+// FUNÇÃO PARA GERAR LINK DO PRODUTO
+// ==========================================
+function getProdutoUrl(produto) {
+    // Gera um slug amigável a partir do nome
+    const slug = produto.nome
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+    
+    return `/produto/${slug}`;
+}
+
+// ==========================================
+// SOBRESCREVER A FUNÇÃO abrirProduto
+// ==========================================
+// Salva a função original
+const abrirProdutoOriginal = abrirProduto;
+
+// Substitui para usar o slug na URL
+abrirProduto = function(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto) return;
+    
+    // Redireciona para a URL amigável
+    const url = getProdutoUrl(produto);
+    window.history.pushState(null, '', url);
+    
+    // Chama a função original
+    abrirProdutoOriginal(id);
+};
+
+// ==========================================
+// INICIAR - VERIFICAR URL
+// ==========================================
+// Chama a função ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    // Primeiro, verifica se é uma página de produto
+    carregarProdutoPorSlug();
+    
+    // Depois, renderiza os produtos (se não for página de produto)
+    if (!window.location.pathname.includes('/produto/')) {
+        renderProdutos();
+    }
+});
 </body>
 </html>
