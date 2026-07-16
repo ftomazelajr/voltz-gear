@@ -72,6 +72,36 @@
             .quantity-selector { padding: 4px 12px; }
             .quantity-selector button { width: 28px; height: 28px; font-size: 16px; }
         }
+
+        .share-badge {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Botão de compartilhar */
+        .btn-share {
+            background: #1a73e8;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-share:hover {
+            background: #1557b0;
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -83,19 +113,19 @@
         <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 6X SEM JUROS</span>
     </div>
 
-    <!-- HEADER - SEM LINK DE PEDIDOS E SEM LOGIN -->
+    <!-- HEADER -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-20 gap-4">
                 <div class="flex items-center gap-8">
-                    <a href="#" onclick="mostrarPagina('home')" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
+                    <a href="/" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
                         VOLTZ<span class="text-blue-600">GEAR</span>
                     </a>
                     <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-                        <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Início</a>
-                        <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Produtos</a>
-                        <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Novidades</a>
-                        <a href="#" onclick="mostrarPagina('home')" class="hover:text-blue-600 transition">Suporte</a>
+                        <a href="/" class="hover:text-blue-600 transition">Início</a>
+                        <a href="/#catalogo" class="hover:text-blue-600 transition">Produtos</a>
+                        <a href="/#novidades" class="hover:text-blue-600 transition">Novidades</a>
+                        <a href="/#suporte" class="hover:text-blue-600 transition">Suporte</a>
                     </nav>
                 </div>
                 <div class="flex-1 max-w-md mx-4 relative hidden sm:block">
@@ -128,7 +158,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-gray-200 pb-4">
-            <h3 class="text-2xl font-bold text-gray-900 tracking-tight">Nosso Catálogo</h3>
+            <h3 id="catalogo" class="text-2xl font-bold text-gray-900 tracking-tight">Nosso Catálogo</h3>
             <span id="results-count" class="text-sm text-gray-500">Mostrando todos os produtos</span>
         </div>
         <div id="grid-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
@@ -136,7 +166,7 @@
 
     <!-- PÁGINA DE PRODUTO INDIVIDUAL -->
     <section id="page-produto" class="max-w-7xl mx-auto px-4 py-12 hidden">
-        <button onclick="mostrarPagina('home')" class="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition">
+        <button onclick="voltarParaHome()" class="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition">
             <i class="fa-solid fa-arrow-left"></i> Voltar para loja
         </button>
         
@@ -157,6 +187,13 @@
                             <i class="fa-solid fa-star-half-stroke"></i>
                         </div>
                         <span class="text-sm text-gray-500">(127 avaliações)</span>
+                    </div>
+                    <!-- Botão de Compartilhar -->
+                    <div class="mt-3">
+                        <button onclick="compartilharProduto()" class="btn-share">
+                            <i class="fa-solid fa-share-nodes"></i> Compartilhar
+                        </button>
+                        <span id="produto-url" class="text-xs text-gray-400 ml-2 hidden"></span>
                     </div>
                 </div>
 
@@ -365,19 +402,25 @@
 
     <!-- SCRIPTS -->
     <script>
+        // ==========================================
+        // CONFIGURAÇÃO
+        // ==========================================
         const API_URL = 'https://voltzgear.com';
 
+        // ==========================================
+        // BANCO DE DADOS DE PRODUTOS COM SLUGS
+        // ==========================================
         const produtos = [
-            { id: 1, nome: "Power Bank 20000mAh Lanterna", preco: 129.90, desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", tag: "Mais Vendido", img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", aliexpressId: "1005010755900045" },
-            { id: 2, nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
-            { id: 3, nome: "Carregador Magnético Sem Fio 3 em 1", preco: 169.90, desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", tag: "Destaque", img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500", aliexpressId: "1005006123456789" },
-            { id: 4, nome: "Mini Ventilador de Celular Gamer", preco: 79.90, desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", tag: "Edição Limitada", img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500", aliexpressId: "1005006090123456" },
-            { id: 5, nome: "Umidificador Difusor Nuvem de Chuva", preco: 149.90, desc: "Estilo e conforto acústico para o seu setup. Efeito visual relaxante de chuva com luzes LED customizáveis.", tag: "Viral TikTok", img: "https://images.unsplash.com/photo-1519183071298-a2962feb14f4?w=500", aliexpressId: "1005005777123456" },
-            { id: 6, nome: "Teclado Mecânico RGB Compacto", preco: 199.90, desc: "Switches macios de alta resposta tátil, conexão rápida e iluminação dinâmica que reage aos seus comandos.", tag: "Melhor Preço", img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500", aliexpressId: "1005005999999999" },
-            { id: 7, nome: "Fone de Ouvido Noise Cancelling", preco: 189.90, desc: "Foco total onde quer que esteja. Isolamento acústico ativo e bateria de longa duração para o dia todo.", tag: "Premium", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", aliexpressId: "1005005666666666" },
-            { id: 8, nome: "Barra de Luz Monitor LED Smart", preco: 119.90, desc: "Iluminação profissional e assimétrica para o seu espaço de trabalho que reduz a fadiga ocular em telas.", tag: "Ergonômico", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500", aliexpressId: "1005005555555555" },
-            { id: 9, nome: "Suporte Veicular Carregador Sem Fio", preco: 99.90, desc: "Fixação automática inteligente por sensor de presença e carregamento rápido para suas viagens e deslocamentos.", tag: "Mais Vendido", img: "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=500", aliexpressId: "1005005444444444" },
-            { id: 10, nome: "Mouse Gamer Wireless Ergonômico", preco: 139.90, desc: "Sem fios, sem atrasos. Precisão cirúrgica de DPI ajustável e design ergonômico anatômico para uso prolongado.", tag: "Novidade", img: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500", aliexpressId: "1005005333333333" }
+            { id: 1, slug: "power-bank-20000mah", nome: "Power Bank 20000mAh Lanterna", preco: 129.90, desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", tag: "Mais Vendido", img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", aliexpressId: "1005010755900045" },
+            { id: 2, slug: "mini-projetor-portatil", nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
+            { id: 3, slug: "carregador-magnetico-3-em-1", nome: "Carregador Magnético Sem Fio 3 em 1", preco: 169.90, desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", tag: "Destaque", img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500", aliexpressId: "1005006123456789" },
+            { id: 4, slug: "mini-ventilador-gamer", nome: "Mini Ventilador de Celular Gamer", preco: 79.90, desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", tag: "Edição Limitada", img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500", aliexpressId: "1005006090123456" },
+            { id: 5, slug: "umidificador-nuvem-chuva", nome: "Umidificador Difusor Nuvem de Chuva", preco: 149.90, desc: "Estilo e conforto acústico para o seu setup. Efeito visual relaxante de chuva com luzes LED customizáveis.", tag: "Viral TikTok", img: "https://images.unsplash.com/photo-1519183071298-a2962feb14f4?w=500", aliexpressId: "1005005777123456" },
+            { id: 6, slug: "teclado-mecanico-rgb", nome: "Teclado Mecânico RGB Compacto", preco: 199.90, desc: "Switches macios de alta resposta tátil, conexão rápida e iluminação dinâmica que reage aos seus comandos.", tag: "Melhor Preço", img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500", aliexpressId: "1005005999999999" },
+            { id: 7, slug: "fone-noise-cancelling", nome: "Fone de Ouvido Noise Cancelling", preco: 189.90, desc: "Foco total onde quer que esteja. Isolamento acústico ativo e bateria de longa duração para o dia todo.", tag: "Premium", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", aliexpressId: "1005005666666666" },
+            { id: 8, slug: "barra-luz-monitor", nome: "Barra de Luz Monitor LED Smart", preco: 119.90, desc: "Iluminação profissional e assimétrica para o seu espaço de trabalho que reduz a fadiga ocular em telas.", tag: "Ergonômico", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500", aliexpressId: "1005005555555555" },
+            { id: 9, slug: "suporte-veicular-carregador", nome: "Suporte Veicular Carregador Sem Fio", preco: 99.90, desc: "Fixação automática inteligente por sensor de presença e carregamento rápido para suas viagens e deslocamentos.", tag: "Mais Vendido", img: "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=500", aliexpressId: "1005005444444444" },
+            { id: 10, slug: "mouse-gamer-wireless", nome: "Mouse Gamer Wireless Ergonômico", preco: 139.90, desc: "Sem fios, sem atrasos. Precisão cirúrgica de DPI ajustável e design ergonômico anatômico para uso prolongado.", tag: "Novidade", img: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500", aliexpressId: "1005005333333333" }
         ];
 
         let carrinho = [];
@@ -385,6 +428,26 @@
         let produtoAtual = null;
         let quantidadeAtual = 1;
 
+        // ==========================================
+        // FUNÇÃO PARA GERAR SLUG
+        // ==========================================
+        function getProdutoUrl(produto) {
+            if (produto.slug) {
+                return `/produto/${produto.slug}`;
+            }
+            // Fallback: gera slug a partir do nome
+            const slug = produto.nome
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            return `/produto/${slug}`;
+        }
+
+        // ==========================================
+        // RENDERIZAR PRODUTOS
+        // ==========================================
         function renderProdutos(listaFiltrada = produtos) {
             const grid = document.getElementById('grid-produtos');
             const countSpan = document.getElementById('results-count');
@@ -396,7 +459,8 @@
             countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
             grid.innerHTML = listaFiltrada.map(p => {
                 const valorParcela = (p.preco / 6).toFixed(2).replace('.', ',');
-                return `<div class="product-card" onclick="abrirProduto(${p.id})">
+                const url = getProdutoUrl(p);
+                return `<div class="product-card" onclick="window.location.href='${url}'">
                     <div class="relative bg-gray-100">
                         <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
                         <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
@@ -416,6 +480,92 @@
             }).join('');
         }
 
+        // ==========================================
+        // FUNÇÃO PARA VOLTAR PARA HOME
+        // ==========================================
+        function voltarParaHome() {
+            window.location.href = '/';
+        }
+
+        // ==========================================
+        // FUNÇÃO PARA COMPARTILHAR PRODUTO
+        // ==========================================
+        function compartilharProduto() {
+            if (!produtoAtual) return;
+            
+            const url = window.location.href;
+            const titulo = `Confira ${produtoAtual.nome} na Voltz Gear!`;
+            const texto = `${titulo}\n\n${produtoAtual.desc}\n\nPreço: R$ ${produtoAtual.preco.toFixed(2).replace('.', ',')}\n\nCompre agora: ${url}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: titulo,
+                    text: texto,
+                    url: url
+                }).catch(() => {});
+            } else {
+                // Fallback: copiar link
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('🔗 Link copiado! Compartilhe com seus amigos.');
+                }).catch(() => {
+                    prompt('Copie o link do produto:', url);
+                });
+            }
+        }
+
+        // ==========================================
+        // DETECTAR PÁGINA DE PRODUTO PELA URL
+        // ==========================================
+        function carregarProdutoPorSlug() {
+            const path = window.location.pathname;
+            const match = path.match(/\/produto\/(.+)/);
+            
+            if (match) {
+                const slug = match[1];
+                const produto = produtos.find(p => p.slug === slug);
+                
+                if (produto) {
+                    abrirProdutoDireto(produto);
+                    return;
+                }
+                
+                // Tenta buscar do backend se não encontrou localmente
+                fetch(`/api/produto/${slug}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            abrirProdutoDireto(data.produto);
+                        } else {
+                            console.error('Produto não encontrado');
+                            window.location.href = '/';
+                        }
+                    })
+                    .catch(() => {
+                        window.location.href = '/';
+                    });
+            }
+        }
+
+        function abrirProdutoDireto(produto) {
+            produtoAtual = produto;
+            quantidadeAtual = 1;
+            
+            document.getElementById('produto-imagem').src = produto.img;
+            document.getElementById('produto-nome').textContent = produto.nome;
+            document.getElementById('produto-desc').textContent = produto.desc;
+            document.getElementById('produto-tag').textContent = produto.tag;
+            document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('produto-quantidade').textContent = '1';
+            
+            // Mostra a página de produto
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-produto').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // ==========================================
+        // FUNÇÕES ORIGINAIS (mantidas)
+        // ==========================================
         function mostrarPagina(pagina) {
             document.getElementById('page-home').classList.add('hidden');
             document.getElementById('page-produto').classList.add('hidden');
@@ -429,42 +579,18 @@
             }
         }
 
-        function abrirProduto(id) {
+        // Sobrescreve a função original para usar URL
+        const abrirProdutoOriginal = window.abrirProduto || function() {};
+        
+        window.abrirProduto = function(id) {
             const produto = produtos.find(p => p.id === id);
             if (!produto) return;
-            produtoAtual = produto;
-            quantidadeAtual = 1;
-            document.getElementById('produto-imagem').src = produto.img;
-            document.getElementById('produto-nome').textContent = produto.nome;
-            document.getElementById('produto-desc').textContent = produto.desc;
-            document.getElementById('produto-tag').textContent = produto.tag;
-            document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-            document.getElementById('produto-quantidade').textContent = '1';
-            mostrarPagina('produto');
-        }
+            window.location.href = getProdutoUrl(produto);
+        };
 
-        function alterarQuantidade(valor) {
-            quantidadeAtual = Math.max(1, quantidadeAtual + valor);
-            document.getElementById('produto-quantidade').textContent = quantidadeAtual;
-        }
-
-        function comprarAgora() {
-            if (!produtoAtual) return;
-            for (let i = 0; i < quantidadeAtual; i++) carrinho.push(produtoAtual);
-            atualizarCarrinho();
-            const sidebar = document.getElementById('cart-sidebar');
-            if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
-            showCheckoutForm();
-        }
-
-        function filtrarProdutos() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
-        }
-        function filtrarProdutosMobile() {
-            const query = document.getElementById('search-input-mobile').value.toLowerCase();
-            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
-        }
+        // ... (resto das funções: toggleCart, adicionarAoCarrinho, etc.)
+        // As funções de carrinho, checkout, pagamento permanecem as mesmas
+        // Vou adicionar apenas as que faltam
 
         function toggleCart() {
             document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
@@ -615,6 +741,31 @@
             if (metodoSelecionado === 'cartao') calcularParcelasDropdown();
         }
 
+        function alterarQuantidade(valor) {
+            quantidadeAtual = Math.max(1, quantidadeAtual + valor);
+            document.getElementById('produto-quantidade').textContent = quantidadeAtual;
+        }
+
+        function comprarAgora() {
+            if (!produtoAtual) return;
+            for (let i = 0; i < quantidadeAtual; i++) {
+                carrinho.push(produtoAtual);
+            }
+            atualizarCarrinho();
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
+            showCheckoutForm();
+        }
+
+        function filtrarProdutos() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
+        }
+        function filtrarProdutosMobile() {
+            const query = document.getElementById('search-input-mobile').value.toLowerCase();
+            renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
+        }
+
         async function processarPagamento() {
             const nome = document.getElementById('cli-nome').value;
             const email = document.getElementById('cli-email').value;
@@ -702,6 +853,7 @@
             toggleCart();
         }
 
+        // Máscaras
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 16) value = value.slice(0, 16);
@@ -723,103 +875,23 @@
             }
         });
 
-        renderProdutos();
-        console.log('🚀 Voltz Gear carregada!');
-        console.log('📡 Backend URL:', API_URL);
-    </script>
-// ==========================================
-// DETECTAR PÁGINA DE PRODUTO PELA URL
-// ==========================================
-async function carregarProdutoPorSlug() {
-    // Pega o caminho da URL
-    const path = window.location.pathname;
-    
-    // Verifica se está em uma página de produto
-    const match = path.match(/\/produto\/(.+)/);
-    if (match) {
-        const slug = match[1];
-        
-        try {
-            const response = await fetch(`/api/produto/${slug}`);
-            const data = await response.json();
+        // ==========================================
+        // INICIAR LOJA
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica se é página de produto
+            carregarProdutoPorSlug();
             
-            if (data.sucesso) {
-                // Abre a página do produto
-                abrirProdutoPorSlug(data.produto);
-            } else {
-                console.error('Produto não encontrado');
-                mostrarPagina('home');
+            // Se não for página de produto, renderiza home
+            if (!window.location.pathname.includes('/produto/')) {
+                renderProdutos();
             }
-        } catch (err) {
-            console.error('Erro ao carregar produto:', err);
-            mostrarPagina('home');
-        }
-    }
-}
+            
+            console.log('🚀 Voltz Gear carregada!');
+            console.log('📡 Backend URL:', API_URL);
+            console.log('🛒 Produtos disponíveis:', produtos.length);
+        });
+    </script>
 
-function abrirProdutoPorSlug(produto) {
-    // Define o produto atual
-    produtoAtual = produto;
-    quantidadeAtual = 1;
-    
-    // Preenche os dados da página de produto
-    document.getElementById('produto-imagem').src = produto.img;
-    document.getElementById('produto-nome').textContent = produto.nome;
-    document.getElementById('produto-desc').textContent = produto.desc;
-    document.getElementById('produto-tag').textContent = produto.tag;
-    document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-    document.getElementById('produto-quantidade').textContent = '1';
-    
-    // Mostra a página de produto
-    mostrarPagina('produto');
-}
-
-// ==========================================
-// FUNÇÃO PARA GERAR LINK DO PRODUTO
-// ==========================================
-function getProdutoUrl(produto) {
-    // Gera um slug amigável a partir do nome
-    const slug = produto.nome
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-    
-    return `/produto/${slug}`;
-}
-
-// ==========================================
-// SOBRESCREVER A FUNÇÃO abrirProduto
-// ==========================================
-// Salva a função original
-const abrirProdutoOriginal = abrirProduto;
-
-// Substitui para usar o slug na URL
-abrirProduto = function(id) {
-    const produto = produtos.find(p => p.id === id);
-    if (!produto) return;
-    
-    // Redireciona para a URL amigável
-    const url = getProdutoUrl(produto);
-    window.history.pushState(null, '', url);
-    
-    // Chama a função original
-    abrirProdutoOriginal(id);
-};
-
-// ==========================================
-// INICIAR - VERIFICAR URL
-// ==========================================
-// Chama a função ao carregar a página
-document.addEventListener('DOMContentLoaded', function() {
-    // Primeiro, verifica se é uma página de produto
-    carregarProdutoPorSlug();
-    
-    // Depois, renderiza os produtos (se não for página de produto)
-    if (!window.location.pathname.includes('/produto/')) {
-        renderProdutos();
-    }
-});
 </body>
 </html>
