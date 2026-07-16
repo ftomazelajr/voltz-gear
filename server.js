@@ -15,10 +15,15 @@ const PORT = process.env.PORT || 3000;
 // CONFIGURAÇÃO DO E-MAIL (GMAIL)
 // ==========================================
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
     },
     timeout: 30000,
     connectionTimeout: 30000,
@@ -156,6 +161,102 @@ app.get('/produto/:slug', (req, res) => {
 // ==========================================
 app.get('/success', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'success.html'));
+});
+
+// ==========================================
+// ROTA: GERAR URL DE AUTORIZAÇÃO ALIEXPRESS
+// ==========================================
+app.get('/api/aliexpress/auth-url', (req, res) => {
+    try {
+        const appKey = process.env.ALIEXPRESS_APP_KEY;
+        const redirectUri = 'https://voltzgear.com/api/aliexpress/callback';
+        
+        const authUrl = `https://auth.aliexpress.com/oauth/authorize?response_type=code&client_id=${appKey}&redirect_uri=${redirectUri}&state=voltz_gear&view=web`;
+        
+        res.json({ 
+            sucesso: true, 
+            authUrl,
+            mensagem: 'Copie esta URL e cole no navegador para autorizar o aplicativo'
+        });
+    } catch (error) {
+        res.status(500).json({ sucesso: false, erro: error.message });
+    }
+});
+
+// ==========================================
+// ROTA: CALLBACK DO ALIEXPRESS (OBTER TOKEN)
+// ==========================================
+app.get('/api/aliexpress/callback', async (req, res) => {
+    const { code } = req.query;
+    
+    if (!code) {
+        return res.status(400).json({ sucesso: false, mensagem: 'Código não fornecido' });
+    }
+    
+    try {
+        const appKey = process.env.ALIEXPRESS_APP_KEY;
+        const appSecret = process.env.ALIEXPRESS_APP_SECRET;
+        
+        console.log('🔄 Trocando code por access_token...');
+        
+        const response = await axios.post('https://api.aliexpress.com/v1/oauth/token', null, {
+            params: {
+                client_id: appKey,
+                client_secret: appSecret,
+                code: code,
+                grant_type: 'authorization_code',
+                redirect_uri: 'https://voltzgear.com/api/aliexpress/callback'
+            }
+        });
+        
+        const accessToken = response.data.access_token;
+        const refreshToken = response.data.refresh_token;
+        
+        console.log('✅ Access Token obtido com sucesso!');
+        console.log('🆔 Access Token:', accessToken);
+        console.log('🔄 Refresh Token:', refreshToken);
+        
+        // Salva os tokens em um arquivo
+        const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
+        fs.writeFileSync(tokensFile, JSON.stringify({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            data_obtencao: new Date().toISOString()
+        }, null, 2));
+        
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"><title>✅ Autenticação AliExpress</title></head>
+            <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #22c55e;">✅ Autenticação realizada com sucesso!</h1>
+                <p>O Access Token foi obtido e salvo no servidor.</p>
+                <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0; word-break: break-all;">
+                    <p><strong>Access Token:</strong><br><code style="font-size: 12px;">${accessToken}</code></p>
+                    <p><strong>Refresh Token:</strong><br><code style="font-size: 12px;">${refreshToken}</code></p>
+                </div>
+                <p style="color: #6b7280;">Agora você já pode enviar pedidos para o AliExpress!</p>
+                <a href="/" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Voltar à Loja</a>
+            </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error('❌ Erro ao obter token:', error.response?.data || error.message);
+        res.status(500).send(`
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"><title>❌ Erro na Autenticação</title></head>
+            <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #ef4444;">❌ Erro na Autenticação</h1>
+                <p>Não foi possível obter o Access Token.</p>
+                <div style="background: #fef2f2; padding: 16px; border-radius: 8px; margin: 20px 0;">
+                    <p><strong>Erro:</strong> ${error.response?.data?.error_description || error.message}</p>
+                </div>
+                <a href="/api/aliexpress/auth-url" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Tentar Novamente</a>
+            </body>
+            </html>
+        `);
+    }
 });
 
 // ROTA PARA OBTER DADOS DE UM PRODUTO ESPECÍFICO
@@ -347,7 +448,6 @@ app.post('/api/checkout', async (req, res) => {
             })
             .catch(err => console.error('❌ Erro no envio de e-mail:', err));
 
-        // Retorna a resposta incluindo o ID do pedido para verificação
         res.status(200).json({
             sucesso: true,
             idPedido,
@@ -441,7 +541,7 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
         
         const { data, type } = req.body;
         
-        if (type === 'payment' || type === 'payment.legacy') {
+        if (type === 'payment' || type === 'payment.legacy' || type === 'payment') {
             const paymentId = data.id;
             
             const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
@@ -511,8 +611,32 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             });
         }
 
+        // Tenta carregar o access_token do arquivo
+        let accessToken = process.env.ALIEXPRESS_ACCESS_TOKEN;
+        
+        try {
+            const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
+            if (fs.existsSync(tokensFile)) {
+                const tokens = JSON.parse(fs.readFileSync(tokensFile));
+                accessToken = tokens.access_token;
+            }
+        } catch (e) {
+            console.warn('⚠️ Não foi possível carregar o token do arquivo:', e.message);
+        }
+
+        if (!accessToken) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Access Token não configurado. Acesse /api/aliexpress/auth-url para gerar.',
+                authUrl: '/api/aliexpress/auth-url'
+            });
+        }
+
+        console.log('🔄 Access Token carregado:', accessToken.substring(0, 20) + '...');
+
         const apiParams = {
             app_key: process.env.ALIEXPRESS_APP_KEY,
+            access_token: accessToken,
             timestamp: Math.floor(Date.now() / 1000).toString(),
             format: 'json',
             v: '2.0',
@@ -569,8 +693,18 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             if (aliError.response?.status === 401) {
                 return res.status(401).json({
                     sucesso: false,
-                    mensagem: 'Erro de autenticação com o AliExpress. Verifique suas credenciais.',
-                    erro: aliError.response?.data
+                    mensagem: 'Erro de autenticação com o AliExpress. Gere um novo token em /api/aliexpress/auth-url',
+                    erro: aliError.response?.data,
+                    authUrl: '/api/aliexpress/auth-url'
+                });
+            }
+
+            if (aliError.response?.data?.error_response?.code === 'MissingParameter') {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: 'Parâmetro ausente. Verifique se o access_token está correto.',
+                    erro: aliError.response?.data,
+                    authUrl: '/api/aliexpress/auth-url'
                 });
             }
 
@@ -642,12 +776,24 @@ app.put('/api/pedidos/:id/status', (req, res) => {
 // ==========================================
 app.get('/api/status', (req, res) => {
     const token = process.env.MERCADO_PAGO_TOKEN;
+    
+    // Verifica se o token do AliExpress está disponível
+    let aliAccessToken = false;
+    try {
+        const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
+        if (fs.existsSync(tokensFile)) {
+            const tokens = JSON.parse(fs.readFileSync(tokensFile));
+            aliAccessToken = !!tokens.access_token;
+        }
+    } catch (e) {}
+
     res.json({
         status: 'online',
         timestamp: new Date().toISOString(),
         tokenConfigurado: !!token,
         tokenModoTeste: token ? token.startsWith('TEST-') : false,
         aliExpressConfigurado: !!process.env.ALIEXPRESS_APP_KEY,
+        aliAccessTokenConfigurado: aliAccessToken,
         emailConfigurado: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS,
         servidor: 'Node.js + Express',
         versao: process.version
@@ -665,6 +811,20 @@ app.listen(PORT, () => {
     console.log(`🔑 Token MP: ${process.env.MERCADO_PAGO_TOKEN ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
     console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE (Sandbox)' : 'PRODUÇÃO'}`);
     console.log(`📦 AliExpress: ${process.env.ALIEXPRESS_APP_KEY ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
+    
+    // Verifica se o token do AliExpress está disponível
+    let aliTokenStatus = '❌ NÃO CONFIGURADO';
+    try {
+        const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
+        if (fs.existsSync(tokensFile)) {
+            const tokens = JSON.parse(fs.readFileSync(tokensFile));
+            if (tokens.access_token) {
+                aliTokenStatus = '✅ Configurado';
+            }
+        }
+    } catch (e) {}
+    console.log(`🔑 AliExpress Token: ${aliTokenStatus}`);
+    
     console.log(`📧 E-mail: ${process.env.EMAIL_USER ? '✅ Configurado (' + process.env.EMAIL_USER + ')' : '❌ NÃO CONFIGURADO'}`);
     console.log(`📁 Pedidos: ${PEDIDOS_FILE}`);
     console.log('='.repeat(50) + '\n');
