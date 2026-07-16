@@ -6,22 +6,146 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ==========================================
+// CONFIGURAÇÃO DO E-MAIL (GMAIL)
+// ==========================================
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// ==========================================
+// FUNÇÃO PARA ENVIAR E-MAIL DE CONFIRMAÇÃO
+// ==========================================
+async function enviarEmailConfirmacao(pedido) {
+    try {
+        const { cliente, idPedido, itens, total, endereco } = pedido;
+        
+        // Formata os produtos
+        const produtosLista = itens.map(item => 
+            `<tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.nome}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">1</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
+            </tr>`
+        ).join('');
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header { text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 20px; }
+        .logo { font-size: 28px; font-weight: 900; color: #1f2937; }
+        .logo span { color: #3b82f6; }
+        .status { background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; font-size: 14px; }
+        .pedido-id { color: #6b7280; font-size: 14px; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table th { background: #f3f4f6; padding: 10px; text-align: left; font-weight: 600; }
+        .total { font-size: 20px; font-weight: 700; color: #1f2937; text-align: right; border-top: 2px solid #e5e7eb; padding-top: 15px; }
+        .endereco { background: #f9fafb; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .footer { text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px; }
+        .btn { display: inline-block; background: #3b82f6; color: white; padding: 10px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        .info-box { background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; margin: 15px 0; }
+        .info-box p { margin: 0; color: #065f46; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">VOLTZ<span>GEAR</span></div>
+            <p style="color: #6b7280; margin: 5px 0;">Pedido confirmado com sucesso! 🎉</p>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <span class="status">✅ Pedido Confirmado</span>
+            <p class="pedido-id">Nº do pedido: <strong>${idPedido}</strong></p>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h3 style="margin-bottom: 10px;">📦 Produtos</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th style="text-align: center;">Qtd</th>
+                        <th style="text-align: right;">Preço</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${produtosLista}
+                </tbody>
+            </table>
+            <div class="total">Total: R$ ${parseFloat(total).toFixed(2).replace('.', ',')}</div>
+        </div>
+
+        <div class="endereco">
+            <h4 style="margin: 0 0 8px 0;">📍 Endereço de Entrega</h4>
+            <p style="margin: 0; color: #374151;">${endereco.rua}, ${endereco.numero}</p>
+            <p style="margin: 0; color: #374151;">${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}</p>
+            <p style="margin: 0; color: #374151;">CEP: ${endereco.cep}</p>
+        </div>
+
+        <div class="info-box">
+            <p>
+                <strong>🚀 Próximos passos:</strong><br>
+                1️⃣ Aguarde a confirmação do pagamento<br>
+                2️⃣ Seu pedido será preparado e enviado<br>
+                3️⃣ Você receberá o código de rastreio em breve
+            </p>
+        </div>
+
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="https://voltzgear.com" class="btn">Voltar à Loja</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Voltz Gear. Todos os direitos reservados.</p>
+            <p>E-mail: contato@voltzgear.com</p>
+        </div>
+    </div>
+</body>
+</html>
+        `;
+
+        const mailOptions = {
+            from: `Voltz Gear <${process.env.EMAIL_USER}>`,
+            to: cliente.email,
+            subject: `✅ Pedido Confirmado! #${idPedido} - Voltz Gear`,
+            html: html
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('📧 E-mail enviado para:', cliente.email);
+        console.log('📧 Message ID:', info.messageId);
+        
+        return { sucesso: true, messageId: info.messageId };
+
+    } catch (error) {
+        console.error('❌ Erro ao enviar e-mail:', error.message);
+        return { sucesso: false, erro: error.message };
+    }
+}
 
 // MIDDLEWARES
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Adicione esta rota no server.js (depois do app.use(express.static(...)))
-
 // ==========================================
 // ROTA PARA PÁGINAS INDIVIDUAIS DE PRODUTO
 // ==========================================
 app.get('/produto/:slug', (req, res) => {
-    // Serve o index.html, mas o JavaScript vai ler o parâmetro
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -29,7 +153,6 @@ app.get('/produto/:slug', (req, res) => {
 app.get('/api/produto/:slug', (req, res) => {
     const { slug } = req.params;
     
-    // Lista de produtos com slugs
     const produtos = [
         { id: 1, slug: "power-bank-20000mah", nome: "Power Bank 20000mAh Lanterna", preco: 129.90, desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", tag: "Mais Vendido", img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", aliexpressId: "1005010755900045" },
         { id: 2, slug: "mini-projetor-portatil", nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
@@ -51,6 +174,7 @@ app.get('/api/produto/:slug', (req, res) => {
     
     res.json({ sucesso: true, produto });
 });
+
 // ARQUIVO DE PEDIDOS
 const PEDIDOS_FILE = path.join(__dirname, 'pedidos.json');
 
@@ -81,7 +205,6 @@ app.post('/api/checkout', async (req, res) => {
     try {
         const { cliente, endereco, itens, total } = req.body;
 
-        // VALIDAÇÕES BÁSICAS
         if (!cliente || !endereco || !itens || !total) {
             console.error('❌ Dados incompletos');
             return res.status(400).json({
@@ -177,6 +300,19 @@ app.post('/api/checkout', async (req, res) => {
 
         console.log('✅ Pedido salvo com sucesso!');
 
+        // ==========================================
+        // ENVIA E-MAIL DE CONFIRMAÇÃO (NÃO BLOQUEIA)
+        // ==========================================
+        enviarEmailConfirmacao(novoPedido)
+            .then(resultado => {
+                if (resultado.sucesso) {
+                    console.log('📧 E-mail enviado com sucesso!');
+                } else {
+                    console.log('⚠️ Falha ao enviar e-mail:', resultado.erro);
+                }
+            })
+            .catch(err => console.error('❌ Erro no envio de e-mail:', err));
+
         res.status(200).json({
             sucesso: true,
             idPedido,
@@ -203,7 +339,6 @@ app.post('/api/checkout', async (req, res) => {
                 mensagem = '❌ Acesso negado. Verifique se o token é válido.';
             }
             
-            // Gera QR Code simulado em caso de erro
             try {
                 const { cliente, total } = req.body;
                 const valorTotal = parseFloat(total) || 10;
@@ -276,7 +411,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             });
         }
 
-        // Busca o pedido no arquivo
         const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
         const pedido = pedidos.find(p => p.idPedido === pedidoId);
 
@@ -294,7 +428,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             });
         }
 
-        // Verifica se tem os produtos com IDs do AliExpress
         const itensComId = pedido.itens.filter(item => item.aliexpressId);
         if (itensComId.length === 0) {
             return res.status(400).json({
@@ -303,7 +436,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             });
         }
 
-        // PREPARA OS DADOS PARA A API DO ALIEXPRESS
         const apiParams = {
             app_key: process.env.ALIEXPRESS_APP_KEY,
             timestamp: Math.floor(Date.now() / 1000).toString(),
@@ -323,7 +455,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             })
         };
 
-        // ADICIONA OS PRODUTOS AO PEDIDO
         const productItems = itensComId.map(item => ({
             product_id: parseInt(item.aliexpressId),
             product_count: 1,
@@ -337,7 +468,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
         console.log('🆔 Pedido:', pedidoId);
         console.log('📦 Produtos:', productItems.length);
 
-        // TENTA ENVIAR PARA O ALIEXPRESS
         try {
             const aliResponse = await axios.post('https://api-sg.aliexpress.com/sync', null, {
                 params: apiParams
@@ -345,7 +475,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
 
             console.log('✅ Resposta do AliExpress:', aliResponse.data);
 
-            // ATUALIZA O STATUS DO PEDIDO
             pedido.enviadoAliExpress = true;
             pedido.status = 'enviado';
             pedido.aliExpressResponse = aliResponse.data;
@@ -362,7 +491,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
         } catch (aliError) {
             console.error('❌ Erro ao enviar para o AliExpress:', aliError.response?.data || aliError.message);
             
-            // Se o erro for de autenticação, tenta novamente com token de sessão
             if (aliError.response?.status === 401) {
                 return res.status(401).json({
                     sucesso: false,
@@ -371,7 +499,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
                 });
             }
 
-            // Salva o erro para debug
             pedido.erroAliExpress = {
                 data: new Date().toISOString(),
                 mensagem: aliError.message,
@@ -446,6 +573,7 @@ app.get('/api/status', (req, res) => {
         tokenConfigurado: !!token,
         tokenModoTeste: token ? token.startsWith('TEST-') : false,
         aliExpressConfigurado: !!process.env.ALIEXPRESS_APP_KEY,
+        emailConfigurado: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS,
         servidor: 'Node.js + Express',
         versao: process.version
     });
@@ -462,6 +590,7 @@ app.listen(PORT, () => {
     console.log(`🔑 Token MP: ${process.env.MERCADO_PAGO_TOKEN ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
     console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE (Sandbox)' : 'PRODUÇÃO'}`);
     console.log(`📦 AliExpress: ${process.env.ALIEXPRESS_APP_KEY ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
+    console.log(`📧 E-mail: ${process.env.EMAIL_USER ? '✅ Configurado (' + process.env.EMAIL_USER + ')' : '❌ NÃO CONFIGURADO'}`);
     console.log(`📁 Pedidos: ${PEDIDOS_FILE}`);
     console.log('='.repeat(50) + '\n');
 });
