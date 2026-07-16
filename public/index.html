@@ -35,8 +35,10 @@
         .product-detail-image {
             width: 100%;
             max-height: 500px;
+            max-width: 500px;
             object-fit: cover;
             border-radius: 16px;
+            margin: 0 auto;
         }
         .quantity-selector {
             display: flex;
@@ -83,7 +85,6 @@
             font-weight: 600;
         }
 
-        /* Botão de compartilhar */
         .btn-share {
             background: #1a73e8;
             color: white;
@@ -103,86 +104,87 @@
             transform: scale(1.02);
         }
 
-        /* Carrossel de imagens */
-.carousel-container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 16px;
-    background: #f3f4f6;
-}
-.carousel-track {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-}
-.carousel-slide {
-    min-width: 100%;
-    aspect-ratio: 1/1;
-}
-.carousel-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255,255,255,0.9);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    transition: all 0.2s;
-    z-index: 10;
-}
-.carousel-btn:hover {
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-.carousel-btn.prev { left: 12px; }
-.carousel-btn.next { right: 12px; }
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 12px;
-}
-.carousel-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #d1d5db;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.carousel-dot.active {
-    background: #3b82f6;
-    width: 24px;
-    border-radius: 5px;
-}
-.carousel-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #ef4444;
-    color: white;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    z-index: 10;
-    animation: pulse-badge 2s infinite;
-}
-@keyframes pulse-badge {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #f3f4f6;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            aspect-ratio: 1/1;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .carousel-btn.prev { left: 12px; }
+        .carousel-btn.next { right: 12px; }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d1d5db;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .carousel-dot.active {
+            background: #3b82f6;
+            width: 24px;
+            border-radius: 5px;
+        }
+        .carousel-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #ef4444;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 10;
+            animation: pulse-badge 2s infinite;
+        }
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
     </style>
 </head>
 <body>
@@ -250,21 +252,19 @@
         <button onclick="voltarParaHome()" class="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition">
             <i class="fa-solid fa-arrow-left"></i> Voltar para loja
         </button>
-        
-<div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-    <!-- CARROSSEL DE IMAGENS -->
-    <div class="carousel-container" style="display:none;">
-        <div class="carousel-track" id="carousel-track">
-            <!-- As imagens serão injetadas via JavaScript -->
-        </div>
-        <button class="carousel-btn prev" onclick="moverCarrossel(-1)">‹</button>
-        <button class="carousel-btn next" onclick="moverCarrossel(1)">›</button>
-        <div class="carousel-badge">🔥 +500 vendidos</div>
-    </div>
-    <div class="carousel-dots" id="carousel-dots" style="display:none;"></div>
-    <!-- IMAGEM ÚNICA (fallback) -->
-    <img id="produto-imagem" src="" alt="Produto" class="product-detail-image" style="display:none;">
-</div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+                <div class="carousel-container" style="display:none;">
+                    <div class="carousel-track" id="carousel-track"></div>
+                    <button class="carousel-btn prev" onclick="moverCarrossel(-1)">‹</button>
+                    <button class="carousel-btn next" onclick="moverCarrossel(1)">›</button>
+                    <div class="carousel-badge">🔥 +500 vendidos</div>
+                </div>
+                <div class="carousel-dots" id="carousel-dots" style="display:none;"></div>
+                <img id="produto-imagem" src="" alt="Produto" class="product-detail-image" style="display:none;">
+            </div>
+
             <div class="space-y-6">
                 <div>
                     <span id="produto-tag" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">Tag</span>
@@ -279,7 +279,6 @@
                         </div>
                         <span class="text-sm text-gray-500">(127 avaliações)</span>
                     </div>
-                    <!-- Botão de Compartilhar -->
                     <div class="mt-3">
                         <button onclick="compartilharProduto()" class="btn-share">
                             <i class="fa-solid fa-share-nodes"></i> Compartilhar
@@ -288,7 +287,23 @@
                     </div>
                 </div>
 
-                <div class="border-t border-gray-200 pt-6">
+                <!-- INFORMAÇÕES DE ESTOQUE E FRETE -->
+                <div class="flex flex-wrap items-center gap-4 text-sm border-b border-gray-200 pb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-green-600 font-medium">Em estoque</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>Frete: <span class="font-semibold text-green-600">Grátis</span></span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>Entrega: <span class="font-semibold">15-20 dias</span></span>
+                    </div>
+                </div>
+
+                <div>
                     <p id="produto-desc" class="text-gray-600 leading-relaxed">Descrição do produto</p>
                 </div>
 
@@ -296,6 +311,32 @@
                     <div class="flex items-end gap-4 flex-wrap">
                         <span id="produto-preco" class="text-3xl font-black text-blue-600">R$ 0,00</span>
                         <span class="text-sm text-green-600 font-medium">ou 6x sem juros</span>
+                    </div>
+                </div>
+
+                <!-- SELOS DE CONFIANÇA -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="flex flex-col items-center text-center p-3 bg-green-50 rounded-xl border border-green-100">
+                            <i class="fa-solid fa-shield-halved text-2xl text-green-600"></i>
+                            <span class="text-xs font-bold text-green-700 mt-1">Compra Segura</span>
+                            <span class="text-[10px] text-green-600">SSL Criptografado</span>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-3 bg-blue-50 rounded-xl border border-blue-100">
+                            <i class="fa-solid fa-truck-fast text-2xl text-blue-600"></i>
+                            <span class="text-xs font-bold text-blue-700 mt-1">Frete Grátis*</span>
+                            <span class="text-[10px] text-blue-600">Acima de R$ 199</span>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-3 bg-purple-50 rounded-xl border border-purple-100">
+                            <i class="fa-solid fa-rotate-left text-2xl text-purple-600"></i>
+                            <span class="text-xs font-bold text-purple-700 mt-1">Devolução Fácil</span>
+                            <span class="text-[10px] text-purple-600">7 dias</span>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-3 bg-yellow-50 rounded-xl border border-yellow-100">
+                            <i class="fa-solid fa-star text-2xl text-yellow-600"></i>
+                            <span class="text-xs font-bold text-yellow-700 mt-1">Garantia</span>
+                            <span class="text-[10px] text-yellow-600">90 dias</span>
+                        </div>
                     </div>
                 </div>
 
@@ -348,6 +389,7 @@
 
     <!-- CARRINHO LATERAL -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
+        <!-- (mantido igual - todo o carrinho e checkout) -->
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <h3 class="text-lg font-bold text-gray-900">Sua Sacola</h3>
             <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-900 text-2xl p-1">&times;</button>
@@ -369,6 +411,7 @@
         </div>
 
         <div id="checkout-form" class="hidden border-t border-gray-100 pt-6 mt-6 pb-8">
+            <!-- (mantido igual - checkout completo) -->
             <div class="flex items-center gap-2 mb-4">
                 <span class="w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">1</span>
                 <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Informações de Envio</h4>
@@ -486,44 +529,33 @@
                 </button>
             </div>
             <button onclick="fecharModalPix()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full transition-all text-sm">
-                Voltar à Loja
-            </button>
+                Voltar à Loja            </button>
         </div>
     </div>
 
     <!-- SCRIPTS -->
     <script>
-        // ==========================================
-        // CONFIGURAÇÃO
-        // ==========================================
         const API_URL = 'https://voltzgear.com';
 
-        // ==========================================
-        // BANCO DE DADOS DE PRODUTOS COM SLUGS
-        // ==========================================
-        
-   const produtos = [
-    { 
-        id: 1, 
-        slug: "power-bank-20000mah", 
-        nome: "Power Bank 20000mAh com Lanterna", 
-        preco: 129.90, 
-        desc: "⚡ BATERIA MONSTRA! Carregue 3+ dispositivos simultaneamente com 20.000mAh de autonomia. Com lanterna LED integrada e tela digital de carga. Perfeito para viagens, trabalho e emergências. Não fique sem bateria nunca mais! 🔋", 
-        tag: "🔥 MAIS VENDIDO",
-        img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
-        aliexpressId: "1005010755900045",
-        // IMAGENS ADICIONAIS PARA O CARROSSEL
-        imagens: [
-            "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
-            "https://ae-pic-a1.aliexpress-media.com/kf/S006983eea656469f95f94c78c9e14dc2c.jpg",
-            "https://ae-pic-a1.aliexpress-media.com/kf/S50ca9ca3711d406b8deae8cf645d4b55Y.jpg"
-        ],
-        descricaoCompleta: `
+        const produtos = [
+            { 
+                id: 1, 
+                slug: "power-bank-20000mah", 
+                nome: "Power Bank 20000mAh com Lanterna", 
+                preco: 129.90, 
+                desc: "⚡ BATERIA MONSTRA! Carregue 3+ dispositivos simultaneamente com 20.000mAh de autonomia. Com lanterna LED integrada e tela digital de carga. Perfeito para viagens, trabalho e emergências. Não fique sem bateria nunca mais! 🔋", 
+                tag: "🔥 MAIS VENDIDO",
+                img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+                aliexpressId: "1005010755900045",
+                imagens: [
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S006983eea656469f95f94c78c9e14dc2c.jpg",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S50ca9ca3711d406b8deae8cf645d4b55Y.jpg"
+                ],
+                descricaoCompleta: `
 <div class="space-y-4 text-gray-700">
-
 <h3 class="text-xl font-bold text-gray-900">⚡ Power Bank 20000mAh com Lanterna</h3>
 <p class="text-gray-600">Mantenha seus dispositivos sempre carregados com o Power Bank de alta capacidade de 20000mAh. Ideal para quem precisa de autonomia extra durante viagens, trabalho ou atividades ao ar livre, este carregador portátil combina praticidade, segurança e eficiência em um design compacto e moderno.</p>
-
 <h4 class="text-lg font-bold text-gray-900 mt-6">🎯 Principais Benefícios:</h4>
 <ul class="list-disc pl-5 space-y-2 text-gray-600">
     <li><strong>🔋 Alta capacidade de 20.000mAh</strong> - Garantindo múltiplas recargas para smartphones, tablets e outros dispositivos móveis.</li>
@@ -532,14 +564,12 @@
     <li><strong>📊 Tela LED</strong> - Indica com precisão a carga restante, facilitando o controle do uso.</li>
     <li><strong>🔌 Três interfaces de carregamento</strong> - Type-C para carregamento rápido, Micro USB para dispositivos Android e Lightning para iPhone e iPad.</li>
 </ul>
-
 <h4 class="text-lg font-bold text-gray-900 mt-6">✨ Características:</h4>
 <ul class="list-disc pl-5 space-y-2 text-gray-600">
     <li>Compatível com smartphones, tablets, fones de ouvido e muito mais.</li>
     <li>Carregamento seguro com proteção contra sobrecarga, curto-circuito e superaquecimento.</li>
     <li>Ideal para viagens, acampamentos, longos dias de trabalho e eventos ao ar livre.</li>
 </ul>
-
 <h4 class="text-lg font-bold text-gray-900 mt-6">👥 Para quem é este produto?</h4>
 <ul class="list-disc pl-5 space-y-2 text-gray-600">
     <li>👨‍💼 Profissionais que dependem do celular para trabalho.</li>
@@ -547,14 +577,12 @@
     <li>✈️ Viajantes e aventureiros que precisam de autonomia.</li>
     <li>⚡ Quem valoriza praticidade, segurança e eficiência.</li>
 </ul>
-
 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
     <p class="text-blue-800 font-semibold">✅ Tenha energia garantida onde estiver com este Power Bank de 20000mAh com lanterna integrada. A solução perfeita para manter seus dispositivos sempre prontos para uso. Não fique sem bateria e aproveite a liberdade de se conectar a qualquer momento!</p>
 </div>
 </div>
     `
-    },
-
+            },
             { id: 2, slug: "mini-projetor-portatil", nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
             { id: 3, slug: "carregador-magnetico-3-em-1", nome: "Carregador Magnético Sem Fio 3 em 1", preco: 169.90, desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", tag: "Destaque", img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500", aliexpressId: "1005006123456789" },
             { id: 4, slug: "mini-ventilador-gamer", nome: "Mini Ventilador de Celular Gamer", preco: 79.90, desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", tag: "Edição Limitada", img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500", aliexpressId: "1005006090123456" },
@@ -570,27 +598,15 @@
         let metodoSelecionado = 'pix';
         let produtoAtual = null;
         let quantidadeAtual = 1;
+        let slideIndex = 0;
+        let carrosselInterval = null;
 
-        // ==========================================
-        // FUNÇÃO PARA GERAR SLUG
-        // ==========================================
         function getProdutoUrl(produto) {
-            if (produto.slug) {
-                return `/produto/${produto.slug}`;
-            }
-            // Fallback: gera slug a partir do nome
-            const slug = produto.nome
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '');
+            if (produto.slug) return `/produto/${produto.slug}`;
+            const slug = produto.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
             return `/produto/${slug}`;
         }
 
-        // ==========================================
-        // RENDERIZAR PRODUTOS
-        // ==========================================
         function renderProdutos(listaFiltrada = produtos) {
             const grid = document.getElementById('grid-produtos');
             const countSpan = document.getElementById('results-count');
@@ -623,156 +639,120 @@
             }).join('');
         }
 
-        // ==========================================
-        // FUNÇÃO PARA VOLTAR PARA HOME
-        // ==========================================
-        function voltarParaHome() {
-            window.location.href = '/';
-        }
+        function voltarParaHome() { window.location.href = '/'; }
 
-        // ==========================================
-        // FUNÇÃO PARA COMPARTILHAR PRODUTO
-        // ==========================================
         function compartilharProduto() {
             if (!produtoAtual) return;
-            
             const url = window.location.href;
             const titulo = `Confira ${produtoAtual.nome} na Voltz Gear!`;
             const texto = `${titulo}\n\n${produtoAtual.desc}\n\nPreço: R$ ${produtoAtual.preco.toFixed(2).replace('.', ',')}\n\nCompre agora: ${url}`;
-            
             if (navigator.share) {
-                navigator.share({
-                    title: titulo,
-                    text: texto,
-                    url: url
-                }).catch(() => {});
+                navigator.share({ title: titulo, text: texto, url: url }).catch(() => {});
             } else {
-                // Fallback: copiar link
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('🔗 Link copiado! Compartilhe com seus amigos.');
-                }).catch(() => {
-                    prompt('Copie o link do produto:', url);
-                });
+                navigator.clipboard.writeText(url).then(() => alert('🔗 Link copiado! Compartilhe com seus amigos.')).catch(() => prompt('Copie o link do produto:', url));
             }
         }
 
-        // ==========================================
-        // DETECTAR PÁGINA DE PRODUTO PELA URL
-        // ==========================================
         function carregarProdutoPorSlug() {
             const path = window.location.pathname;
             const match = path.match(/\/produto\/(.+)/);
-            
             if (match) {
                 const slug = match[1];
                 const produto = produtos.find(p => p.slug === slug);
-                
-                if (produto) {
-                    abrirProdutoDireto(produto);
-                    return;
-                }
-                
-                // Tenta buscar do backend se não encontrou localmente
-                fetch(`/api/produto/${slug}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.sucesso) {
-                            abrirProdutoDireto(data.produto);
-                        } else {
-                            console.error('Produto não encontrado');
-                            window.location.href = '/';
-                        }
-                    })
-                    .catch(() => {
-                        window.location.href = '/';
-                    });
+                if (produto) { abrirProdutoDireto(produto); return; }
+                fetch(`/api/produto/${slug}`).then(res => res.json()).then(data => {
+                    if (data.sucesso) abrirProdutoDireto(data.produto);
+                    else { console.error('Produto não encontrado'); window.location.href = '/'; }
+                }).catch(() => { window.location.href = '/'; });
             }
         }
 
-function abrirProdutoDireto(produto) {
-    produtoAtual = produto;
-    quantidadeAtual = 1;
-    
-    // Verifica se o produto tem imagens para o carrossel
-    if (produto.imagens && produto.imagens.length > 1) {
-        // Mostra o carrossel e esconde a imagem única
-        document.querySelector('.carousel-container').style.display = 'block';
-        document.getElementById('carousel-dots').style.display = 'flex';
-        document.getElementById('produto-imagem').style.display = 'none';
-        
-        // Cria o carrossel
-        const track = document.getElementById('carousel-track');
-        track.innerHTML = '';
-        
-        // Adiciona as imagens
-        produto.imagens.forEach((img, index) => {
-            const slide = document.createElement('div');
-            slide.className = 'carousel-slide';
-            slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
-            track.appendChild(slide);
-        });
-        
-        // Cria os dots
-        criarDots();
-        
-        // Reseta o slide index
-        slideIndex = 0;
-        irParaSlide(0);
-        
-        // Inicia o auto-play
-        iniciarCarrossel();
-    } else {
-        // Usa imagem única
-        document.querySelector('.carousel-container').style.display = 'none';
-        document.getElementById('carousel-dots').style.display = 'none';
-        document.getElementById('produto-imagem').style.display = 'block';
-        document.getElementById('produto-imagem').src = produto.img;
-    }
-    
-    document.getElementById('produto-nome').textContent = produto.nome;
-    document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
-    document.getElementById('produto-tag').textContent = produto.tag;
-    document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-    document.getElementById('produto-quantidade').textContent = '1';
-    
-    // Mostra a página de produto
-    document.getElementById('page-home').classList.add('hidden');
-    document.getElementById('page-produto').classList.remove('hidden');
-    window.scrollTo(0, 0);
-}
-        // ==========================================
-        // FUNÇÕES ORIGINAIS (mantidas)
-        // ==========================================
-        function mostrarPagina(pagina) {
+        function abrirProdutoDireto(produto) {
+            produtoAtual = produto;
+            quantidadeAtual = 1;
+            
+            if (produto.imagens && produto.imagens.length > 1) {
+                document.querySelector('.carousel-container').style.display = 'block';
+                document.getElementById('carousel-dots').style.display = 'flex';
+                document.getElementById('produto-imagem').style.display = 'none';
+                const track = document.getElementById('carousel-track');
+                track.innerHTML = '';
+                produto.imagens.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
+                    track.appendChild(slide);
+                });
+                criarDots();
+                slideIndex = 0;
+                irParaSlide(0);
+                iniciarCarrossel();
+            } else {
+                document.querySelector('.carousel-container').style.display = 'none';
+                document.getElementById('carousel-dots').style.display = 'none';
+                document.getElementById('produto-imagem').style.display = 'block';
+                document.getElementById('produto-imagem').src = produto.img;
+            }
+            
+            document.getElementById('produto-nome').textContent = produto.nome;
+            document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
+            document.getElementById('produto-tag').textContent = produto.tag;
+            document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('produto-quantidade').textContent = '1';
             document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-produto').classList.add('hidden');
-            if (pagina === 'home') {
-                document.getElementById('page-home').classList.remove('hidden');
-                renderProdutos();
-                window.scrollTo(0, 0);
-            } else if (pagina === 'produto') {
-                document.getElementById('page-produto').classList.remove('hidden');
-                window.scrollTo(0, 0);
+            document.getElementById('page-produto').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function irParaSlide(index) {
+            const track = document.getElementById('carousel-track');
+            const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+            const totalSlides = slides.length;
+            if (totalSlides === 0) return;
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            slideIndex = index;
+            if (track) track.style.transform = `translateX(-${slideIndex * 100}%)`;
+            document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+                dot.className = 'carousel-dot' + (i === slideIndex ? ' active' : '');
+            });
+        }
+
+        function moverCarrossel(direcao) {
+            irParaSlide(slideIndex + direcao);
+            if (carrosselInterval) { clearInterval(carrosselInterval); iniciarCarrossel(); }
+        }
+
+        function iniciarCarrossel() {
+            if (carrosselInterval) clearInterval(carrosselInterval);
+            const track = document.getElementById('carousel-track');
+            const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+            if (slides.length <= 1) return;
+            carrosselInterval = setInterval(() => {
+                const pageProduto = document.getElementById('page-produto');
+                if (pageProduto && !pageProduto.classList.contains('hidden')) moverCarrossel(1);
+            }, 4000);
+        }
+
+        function criarDots() {
+            const dotsContainer = document.getElementById('carousel-dots');
+            if (!dotsContainer) return;
+            const track = document.getElementById('carousel-track');
+            const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < slides.length; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('data-index', i);
+                dot.onclick = function() {
+                    irParaSlide(i);
+                    if (carrosselInterval) { clearInterval(carrosselInterval); iniciarCarrossel(); }
+                };
+                dotsContainer.appendChild(dot);
             }
         }
 
-        // Sobrescreve a função original para usar URL
-        const abrirProdutoOriginal = window.abrirProduto || function() {};
-        
-        window.abrirProduto = function(id) {
-            const produto = produtos.find(p => p.id === id);
-            if (!produto) return;
-            window.location.href = getProdutoUrl(produto);
-        };
-
-        // ... (resto das funções: toggleCart, adicionarAoCarrinho, etc.)
-        // As funções de carrinho, checkout, pagamento permanecem as mesmas
-        // Vou adicionar apenas as que faltam
-
-        function toggleCart() {
-            document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
-        }
-
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
         function adicionarAoCarrinho(id) {
             if (!id) return;
             const prod = produtos.find(p => p.id === id);
@@ -782,11 +762,7 @@ function abrirProdutoDireto(produto) {
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
         }
-
-        function removerDoCarrinho(index) {
-            carrinho.splice(index, 1);
-            atualizarCarrinho();
-        }
+        function removerDoCarrinho(index) { carrinho.splice(index, 1); atualizarCarrinho(); }
 
         function atualizarCarrinho() {
             const container = document.getElementById('cart-items');
@@ -794,9 +770,7 @@ function abrirProdutoDireto(produto) {
             const installmentsSpan = document.getElementById('cart-installments');
             const countSpan = document.getElementById('cart-count');
             const btnNext = document.getElementById('btn-next-step');
-
             countSpan.innerText = carrinho.length;
-
             if (carrinho.length === 0) {
                 container.innerHTML = '<p class="text-gray-400 text-center py-8 text-sm">Sua sacola está vazia.</p>';
                 totalSpan.innerText = "R$ 0,00";
@@ -805,7 +779,6 @@ function abrirProdutoDireto(produto) {
                 document.getElementById('checkout-form').classList.add('hidden');
                 return;
             }
-
             container.innerHTML = carrinho.map((p, index) => {
                 const valorParcelaProd = (p.preco / 6).toFixed(2).replace('.', ',');
                 return `<div class="flex items-center justify-between border-b border-gray-100 pb-3">
@@ -822,7 +795,6 @@ function abrirProdutoDireto(produto) {
                     <button onclick="removerDoCarrinho(${index})" class="text-red-500 hover:text-red-600 text-xs font-bold">Excluir</button>
                 </div>`;
             }).join('');
-
             const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const totalParcela = (total / 6).toFixed(2).replace('.', ',');
             totalSpan.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
@@ -844,7 +816,6 @@ function abrirProdutoDireto(produto) {
             const camposCartao = document.getElementById('campos-cartao');
             const btnText = document.getElementById('btn-text');
             const btnFinalizar = document.getElementById('btn-finalizar');
-
             if (metodo === 'pix') {
                 btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
                 btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
@@ -925,9 +896,7 @@ function abrirProdutoDireto(produto) {
 
         function comprarAgora() {
             if (!produtoAtual) return;
-            for (let i = 0; i < quantidadeAtual; i++) {
-                carrinho.push(produtoAtual);
-            }
+            for (let i = 0; i < quantidadeAtual; i++) carrinho.push(produtoAtual);
             atualizarCarrinho();
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
@@ -953,9 +922,7 @@ function abrirProdutoDireto(produto) {
             const bairro = document.getElementById('cli-bairro').value;
             const cidade = document.getElementById('cli-cidade').value;
             const estado = document.getElementById('cli-estado').value;
-
             if (!nome || !email || !cep || !numero) { alert("Preencha todos os dados de entrega!"); return; }
-
             if (metodoSelecionado === 'cartao') {
                 const cardNum = document.getElementById('card-num').value;
                 const cardNome = document.getElementById('card-nome').value;
@@ -963,11 +930,9 @@ function abrirProdutoDireto(produto) {
                 const cardCvv = document.getElementById('card-cvv').value;
                 if (!cardNum || !cardNome || !cardValidade || !cardCvv) { alert("Preencha todos os dados do cartão!"); return; }
             }
-
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const frete = subtotal >= 199 ? 0 : 14.90;
             const total = subtotal + frete;
-
             const payload = {
                 cliente: { nome, email, whatsapp },
                 endereco: { cep, numero, rua, bairro, cidade, estado },
@@ -976,21 +941,17 @@ function abrirProdutoDireto(produto) {
                 metodoPagamento: metodoSelecionado,
                 detalhesCartao: metodoSelecionado === 'cartao' ? { parcelas: document.getElementById('card-parcelas').value } : null
             };
-
             try {
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
                 btnText.innerText = "Processando...";
                 btnFinalizar.disabled = true;
-
                 const response = await fetch(`${API_URL}/api/checkout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
                 const resData = await response.json();
-
                 if (resData.sucesso) {
                     if (metodoSelecionado === 'pix') {
                         document.getElementById('pix-qr-img').src = resData.pixQRCode;
@@ -1002,13 +963,9 @@ function abrirProdutoDireto(produto) {
                     }
                     carrinho = [];
                     atualizarCarrinho();
-                } else {
-                    alert("❌ " + resData.mensagem);
-                }
-
+                } else { alert("❌ " + resData.mensagem); }
                 btnFinalizar.disabled = false;
                 selecionarMetodo(metodoSelecionado);
-
             } catch (err) {
                 alert("❌ Erro ao processar pagamento. Verifique se o backend está online.");
                 console.error(err);
@@ -1030,7 +987,6 @@ function abrirProdutoDireto(produto) {
             toggleCart();
         }
 
-        // Máscaras
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 16) value = value.slice(0, 16);
@@ -1047,110 +1003,35 @@ function abrirProdutoDireto(produto) {
             if (value.length > 4) value = value.slice(0, 4);
             if (value.length >= 2) {
                 this.value = value.slice(0, 2) + '/' + value.slice(2);
-            } else {
-                this.value = value;
-            }
+            } else { this.value = value; }
         });
 
-        // ==========================================
-        // INICIAR LOJA
-        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Verifica se é página de produto
             carregarProdutoPorSlug();
-            
-            // Se não for página de produto, renderiza home
-            if (!window.location.pathname.includes('/produto/')) {
-                renderProdutos();
-            }
-            
+            if (!window.location.pathname.includes('/produto/')) renderProdutos();
             console.log('🚀 Voltz Gear carregada!');
             console.log('📡 Backend URL:', API_URL);
             console.log('🛒 Produtos disponíveis:', produtos.length);
         });
 
-        // ==========================================
-// CARROSSEL DE IMAGENS
-// ==========================================
-let slideIndex = 0;
-let carrosselInterval = null;
-
-function irParaSlide(index) {
-    const track = document.getElementById('carousel-track');
-    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-    const totalSlides = slides.length;
-    
-    if (totalSlides === 0) return;
-    
-    // Ajusta o índice
-    if (index < 0) index = totalSlides - 1;
-    if (index >= totalSlides) index = 0;
-    slideIndex = index;
-    
-    // Move o track
-    if (track) {
-        track.style.transform = `translateX(-${slideIndex * 100}%)`;
-    }
-    
-    // Atualiza os dots
-    document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-        dot.className = 'carousel-dot' + (i === slideIndex ? ' active' : '');
-    });
-}
-
-function moverCarrossel(direcao) {
-    irParaSlide(slideIndex + direcao);
-    // Reseta o timer do auto-play
-    if (carrosselInterval) {
-        clearInterval(carrosselInterval);
-        iniciarCarrossel();
-    }
-}
-
-function iniciarCarrossel() {
-    // Para o intervalo anterior se existir
-    if (carrosselInterval) {
-        clearInterval(carrosselInterval);
-    }
-    
-    const track = document.getElementById('carousel-track');
-    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-    if (slides.length <= 1) return;
-    
-    // Inicia o auto-play a cada 4 segundos
-    carrosselInterval = setInterval(() => {
-        // Verifica se a página de produto está visível
-        const pageProduto = document.getElementById('page-produto');
-        if (pageProduto && !pageProduto.classList.contains('hidden')) {
-            moverCarrossel(1);
-        }
-    }, 4000);
-}
-
-function criarDots() {
-    const dotsContainer = document.getElementById('carousel-dots');
-    if (!dotsContainer) return;
-    
-    const track = document.getElementById('carousel-track');
-    const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-    const totalSlides = slides.length;
-    
-    dotsContainer.innerHTML = '';
-    for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-        dot.setAttribute('data-index', i);
-        dot.onclick = function() {
-            irParaSlide(i);
-            // Reseta o timer
-            if (carrosselInterval) {
-                clearInterval(carrosselInterval);
-                iniciarCarrossel();
+        function mostrarPagina(pagina) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-produto').classList.add('hidden');
+            if (pagina === 'home') {
+                document.getElementById('page-home').classList.remove('hidden');
+                renderProdutos();
+                window.scrollTo(0, 0);
+            } else if (pagina === 'produto') {
+                document.getElementById('page-produto').classList.remove('hidden');
+                window.scrollTo(0, 0);
             }
+        }
+
+        window.abrirProduto = function(id) {
+            const produto = produtos.find(p => p.id === id);
+            if (!produto) return;
+            window.location.href = getProdutoUrl(produto);
         };
-        dotsContainer.appendChild(dot);
-    }
-}
     </script>
 
 </body>
