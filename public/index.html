@@ -411,7 +411,51 @@
         // BANCO DE DADOS DE PRODUTOS COM SLUGS
         // ==========================================
         const produtos = [
-            { id: 1, slug: "power-bank-20000mah", nome: "Power Bank 20000mAh Lanterna", preco: 129.90, desc: "Bateria externa de alta performance com design robusto favo de mel e lanterna integrada de emergência.", tag: "Mais Vendido", img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", aliexpressId: "1005010755900045" },
+            { 
+    id: 1, 
+    slug: "power-bank-20000mah", 
+    nome: "Power Bank 20000mAh com Lanterna", 
+    preco: 129.90, 
+    desc: "⚡ BATERIA MONSTRA! Carregue 3+ dispositivos simultaneamente com 20.000mAh de autonomia. Com lanterna LED integrada e tela digital de carga. Perfeito para viagens, trabalho e emergências. Não fique sem bateria nunca mais! 🔋", 
+    tag: "🔥 MAIS VENDIDO", 
+    img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg", 
+    aliexpressId: "1005010755900045",
+    descricaoCompleta: `
+<div class="space-y-4 text-gray-700">
+
+<h3 class="text-xl font-bold text-gray-900">⚡ Power Bank 20000mAh com Lanterna</h3>
+<p class="text-gray-600">Mantenha seus dispositivos sempre carregados com o Power Bank de alta capacidade de 20000mAh. Ideal para quem precisa de autonomia extra durante viagens, trabalho ou atividades ao ar livre, este carregador portátil combina praticidade, segurança e eficiência em um design compacto e moderno.</p>
+
+<h4 class="text-lg font-bold text-gray-900 mt-6">🎯 Principais Benefícios:</h4>
+<ul class="list-disc pl-5 space-y-2 text-gray-600">
+    <li><strong>🔋 Alta capacidade de 20.000mAh</strong> - Garantindo múltiplas recargas para smartphones, tablets e outros dispositivos móveis.</li>
+    <li><strong>📱 Design compacto e leve</strong> - Fácil de transportar no bolso, mochila ou bolsa.</li>
+    <li><strong>🔦 Lanterna integrada</strong> - Útil para emergências ou ambientes com pouca luz.</li>
+    <li><strong>📊 Tela LED</strong> - Indica com precisão a carga restante, facilitando o controle do uso.</li>
+    <li><strong>🔌 Três interfaces de carregamento</strong> - Type-C para carregamento rápido, Micro USB para dispositivos Android e Lightning para iPhone e iPad.</li>
+</ul>
+
+<h4 class="text-lg font-bold text-gray-900 mt-6">✨ Características:</h4>
+<ul class="list-disc pl-5 space-y-2 text-gray-600">
+    <li>Compatível com smartphones, tablets, fones de ouvido e muito mais.</li>
+    <li>Carregamento seguro com proteção contra sobrecarga, curto-circuito e superaquecimento.</li>
+    <li>Ideal para viagens, acampamentos, longos dias de trabalho e eventos ao ar livre.</li>
+</ul>
+
+<h4 class="text-lg font-bold text-gray-900 mt-6">👥 Para quem é este produto?</h4>
+<ul class="list-disc pl-5 space-y-2 text-gray-600">
+    <li>👨‍💼 Profissionais que dependem do celular para trabalho.</li>
+    <li>🎓 Estudantes que usam dispositivos para estudo e lazer.</li>
+    <li>✈️ Viajantes e aventureiros que precisam de autonomia.</li>
+    <li>⚡ Quem valoriza praticidade, segurança e eficiência.</li>
+</ul>
+
+<div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+    <p class="text-blue-800 font-semibold">✅ Tenha energia garantida onde estiver com este Power Bank de 20000mAh com lanterna integrada. A solução perfeita para manter seus dispositivos sempre prontos para uso. Não fique sem bateria e aproveite a liberdade de se conectar a qualquer momento!</p>
+</div>
+</div>
+    `
+},
             { id: 2, slug: "mini-projetor-portatil", nome: "Mini Projetor Portátil Smart", preco: 289.90, desc: "Transforme qualquer parede branca em um cinema em segundos. Conexão Wi-Fi, som integrado e sistema inteligente.", tag: "Super Novidade", img: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500", aliexpressId: "1005005886477123" },
             { id: 3, slug: "carregador-magnetico-3-em-1", nome: "Carregador Magnético Sem Fio 3 em 1", preco: 169.90, desc: "Elimine cabos na mesa. Carrega simultaneamente seu Smartphone, Fone de Ouvido e Relógio inteligente por indução.", tag: "Destaque", img: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500", aliexpressId: "1005006123456789" },
             { id: 4, slug: "mini-ventilador-gamer", nome: "Mini Ventilador de Celular Gamer", preco: 79.90, desc: "Evite superaquecimento e quedas de FPS nas suas partidas mais intensas. Cooler RGB portátil ultra-silencioso.", tag: "Edição Limitada", img: "https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=500", aliexpressId: "1005006090123456" },
@@ -552,7 +596,8 @@
             
             document.getElementById('produto-imagem').src = produto.img;
             document.getElementById('produto-nome').textContent = produto.nome;
-            document.getElementById('produto-desc').textContent = produto.desc;
+           // Na função abrirProdutoDireto ou onde a descrição é carregada
+document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
             document.getElementById('produto-tag').textContent = produto.tag;
             document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             document.getElementById('produto-quantidade').textContent = '1';
