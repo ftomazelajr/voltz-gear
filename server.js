@@ -151,6 +151,13 @@ app.get('/produto/:slug', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ==========================================
+// ROTA: PÁGINA DE SUCESSO
+// ==========================================
+app.get('/success', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'success.html'));
+});
+
 // ROTA PARA OBTER DADOS DE UM PRODUTO ESPECÍFICO
 app.get('/api/produto/:slug', (req, res) => {
     const { slug } = req.params;
@@ -175,6 +182,30 @@ app.get('/api/produto/:slug', (req, res) => {
     }
     
     res.json({ sucesso: true, produto });
+});
+
+// ==========================================
+// ROTA: VERIFICAR STATUS DO PEDIDO (FRONTEND)
+// ==========================================
+app.get('/api/pedidos/:id/status', (req, res) => {
+    try {
+        const { id } = req.params;
+        const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+        const pedido = pedidos.find(p => p.idPedido === id);
+        
+        if (!pedido) {
+            return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado' });
+        }
+        
+        res.json({ 
+            sucesso: true, 
+            status: pedido.status,
+            total: pedido.total,
+            idPedido: pedido.idPedido
+        });
+    } catch (error) {
+        res.status(500).json({ sucesso: false, erro: error.message });
+    }
 });
 
 // ARQUIVO DE PEDIDOS
@@ -316,6 +347,7 @@ app.post('/api/checkout', async (req, res) => {
             })
             .catch(err => console.error('❌ Erro no envio de e-mail:', err));
 
+        // Retorna a resposta incluindo o ID do pedido para verificação
         res.status(200).json({
             sucesso: true,
             idPedido,
@@ -409,7 +441,7 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
         
         const { data, type } = req.body;
         
-        if (type === 'payment') {
+        if (type === 'payment' || type === 'payment.legacy') {
             const paymentId = data.id;
             
             const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
