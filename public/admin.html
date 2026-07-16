@@ -21,9 +21,70 @@
         .status-pago { background: #d1fae5; color: #065f46; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-enviado { background: #dbeafe; color: #1e40af; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-simulado { background: #fce4ec; color: #c62828; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-ali-enviado { background: #e0e7ff; color: #3730a3; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .admin-login-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+        .badge-ali {
+            background: #7c3aed;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .badge-ali-enviado {
+            background: #10b981;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .btn-ali {
+            background: #7c3aed;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-ali:hover { background: #6d28d9; transform: scale(1.02); }
+        .btn-ali:disabled { background: #9ca3af; cursor: not-allowed; }
+        .btn-ali-enviado {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+        }
+        .status-rastreio {
+            background: #f0fdf4;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+        }
         /* Esconde o link de pedidos do menu da loja principal */
         .menu-pedidos { display: none !important; }
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -49,7 +110,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- CONTEÚDO ADMIN (ESCONDIDO INICIALMENTE) -->
+    <!-- CONTEÚDO ADMIN -->
     <!-- ========================================== -->
     <div id="admin-content" class="hidden max-w-7xl mx-auto px-4 py-8">
         <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
@@ -57,7 +118,7 @@
                 <h2 class="text-3xl font-bold text-gray-900">📋 Painel de Pedidos</h2>
                 <p class="text-gray-500 text-sm">Gerencie os pedidos da sua loja Voltz Gear</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
                 <button onclick="carregarPedidos()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition flex items-center gap-2 text-sm">
                     <i class="fa-solid fa-rotate"></i> Atualizar
                 </button>
@@ -77,6 +138,7 @@
             <button onclick="filtrarPedidos('pago')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="pago">Pagos</button>
             <button onclick="filtrarPedidos('enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="enviado">Enviados</button>
             <button onclick="filtrarPedidos('simulado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="simulado">Simulados</button>
+            <button onclick="filtrarPedidos('ali_enviado')" class="filtro-pedido px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-filtro="ali_enviado">AliExpress</button>
         </div>
 
         <!-- Lista de Pedidos -->
@@ -89,13 +151,28 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- MODAL DE RASTREIO -->
+    <!-- ========================================== -->
+    <div id="modal-rastreio" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">📦 Rastreio do Pedido</h3>
+                <button onclick="fecharModalRastreio()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div id="conteudo-rastreio">
+                <p class="text-gray-500 text-sm">Carregando informações de rastreio...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- SCRIPTS -->
     <!-- ========================================== -->
     <script>
         // ==========================================
         // CONFIGURAÇÃO
         // ==========================================
-        const API_URL = 'https://voltz-gear.onrender.com';
+        const API_URL = 'https://voltzgear.com';
         const ADMIN_SENHA = 'voltz2026';
 
         let filtroPedidoAtual = 'todos';
@@ -139,22 +216,31 @@
                 if (data.pedidos && data.pedidos.length > 0) {
                     let pedidosFiltrados = data.pedidos;
                     if (filtroPedidoAtual !== 'todos') {
-                        pedidosFiltrados = pedidosFiltrados.filter(p => p.status === filtroPedidoAtual);
+                        if (filtroPedidoAtual === 'ali_enviado') {
+                            pedidosFiltrados = pedidosFiltrados.filter(p => p.enviadoAliExpress === true);
+                        } else {
+                            pedidosFiltrados = pedidosFiltrados.filter(p => p.status === filtroPedidoAtual);
+                        }
                     }
                     
                     if (pedidosFiltrados.length === 0) {
-                        container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido com status "${filtroPedidoAtual}"</p></div>`;
+                        container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i><p>Nenhum pedido com este filtro</p></div>`;
                         return;
                     }
 
                     container.innerHTML = pedidosFiltrados.map(p => {
                         const statusClass = p.status || 'pendente';
+                        const enviadoAli = p.enviadoAliExpress || false;
+                        const temAliId = p.itens.some(item => item.aliexpressId);
+                        
                         return `<div class="pedido-card">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <div class="flex items-center gap-3 flex-wrap">
                                         <span class="font-bold text-gray-900">#${p.idPedido}</span>
                                         <span class="status-${statusClass}">${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}</span>
+                                        ${enviadoAli ? `<span class="badge-ali-enviado">✅ AliExpress</span>` : ''}
+                                        ${!temAliId ? `<span class="text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">⚠️ Sem ID</span>` : ''}
                                         <span class="text-xs text-gray-400">${new Date(p.data).toLocaleDateString('pt-BR')} ${new Date(p.data).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</span>
                                     </div>
                                     <div class="mt-1">
@@ -162,22 +248,27 @@
                                         <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp || 'N/A'}</p>
                                         <p class="text-xs text-gray-400">${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.estado}</p>
                                     </div>
+                                    ${p.codigoRastreio ? `<div class="mt-1"><span class="status-rastreio"><i class="fa-solid fa-truck"></i> ${p.codigoRastreio}</span></div>` : ''}
                                 </div>
                                 <div class="flex items-center gap-4 flex-wrap">
                                     <div class="text-right">
                                         <span class="text-lg font-bold text-blue-600">R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</span>
                                         <p class="text-xs text-gray-400">${p.itens.length} item(ns)</p>
                                     </div>
-                                    <div class="flex flex-col gap-1">
-                                        ${p.status !== 'pago' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}
-                                        ${p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>` : ''}
+                                    <div class="flex flex-col gap-1 items-end">
+                                        ${p.status !== 'pago' && p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}
+                                        ${p.status !== 'enviado' && p.status !== 'simulado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'enviado')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition">Enviar</button>` : ''}
+                                        ${temAliId && !enviadoAli && p.status !== 'simulado' ? `<button onclick="enviarParaAliExpress('${p.idPedido}')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded-full transition flex items-center gap-1">📦 AliExpress</button>` : ''}
+                                        ${enviadoAli ? `<span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">✅ Enviado p/ Ali</span>` : ''}
                                         ${p.status === 'simulado' ? `<span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">🧪 Teste</span>` : ''}
+                                        ${p.codigoRastreio ? `<button onclick="verRastreio('${p.idPedido}')" class="text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full transition">📦 Rastrear</button>` : ''}
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-2 border-t border-gray-100 pt-2">
-                                <p class="text-xs text-gray-500">Produtos: ${p.itens.map(i => i.nome).join(', ')}</p>
+                                <p class="text-xs text-gray-500">Produtos: ${p.itens.map(i => i.nome + (i.aliexpressId ? ' (ID: '+i.aliexpressId+')' : '')).join(', ')}</p>
                             </div>
+                            ${p.erroAliExpress ? `<div class="mt-2 bg-red-50 border border-red-200 rounded-lg p-2 text-xs text-red-600"><i class="fa-solid fa-exclamation-triangle"></i> Erro AliExpress: ${p.erroAliExpress.mensagem}</div>` : ''}
                         </div>`;
                     }).join('');
                 } else {
@@ -222,7 +313,99 @@
         }
 
         // ==========================================
-        // AUTO-LOGIN (se já estiver logado)
+        // ENVIAR PARA ALIEXPRESS
+        // ==========================================
+        async function enviarParaAliExpress(pedidoId) {
+            if (!confirm(`Deseja enviar o pedido #${pedidoId} para o AliExpress?`)) return;
+            
+            const btn = event?.target;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Enviando...';
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/aliexpress/enviar-pedido`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pedidoId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    alert(`✅ Pedido enviado para o AliExpress com sucesso!`);
+                    carregarPedidos();
+                } else {
+                    alert(`❌ Erro: ${data.mensagem}\n${data.erro || ''}`);
+                }
+            } catch (err) {
+                alert('❌ Erro ao conectar com o servidor');
+                console.error(err);
+            }
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '📦 AliExpress';
+            }
+        }
+
+        // ==========================================
+        // VER RASTREIO
+        // ==========================================
+        async function verRastreio(pedidoId) {
+            const modal = document.getElementById('modal-rastreio');
+            const conteudo = document.getElementById('conteudo-rastreio');
+            modal.classList.remove('hidden');
+            conteudo.innerHTML = `<p class="text-gray-500 text-sm"><i class="fa-solid fa-spinner fa-spin"></i> Carregando rastreio...</p>`;
+
+            try {
+                const response = await fetch(`${API_URL}/api/pedidos/${pedidoId}/rastreio`);
+                const data = await response.json();
+                
+                if (data.sucesso && data.rastreio) {
+                    conteudo.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span class="font-bold text-gray-700">Código:</span>
+                                <span class="font-mono text-blue-600">${data.rastreio.codigo}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span class="font-bold text-gray-700">Status:</span>
+                                <span class="status-rastreio">${data.rastreio.status || 'Em trânsito'}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span class="font-bold text-gray-700">Transportadora:</span>
+                                <span class="text-gray-600">${data.rastreio.transportadora || 'Correios'}</span>
+                            </div>
+                            <div class="mt-4">
+                                <p class="font-bold text-gray-700 text-sm">Última atualização:</p>
+                                <p class="text-sm text-gray-600">${data.rastreio.ultimaAtualizacao || 'Aguardando atualizações'}</p>
+                            </div>
+                            ${data.rastreio.historico && data.rastreio.historico.length > 0 ? `
+                            <div class="mt-4">
+                                <p class="font-bold text-gray-700 text-sm">Histórico:</p>
+                                <div class="space-y-1 mt-1 max-h-40 overflow-y-auto">
+                                    ${data.rastreio.historico.map(h => `<p class="text-xs text-gray-600">${h.data} - ${h.status}</p>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    conteudo.innerHTML = `<p class="text-gray-500 text-sm">Nenhuma informação de rastreio disponível para este pedido.</p>`;
+                }
+            } catch (err) {
+                conteudo.innerHTML = `<p class="text-red-500 text-sm">❌ Erro ao buscar rastreio: ${err.message}</p>`;
+                console.error(err);
+            }
+        }
+
+        function fecharModalRastreio() {
+            document.getElementById('modal-rastreio').classList.add('hidden');
+        }
+
+        // ==========================================
+        // AUTO-LOGIN
         // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             const logado = sessionStorage.getItem('admin_logado');
