@@ -45,85 +45,7 @@ async function enviarEmailConfirmacao(pedido) {
             </tr>`
         ).join('');
 
-        const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .header { text-align: center; border-bottom: 2px solid #3b82f6; padding-bottom: 20px; }
-        .logo { font-size: 28px; font-weight: 900; color: #1f2937; }
-        .logo span { color: #3b82f6; }
-        .status { background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; font-size: 14px; }
-        .pedido-id { color: #6b7280; font-size: 14px; }
-        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .table th { background: #f3f4f6; padding: 10px; text-align: left; font-weight: 600; }
-        .total { font-size: 20px; font-weight: 700; color: #1f2937; text-align: right; border-top: 2px solid #e5e7eb; padding-top: 15px; }
-        .endereco { background: #f9fafb; padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .footer { text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px; }
-        .btn { display: inline-block; background: #3b82f6; color: white; padding: 10px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; }
-        .info-box { background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; margin: 15px 0; }
-        .info-box p { margin: 0; color: #065f46; font-size: 14px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">VOLTZ<span>GEAR</span></div>
-            <p style="color: #6b7280; margin: 5px 0;">Pedido confirmado com sucesso! 🎉</p>
-        </div>
-
-        <div style="text-align: center; margin: 20px 0;">
-            <span class="status">✅ Pedido Confirmado</span>
-            <p class="pedido-id">Nº do pedido: <strong>${idPedido}</strong></p>
-        </div>
-
-        <div style="margin: 20px 0;">
-            <h3 style="margin-bottom: 10px;">📦 Produtos</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th style="text-align: center;">Qtd</th>
-                        <th style="text-align: right;">Preço</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${produtosLista}
-                </tbody>
-            </table>
-            <div class="total">Total: R$ ${parseFloat(total).toFixed(2).replace('.', ',')}</div>
-        </div>
-
-        <div class="endereco">
-            <h4 style="margin: 0 0 8px 0;">📍 Endereço de Entrega</h4>
-            <p style="margin: 0; color: #374151;">${endereco.rua}, ${endereco.numero}</p>
-            <p style="margin: 0; color: #374151;">${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}</p>
-            <p style="margin: 0; color: #374151;">CEP: ${endereco.cep}</p>
-        </div>
-
-        <div class="info-box">
-            <p>
-                <strong>🚀 Próximos passos:</strong><br>
-                1️⃣ Aguarde a confirmação do pagamento<br>
-                2️⃣ Seu pedido será preparado e enviado<br>
-                3️⃣ Você receberá o código de rastreio em breve
-            </p>
-        </div>
-
-        <div style="text-align: center; margin: 25px 0;">
-            <a href="https://voltzgear.com" class="btn">Voltar à Loja</a>
-        </div>
-
-        <div class="footer">
-            <p>© 2026 Voltz Gear. Todos os direitos reservados.</p>
-            <p>E-mail: contato@voltzgear.com</p>
-        </div>
-    </div>
-</body>
-</html>
-        `;
+        const html = `...`; // Mantenha o HTML do e-mail igual ao seu
 
         const mailOptions = {
             from: `Voltz Gear <${process.env.EMAIL_USER}>`,
@@ -187,117 +109,12 @@ app.get('/api/aliexpress/auth-url', (req, res) => {
 // ROTA: CALLBACK DO ALIEXPRESS (OBTER TOKEN)
 // ==========================================
 app.get('/api/aliexpress/callback', async (req, res) => {
-    const { code } = req.query;
-    
-    if (!code) {
-        return res.status(400).json({ sucesso: false, mensagem: 'Código não fornecido' });
-    }
-    
-    try {
-        const appKey = process.env.ALIEXPRESS_APP_KEY;
-        const appSecret = process.env.ALIEXPRESS_APP_SECRET;
-        
-        console.log('🔄 Trocando code por access_token...');
-        console.log('📝 Code recebido:', code);
-        console.log('🔑 App Key:', appKey);
-        console.log('🔑 App Secret (primeiros 5):', appSecret?.substring(0, 5) + '...');
-        console.log('📌 Redirect URI:', 'https://voltzgear.com/api/aliexpress/callback');
-        
-        try {
-            const response = await axios({
-                method: 'post',
-                url: 'https://api.aliexpress.com/v1/oauth/token',
-                data: new URLSearchParams({
-                    client_id: appKey,
-                    client_secret: appSecret,
-                    code: code,
-                    grant_type: 'authorization_code',
-                    redirect_uri: 'https://voltzgear.com/api/aliexpress/callback'
-                }).toString(),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-            
-            console.log('📦 Resposta COMPLETA do AliExpress:', JSON.stringify(response.data, null, 2));
-            
-            let accessToken = response.data?.access_token || 
-                              response.data?.access_token_result?.access_token ||
-                              response.data?.data?.access_token ||
-                              response.data?.result?.access_token;
-            
-            let refreshToken = response.data?.refresh_token || 
-                               response.data?.access_token_result?.refresh_token ||
-                               response.data?.data?.refresh_token ||
-                               response.data?.result?.refresh_token;
-            
-            if (accessToken) {
-                console.log('✅ Access Token obtido com sucesso!');
-                console.log('🆔 Access Token:', accessToken);
-                console.log('🔄 Refresh Token:', refreshToken);
-                
-                const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
-                fs.writeFileSync(tokensFile, JSON.stringify({
-                    access_token: accessToken,
-                    refresh_token: refreshToken,
-                    data_obtencao: new Date().toISOString()
-                }, null, 2));
-                
-                return res.send(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head><meta charset="UTF-8"><title>✅ Autenticação AliExpress</title></head>
-                    <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
-                        <h1 style="color: #22c55e;">✅ Autenticação realizada com sucesso!</h1>
-                        <p>O Access Token foi obtido e salvo no servidor.</p>
-                        <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0; word-break: break-all;">
-                            <p><strong>Access Token:</strong><br><code style="font-size: 12px;">${accessToken}</code></p>
-                            <p><strong>Refresh Token:</strong><br><code style="font-size: 12px;">${refreshToken}</code></p>
-                        </div>
-                        <p style="color: #6b7280;">Agora você já pode enviar pedidos para o AliExpress!</p>
-                        <a href="/" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Voltar à Loja</a>
-                    </body>
-                    </html>
-                `);
-            }
-            
-            console.error('❌ Token não encontrado na resposta');
-            console.error('📦 Resposta completa:', JSON.stringify(response.data, null, 2));
-            throw new Error('Token não encontrado na resposta do AliExpress');
-            
-        } catch (axiosError) {
-            console.error('❌ Erro na requisição:', axiosError.response?.data || axiosError.message);
-            console.error('📦 Status:', axiosError.response?.status);
-            throw axiosError;
-        }
-        
-    } catch (error) {
-        console.error('❌ Erro ao obter token:', error.response?.data || error.message);
-        
-        const erroDetalhado = error.response?.data?.error_description || 
-                             error.response?.data?.error_msg ||
-                             error.response?.data?.message ||
-                             error.message;
-        
-        res.status(500).send(`
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="UTF-8"><title>❌ Erro na Autenticação</title></head>
-            <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #ef4444;">❌ Erro na Autenticação</h1>
-                <p>Não foi possível obter o Access Token.</p>
-                <div style="background: #fef2f2; padding: 16px; border-radius: 8px; margin: 20px 0;">
-                    <p><strong>Erro:</strong> ${erroDetalhado}</p>
-                    ${error.response?.data ? `<pre style="background:#f1f1f1;padding:10px;border-radius:4px;overflow:auto;font-size:12px;">${JSON.stringify(error.response.data, null, 2)}</pre>` : ''}
-                </div>
-                <a href="/api/aliexpress/auth-url" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Tentar Novamente</a>
-            </body>
-            </html>
-        `);
-    }
+    // ... mantenha o código do callback
 });
 
-// ROTA PARA OBTER DADOS DE UM PRODUTO ESPECÍFICO
+// ==========================================
+// ROTA: OBTER DADOS DE UM PRODUTO ESPECÍFICO
+// ==========================================
 app.get('/api/produto/:slug', (req, res) => {
     const { slug } = req.params;
     
@@ -368,14 +185,14 @@ function gerarAssinaturaAliExpress(params, secret) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT E GERAÇÃO DE PIX (MERCADO PAGO)
+// ROTA: CHECKOUT - APENAS PRODUÇÃO (SEM SIMULAÇÃO)
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
     console.log('📝 Dados:', JSON.stringify(req.body, null, 2));
 
     try {
-        const { cliente, endereco, itens, total } = req.body;
+        const { cliente, endereco, itens, total, metodoPagamento, detalhesCartao } = req.body;
 
         if (!cliente || !endereco || !itens || !total) {
             console.error('❌ Dados incompletos');
@@ -390,8 +207,13 @@ app.post('/api/checkout', async (req, res) => {
             console.error('❌ Token não configurado');
             return res.status(500).json({
                 sucesso: false,
-                mensagem: 'Token do Mercado Pago não configurado. Verifique o arquivo .env'
+                mensagem: 'Token do Mercado Pago não configurado.'
             });
+        }
+
+        // VERIFICA SE É TOKEN DE PRODUÇÃO
+        if (token.startsWith('TEST-')) {
+            console.warn('⚠️ ATENÇÃO: Token de TESTE detectado! Use token de PRODUÇÃO para pagamentos reais.');
         }
 
         const idPedido = `VOLTZ-${Date.now()}`;
@@ -403,11 +225,27 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`🆔 Pedido: ${idPedido}`);
         console.log(`📧 Email: ${cliente.email}`);
         console.log(`📋 CPF: ${cliente.cpf || 'Não informado'}`);
+        console.log(`💳 Método: ${metodoPagamento || 'pix'}`);
 
+        // ==========================================
+        // DEFINE O MÉTODO DE PAGAMENTO
+        // ==========================================
+        let paymentMethodId = "pix";
+        let installments = 1;
+
+        if (metodoPagamento === 'cartao') {
+            paymentMethodId = "credit_card";
+            installments = parseInt(detalhesCartao?.parcelas) || 1;
+            console.log(`📦 Parcelas: ${installments}x`);
+        }
+
+        // ==========================================
+        // PREPARA OS DADOS PARA O MERCADO PAGO
+        // ==========================================
         const paymentData = {
             transaction_amount: valorTotal,
             description: `Pedido ${idPedido} - Voltz Gear`,
-            payment_method_id: "pix",
+            payment_method_id: paymentMethodId,
             payer: {
                 email: cliente.email || 'cliente@teste.com',
                 first_name: cliente.nome ? cliente.nome.split(' ')[0] : 'Cliente',
@@ -426,6 +264,11 @@ app.post('/api/checkout', async (req, res) => {
                 }
             }
         };
+
+        // SE FOR CARTÃO, ADICIONA PARCELAS
+        if (metodoPagamento === 'cartao') {
+            paymentData.installments = installments;
+        }
 
         console.log('📤 Enviando para o Mercado Pago...');
 
@@ -448,19 +291,24 @@ app.post('/api/checkout', async (req, res) => {
         let pixCopiaCola = pResponse.point_of_interaction?.transaction_data?.qr_code || '';
         let pixBase64Img = pResponse.point_of_interaction?.transaction_data?.qr_code_base64 || '';
 
-        if (!pixCopiaCola) {
-            console.warn('⚠️ QR Code não retornado, gerando simulado...');
-            pixCopiaCola = `00020101021226930014BR.GOV.BCB.PIX2572SIMULADO-${Date.now()}5204000053039865405${valorTotal}5802BR5913${cliente.nome || 'Cliente'}6009SaoPaulo62070503***6304E2A8`;
-            pixBase64Img = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        // SE FOR PIX E NÃO TIVER QR CODE, retorna erro (NÃO SIMULA)
+        if (metodoPagamento === 'pix' && !pixCopiaCola) {
+            console.error('❌ QR Code não retornado pelo Mercado Pago');
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: 'Erro ao gerar QR Code PIX. Tente novamente.'
+            });
         }
 
+        // SALVA O PEDIDO
         const novoPedido = {
             idPedido,
-            status: 'pendente',
+            status: pResponse.status || 'pendente',
             cliente,
             endereco,
             itens,
             total: valorTotal,
+            metodoPagamento: metodoPagamento || 'pix',
             mercadoPagoId: pResponse.id,
             modoTeste: isTestMode,
             data: new Date().toISOString(),
@@ -473,9 +321,7 @@ app.post('/api/checkout', async (req, res) => {
 
         console.log('✅ Pedido salvo com sucesso!');
 
-        // ==========================================
         // ENVIA E-MAIL DE CONFIRMAÇÃO (NÃO BLOQUEIA)
-        // ==========================================
         enviarEmailConfirmacao(novoPedido)
             .then(resultado => {
                 if (resultado.sucesso) {
@@ -486,12 +332,14 @@ app.post('/api/checkout', async (req, res) => {
             })
             .catch(err => console.error('❌ Erro no envio de e-mail:', err));
 
+        // RETORNA A RESPOSTA
         res.status(200).json({
             sucesso: true,
             idPedido,
             total: valorTotal,
-            pixCopiaCola,
-            pixQRCode: `data:image/png;base64,${pixBase64Img}`,
+            pixCopiaCola: pixCopiaCola || null,
+            pixQRCode: pixBase64Img ? `data:image/png;base64,${pixBase64Img}` : null,
+            metodoPagamento: metodoPagamento || 'pix',
             modoTeste: isTestMode,
             status: pResponse.status
         });
@@ -510,43 +358,6 @@ app.post('/api/checkout', async (req, res) => {
                 mensagem = '❌ Dados inválidos: ' + (error.response.data?.message || '');
             } else if (error.response.status === 403) {
                 mensagem = '❌ Acesso negado. Verifique se o token é válido.';
-            }
-            
-            try {
-                const { cliente, total } = req.body;
-                const valorTotal = parseFloat(total) || 10;
-                const idPedido = `VOLTZ-${Date.now()}`;
-                const pixSimulado = {
-                    sucesso: true,
-                    idPedido,
-                    total: valorTotal,
-                    pixCopiaCola: `00020101021226930014BR.GOV.BCB.PIX2572SIMULADO-${Date.now()}5204000053039865405${valorTotal}5802BR5913${cliente?.nome || 'Teste'}6009SaoPaulo62070503***6304E2A8`,
-                    pixQRCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-                    modoTeste: true,
-                    status: 'simulado',
-                    aviso: '⚠️ QR Code SIMULADO - Use para testar o fluxo'
-                };
-
-                const novoPedido = {
-                    idPedido,
-                    status: 'simulado',
-                    cliente: cliente || { nome: 'Cliente', email: 'teste@email.com' },
-                    endereco: req.body?.endereco || {},
-                    itens: req.body?.itens || [],
-                    total: valorTotal,
-                    modoTeste: true,
-                    data: new Date().toISOString(),
-                    enviadoAliExpress: false
-                };
-
-                const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
-                pedidos.push(novoPedido);
-                fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
-
-                console.log('✅ QR Code simulado gerado e salvo!');
-                return res.status(200).json(pixSimulado);
-            } catch (e) {
-                console.error('❌ Erro ao gerar QR Code simulado:', e.message);
             }
             
             res.status(500).json({
@@ -571,122 +382,57 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 // ==========================================
-// WEBHOOK DO MERCADO PAGO (ATUALIZADO COM LOGS)
-// ==========================================
-// ==========================================
-// WEBHOOK DO MERCADO PAGO (CORRIGIDO)
+// WEBHOOK DO MERCADO PAGO
 // ==========================================
 app.post('/api/webhook/mercadopago', async (req, res) => {
     try {
         console.log('📨 Webhook recebido:', JSON.stringify(req.body, null, 2));
         
-        const { data, type, action } = req.body;
+        const { data, type } = req.body;
         
-        // VERIFICA SE É UM EVENTO DE PAGAMENTO
         if (type === 'payment' || type === 'payment.legacy') {
-            
-            // EXTRAI O ID DO PAGAMENTO
             const paymentId = data?.id;
             
             if (!paymentId) {
-                console.log('⚠️ Nenhum paymentId encontrado no webhook');
-                return res.status(200).json({ sucesso: true, mensagem: 'Nenhum paymentId' });
+                console.log('⚠️ Nenhum paymentId encontrado');
+                return res.status(200).json({ sucesso: true });
             }
             
             console.log(`🔍 Buscando pagamento ID: ${paymentId}`);
             
-            // BUSCA O PAGAMENTO NO MERCADO PAGO
-            const token = process.env.MERCADO_PAGO_TOKEN;
-            if (!token) {
-                console.error('❌ Token do Mercado Pago não configurado');
-                return res.status(500).json({ sucesso: false, mensagem: 'Token não configurado' });
-            }
+            const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                headers: {
+                    'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
+                },
+                timeout: 10000
+            });
             
-            try {
-                const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    timeout: 10000
-                });
-                
-                const payment = response.data;
-                console.log(`📊 Status do pagamento: ${payment.status}`);
-                console.log(`🔍 MercadoPagoId (webhook): ${paymentId}`);
-                
-                // LÊ OS PEDIDOS
-                let pedidos = [];
-                try {
-                    pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
-                } catch (readError) {
-                    console.error('❌ Erro ao ler pedidos.json:', readError.message);
-                    pedidos = [];
-                }
-                
-                console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
-                
-                // BUSCA O PEDIDO (comparação flexível)
-                const pedido = pedidos.find(p => {
-                    const mpId = p.mercadoPagoId?.toString();
-                    const wpId = paymentId?.toString();
-                    console.log(`🔍 Comparando: mpId=${mpId} === wpId=${wpId} => ${mpId === wpId}`);
-                    return mpId === wpId;
-                });
-                
-                if (payment.status === 'approved') {
-                    if (pedido) {
-                        pedido.status = 'pago';
-                        pedido.dataPagamento = new Date().toISOString();
-                        fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
-                        console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
-                        
-                        // ENVIA E-MAIL DE CONFIRMAÇÃO DE PAGAMENTO (OPCIONAL)
-                        // await enviarEmailPagamentoConfirmado(pedido);
-                    } else {
-                        console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
-                        console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ 
-                            id: p.idPedido, 
-                            mpId: p.mercadoPagoId,
-                            tipo: typeof p.mercadoPagoId 
-                        })));
-                    }
+            const payment = response.data;
+            console.log(`📊 Status do pagamento: ${payment.status}`);
+            
+            const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+            console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
+            
+            const pedido = pedidos.find(p => p.mercadoPagoId?.toString() === paymentId?.toString());
+            
+            if (payment.status === 'approved') {
+                if (pedido) {
+                    pedido.status = 'pago';
+                    pedido.dataPagamento = new Date().toISOString();
+                    fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
+                    console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
                 } else {
-                    console.log(`⏳ Pagamento ainda não aprovado. Status: ${payment.status}`);
+                    console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
                 }
-                
-                res.status(200).json({ 
-                    sucesso: true, 
-                    mensagem: 'Webhook processado',
-                    status: payment.status 
-                });
-                
-            } catch (mpError) {
-                console.error('❌ Erro ao buscar pagamento no Mercado Pago:', mpError.message);
-                if (mpError.response) {
-                    console.error('📦 Status:', mpError.response.status);
-                    console.error('📦 Dados:', JSON.stringify(mpError.response.data, null, 2));
-                }
-                res.status(200).json({ 
-                    sucesso: false, 
-                    mensagem: 'Erro ao buscar pagamento',
-                    erro: mpError.message 
-                });
+            } else {
+                console.log(`⏳ Pagamento ainda não aprovado. Status: ${payment.status}`);
             }
-            
-        } else {
-            console.log(`📌 Tipo de evento não processado: ${type}`);
-            res.status(200).json({ sucesso: true, mensagem: `Evento ${type} ignorado` });
         }
         
+        res.status(200).json({ sucesso: true });
     } catch (error) {
-        console.error('❌ Erro fatal no webhook:', error.message);
-        console.error('📦 Stack:', error.stack);
-        // SEMPRE RETORNA 200 PARA O MERCADO PAGO NÃO REENVIAR
-        res.status(200).json({ 
-            sucesso: false, 
-            mensagem: 'Erro interno processado',
-            erro: error.message 
-        });
+        console.error('❌ Erro no webhook:', error.message);
+        res.status(200).json({ sucesso: false, erro: error.message });
     }
 });
 
@@ -694,159 +440,7 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
 // ROTA: ENVIAR PEDIDO PARA O ALIEXPRESS
 // ==========================================
 app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
-    try {
-        const { pedidoId } = req.body;
-        
-        if (!pedidoId) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'ID do pedido é obrigatório'
-            });
-        }
-
-        const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
-        const pedido = pedidos.find(p => p.idPedido === pedidoId);
-
-        if (!pedido) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: 'Pedido não encontrado'
-            });
-        }
-
-        if (pedido.enviadoAliExpress) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Pedido já foi enviado para o AliExpress'
-            });
-        }
-
-        const itensComId = pedido.itens.filter(item => item.aliexpressId);
-        if (itensComId.length === 0) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Nenhum produto possui ID do AliExpress configurado'
-            });
-        }
-
-        let accessToken = process.env.ALIEXPRESS_ACCESS_TOKEN;
-        
-        try {
-            const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
-            if (fs.existsSync(tokensFile)) {
-                const tokens = JSON.parse(fs.readFileSync(tokensFile));
-                accessToken = tokens.access_token;
-            }
-        } catch (e) {
-            console.warn('⚠️ Não foi possível carregar o token do arquivo:', e.message);
-        }
-
-        if (!accessToken) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Access Token não configurado. Acesse /api/aliexpress/auth-url para gerar.',
-                authUrl: '/api/aliexpress/auth-url'
-            });
-        }
-
-        console.log('🔄 Access Token carregado:', accessToken.substring(0, 20) + '...');
-
-        const apiParams = {
-            app_key: process.env.ALIEXPRESS_APP_KEY,
-            access_token: accessToken,
-            timestamp: Math.floor(Date.now() / 1000).toString(),
-            format: 'json',
-            v: '2.0',
-            sign_method: 'md5',
-            method: 'aliexpress.trade.buy.placeorder',
-            address_info: JSON.stringify({
-                contact_person: pedido.cliente.nome,
-                phone_number: pedido.cliente.whatsapp,
-                address_line1: `${pedido.endereco.rua}, ${pedido.endereco.numero}`,
-                address_line2: pedido.endereco.bairro,
-                city: pedido.endereco.cidade,
-                province: pedido.endereco.estado,
-                zip_code: pedido.endereco.cep.replace(/\D/g, ''),
-                country_code: 'BR'
-            })
-        };
-
-        const productItems = itensComId.map(item => ({
-            product_id: parseInt(item.aliexpressId),
-            product_count: 1,
-            logistics_service_name: "AliExpress Standard Shipping"
-        }));
-
-        apiParams.product_items = JSON.stringify(productItems);
-        apiParams.sign = gerarAssinaturaAliExpress(apiParams, process.env.ALIEXPRESS_APP_SECRET);
-
-        console.log('📤 Enviando pedido para o AliExpress...');
-        console.log('🆔 Pedido:', pedidoId);
-        console.log('📦 Produtos:', productItems.length);
-
-        try {
-            const aliResponse = await axios.post('https://api-sg.aliexpress.com/sync', null, {
-                params: apiParams
-            });
-
-            console.log('✅ Resposta do AliExpress:', aliResponse.data);
-
-            pedido.enviadoAliExpress = true;
-            pedido.status = 'enviado';
-            pedido.aliExpressResponse = aliResponse.data;
-            pedido.dataEnvioAliExpress = new Date().toISOString();
-
-            fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
-
-            res.status(200).json({
-                sucesso: true,
-                mensagem: 'Pedido enviado para o AliExpress com sucesso!',
-                resposta: aliResponse.data
-            });
-
-        } catch (aliError) {
-            console.error('❌ Erro ao enviar para o AliExpress:', aliError.response?.data || aliError.message);
-            
-            if (aliError.response?.status === 401) {
-                return res.status(401).json({
-                    sucesso: false,
-                    mensagem: 'Erro de autenticação com o AliExpress. Gere um novo token em /api/aliexpress/auth-url',
-                    erro: aliError.response?.data,
-                    authUrl: '/api/aliexpress/auth-url'
-                });
-            }
-
-            if (aliError.response?.data?.error_response?.code === 'MissingParameter') {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: 'Parâmetro ausente. Verifique se o access_token está correto.',
-                    erro: aliError.response?.data,
-                    authUrl: '/api/aliexpress/auth-url'
-                });
-            }
-
-            pedido.erroAliExpress = {
-                data: new Date().toISOString(),
-                mensagem: aliError.message,
-                detalhes: aliError.response?.data
-            };
-            fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
-
-            res.status(500).json({
-                sucesso: false,
-                mensagem: 'Erro ao enviar pedido para o AliExpress. Tente novamente.',
-                erro: aliError.message
-            });
-        }
-
-    } catch (error) {
-        console.error('❌ ERRO NA ROTA ALIEXPRESS:', error.message);
-        res.status(500).json({
-            sucesso: false,
-            mensagem: 'Erro interno ao processar envio para o AliExpress',
-            erro: error.message
-        });
-    }
+    // ... mantenha o código do AliExpress
 });
 
 // ==========================================
@@ -977,7 +571,7 @@ app.listen(PORT, () => {
     console.log('='.repeat(50));
     console.log(`🌐 URL: http://localhost:${PORT}`);
     console.log(`🔑 Token MP: ${process.env.MERCADO_PAGO_TOKEN ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
-    console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE (Sandbox)' : 'PRODUÇÃO'}`);
+    console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE' : 'PRODUÇÃO'}`);
     console.log(`📦 AliExpress: ${process.env.ALIEXPRESS_APP_KEY ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
     
     let aliTokenStatus = '❌ NÃO CONFIGURADO';
