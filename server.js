@@ -573,61 +573,120 @@ app.post('/api/checkout', async (req, res) => {
 // ==========================================
 // WEBHOOK DO MERCADO PAGO (ATUALIZADO COM LOGS)
 // ==========================================
+// ==========================================
+// WEBHOOK DO MERCADO PAGO (CORRIGIDO)
+// ==========================================
 app.post('/api/webhook/mercadopago', async (req, res) => {
     try {
         console.log('📨 Webhook recebido:', JSON.stringify(req.body, null, 2));
         
-        const { data, type } = req.body;
+        const { data, type, action } = req.body;
         
-        if (type === 'payment' || type === 'payment.legacy' || type === 'payment') {
-            const paymentId = data.id; // ← STRING
+        // VERIFICA SE É UM EVENTO DE PAGAMENTO
+        if (type === 'payment' || type === 'payment.legacy') {
+            
+            // EXTRAI O ID DO PAGAMENTO
+            const paymentId = data?.id;
+            
+            if (!paymentId) {
+                console.log('⚠️ Nenhum paymentId encontrado no webhook');
+                return res.status(200).json({ sucesso: true, mensagem: 'Nenhum paymentId' });
+            }
+            
             console.log(`🔍 Buscando pagamento ID: ${paymentId}`);
             
-            const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-                headers: {
-                    'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
-                }
-            });
-            
-            const payment = response.data;
-            console.log(`📊 Status do pagamento: ${payment.status}`);
-            console.log(`🔍 MercadoPagoId (webhook): ${paymentId}`);
-            
-            const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
-            console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
-            
-            // 🔧 CORREÇÃO: Comparação flexível (string e número)
-            const pedido = pedidos.find(p => {
-                const mpId = p.mercadoPagoId?.toString();
-                const wpId = paymentId?.toString();
-                console.log(`🔍 Comparando: mpId=${mpId} === wpId=${wpId} => ${mpId === wpId}`);
-                return mpId === wpId;
-            });
-            
-            if (payment.status === 'approved') {
-                if (pedido) {
-                    pedido.status = 'pago';
-                    pedido.dataPagamento = new Date().toISOString();
-                    fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
-                    console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
-                    
-                    // ENVIA E-MAIL DE CONFIRMAÇÃO DE PAGAMENTO
-                    // await enviarEmailPagamentoConfirmado(pedido);
-                } else {
-                    console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
-                    console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ 
-                        id: p.idPedido, 
-                        mpId: p.mercadoPagoId,
-                        tipo: typeof p.mercadoPagoId 
-                    })));
-                }
+            // BUSCA O PAGAMENTO NO MERCADO PAGO
+            const token = process.env.MERCADO_PAGO_TOKEN;
+            if (!token) {
+                console.error('❌ Token do Mercado Pago não configurado');
+                return res.status(500).json({ sucesso: false, mensagem: 'Token não configurado' });
             }
+            
+            try {
+                const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    timeout: 10000
+                });
+                
+                const payment = response.data;
+                console.log(`📊 Status do pagamento: ${payment.status}`);
+                console.log(`🔍 MercadoPagoId (webhook): ${paymentId}`);
+                
+                // LÊ OS PEDIDOS
+                let pedidos = [];
+                try {
+                    pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+                } catch (readError) {
+                    console.error('❌ Erro ao ler pedidos.json:', readError.message);
+                    pedidos = [];
+                }
+                
+                console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
+                
+                // BUSCA O PEDIDO (comparação flexível)
+                const pedido = pedidos.find(p => {
+                    const mpId = p.mercadoPagoId?.toString();
+                    const wpId = paymentId?.toString();
+                    console.log(`🔍 Comparando: mpId=${mpId} === wpId=${wpId} => ${mpId === wpId}`);
+                    return mpId === wpId;
+                });
+                
+                if (payment.status === 'approved') {
+                    if (pedido) {
+                        pedido.status = 'pago';
+                        pedido.dataPagamento = new Date().toISOString();
+                        fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
+                        console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
+                        
+                        // ENVIA E-MAIL DE CONFIRMAÇÃO DE PAGAMENTO (OPCIONAL)
+                        // await enviarEmailPagamentoConfirmado(pedido);
+                    } else {
+                        console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
+                        console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ 
+                            id: p.idPedido, 
+                            mpId: p.mercadoPagoId,
+                            tipo: typeof p.mercadoPagoId 
+                        })));
+                    }
+                } else {
+                    console.log(`⏳ Pagamento ainda não aprovado. Status: ${payment.status}`);
+                }
+                
+                res.status(200).json({ 
+                    sucesso: true, 
+                    mensagem: 'Webhook processado',
+                    status: payment.status 
+                });
+                
+            } catch (mpError) {
+                console.error('❌ Erro ao buscar pagamento no Mercado Pago:', mpError.message);
+                if (mpError.response) {
+                    console.error('📦 Status:', mpError.response.status);
+                    console.error('📦 Dados:', JSON.stringify(mpError.response.data, null, 2));
+                }
+                res.status(200).json({ 
+                    sucesso: false, 
+                    mensagem: 'Erro ao buscar pagamento',
+                    erro: mpError.message 
+                });
+            }
+            
+        } else {
+            console.log(`📌 Tipo de evento não processado: ${type}`);
+            res.status(200).json({ sucesso: true, mensagem: `Evento ${type} ignorado` });
         }
         
-        res.status(200).json({ sucesso: true });
     } catch (error) {
-        console.error('❌ Erro no webhook:', error.message);
-        res.status(500).json({ sucesso: false, erro: error.message });
+        console.error('❌ Erro fatal no webhook:', error.message);
+        console.error('📦 Stack:', error.stack);
+        // SEMPRE RETORNA 200 PARA O MERCADO PAGO NÃO REENVIAR
+        res.status(200).json({ 
+            sucesso: false, 
+            mensagem: 'Erro interno processado',
+            erro: error.message 
+        });
     }
 });
 
