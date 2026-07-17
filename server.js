@@ -198,50 +198,95 @@ app.get('/api/aliexpress/callback', async (req, res) => {
         const appSecret = process.env.ALIEXPRESS_APP_SECRET;
         
         console.log('🔄 Trocando code por access_token...');
+        console.log('📝 Code recebido:', code);
+        console.log('🔑 App Key:', appKey);
+        console.log('🔑 App Secret (primeiros 5):', appSecret?.substring(0, 5) + '...');
+        console.log('📌 Redirect URI:', 'https://voltzgear.com/api/aliexpress/callback');
         
-        const response = await axios.post('https://api.aliexpress.com/v1/oauth/token', null, {
-            params: {
-                client_id: appKey,
-                client_secret: appSecret,
-                code: code,
-                grant_type: 'authorization_code',
-                redirect_uri: 'https://voltzgear.com/api/aliexpress/callback'
+        // Tenta diferentes formatos de requisição
+        try {
+            // FORMATO 1: application/x-www-form-urlencoded (padrão OAuth)
+            const response = await axios({
+                method: 'post',
+                url: 'https://api.aliexpress.com/v1/oauth/token',
+                data: new URLSearchParams({
+                    client_id: appKey,
+                    client_secret: appSecret,
+                    code: code,
+                    grant_type: 'authorization_code',
+                    redirect_uri: 'https://voltzgear.com/api/aliexpress/callback'
+                }).toString(),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            
+            console.log('📦 Resposta COMPLETA do AliExpress (Formato 1):', JSON.stringify(response.data, null, 2));
+            
+            // Tenta extrair o token de diferentes lugares
+            let accessToken = response.data?.access_token || 
+                              response.data?.access_token_result?.access_token ||
+                              response.data?.data?.access_token ||
+                              response.data?.result?.access_token;
+            
+            let refreshToken = response.data?.refresh_token || 
+                               response.data?.access_token_result?.refresh_token ||
+                               response.data?.data?.refresh_token ||
+                               response.data?.result?.refresh_token;
+            
+            if (accessToken) {
+                console.log('✅ Access Token obtido com sucesso!');
+                console.log('🆔 Access Token:', accessToken);
+                console.log('🔄 Refresh Token:', refreshToken);
+                
+                // Salva os tokens
+                const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
+                fs.writeFileSync(tokensFile, JSON.stringify({
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                    data_obtencao: new Date().toISOString()
+                }, null, 2));
+                
+                return res.send(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head><meta charset="UTF-8"><title>✅ Autenticação AliExpress</title></head>
+                    <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
+                        <h1 style="color: #22c55e;">✅ Autenticação realizada com sucesso!</h1>
+                        <p>O Access Token foi obtido e salvo no servidor.</p>
+                        <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0; word-break: break-all;">
+                            <p><strong>Access Token:</strong><br><code style="font-size: 12px;">${accessToken}</code></p>
+                            <p><strong>Refresh Token:</strong><br><code style="font-size: 12px;">${refreshToken}</code></p>
+                        </div>
+                        <p style="color: #6b7280;">Agora você já pode enviar pedidos para o AliExpress!</p>
+                        <a href="/" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Voltar à Loja</a>
+                    </body>
+                    </html>
+                `);
             }
-        });
+            
+            // Se chegou aqui, não encontrou o token na resposta
+            console.error('❌ Token não encontrado na resposta');
+            console.error('📦 Resposta completa:', JSON.stringify(response.data, null, 2));
+            
+            throw new Error('Token não encontrado na resposta do AliExpress');
+            
+        } catch (axiosError) {
+            console.error('❌ Erro na requisição:', axiosError.response?.data || axiosError.message);
+            console.error('📦 Status:', axiosError.response?.status);
+            console.error('📦 Headers:', axiosError.response?.headers);
+            
+            throw axiosError;
+        }
         
-        const accessToken = response.data.access_token;
-        const refreshToken = response.data.refresh_token;
-        
-        console.log('✅ Access Token obtido com sucesso!');
-        console.log('🆔 Access Token:', accessToken);
-        console.log('🔄 Refresh Token:', refreshToken);
-        
-        // Salva os tokens em um arquivo
-        const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
-        fs.writeFileSync(tokensFile, JSON.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            data_obtencao: new Date().toISOString()
-        }, null, 2));
-        
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="UTF-8"><title>✅ Autenticação AliExpress</title></head>
-            <body style="font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #22c55e;">✅ Autenticação realizada com sucesso!</h1>
-                <p>O Access Token foi obtido e salvo no servidor.</p>
-                <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0; word-break: break-all;">
-                    <p><strong>Access Token:</strong><br><code style="font-size: 12px;">${accessToken}</code></p>
-                    <p><strong>Refresh Token:</strong><br><code style="font-size: 12px;">${refreshToken}</code></p>
-                </div>
-                <p style="color: #6b7280;">Agora você já pode enviar pedidos para o AliExpress!</p>
-                <a href="/" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Voltar à Loja</a>
-            </body>
-            </html>
-        `);
     } catch (error) {
         console.error('❌ Erro ao obter token:', error.response?.data || error.message);
+        
+        const erroDetalhado = error.response?.data?.error_description || 
+                             error.response?.data?.error_msg ||
+                             error.response?.data?.message ||
+                             error.message;
+        
         res.status(500).send(`
             <!DOCTYPE html>
             <html>
@@ -250,7 +295,8 @@ app.get('/api/aliexpress/callback', async (req, res) => {
                 <h1 style="color: #ef4444;">❌ Erro na Autenticação</h1>
                 <p>Não foi possível obter o Access Token.</p>
                 <div style="background: #fef2f2; padding: 16px; border-radius: 8px; margin: 20px 0;">
-                    <p><strong>Erro:</strong> ${error.response?.data?.error_description || error.message}</p>
+                    <p><strong>Erro:</strong> ${erroDetalhado}</p>
+                    ${error.response?.data ? `<pre style="background:#f1f1f1;padding:10px;border-radius:4px;overflow:auto;font-size:12px;">${JSON.stringify(error.response.data, null, 2)}</pre>` : ''}
                 </div>
                 <a href="/api/aliexpress/auth-url" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Tentar Novamente</a>
             </body>
