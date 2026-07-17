@@ -203,9 +203,7 @@ app.get('/api/aliexpress/callback', async (req, res) => {
         console.log('🔑 App Secret (primeiros 5):', appSecret?.substring(0, 5) + '...');
         console.log('📌 Redirect URI:', 'https://voltzgear.com/api/aliexpress/callback');
         
-        // Tenta diferentes formatos de requisição
         try {
-            // FORMATO 1: application/x-www-form-urlencoded (padrão OAuth)
             const response = await axios({
                 method: 'post',
                 url: 'https://api.aliexpress.com/v1/oauth/token',
@@ -221,9 +219,8 @@ app.get('/api/aliexpress/callback', async (req, res) => {
                 }
             });
             
-            console.log('📦 Resposta COMPLETA do AliExpress (Formato 1):', JSON.stringify(response.data, null, 2));
+            console.log('📦 Resposta COMPLETA do AliExpress:', JSON.stringify(response.data, null, 2));
             
-            // Tenta extrair o token de diferentes lugares
             let accessToken = response.data?.access_token || 
                               response.data?.access_token_result?.access_token ||
                               response.data?.data?.access_token ||
@@ -239,7 +236,6 @@ app.get('/api/aliexpress/callback', async (req, res) => {
                 console.log('🆔 Access Token:', accessToken);
                 console.log('🔄 Refresh Token:', refreshToken);
                 
-                // Salva os tokens
                 const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
                 fs.writeFileSync(tokensFile, JSON.stringify({
                     access_token: accessToken,
@@ -265,17 +261,13 @@ app.get('/api/aliexpress/callback', async (req, res) => {
                 `);
             }
             
-            // Se chegou aqui, não encontrou o token na resposta
             console.error('❌ Token não encontrado na resposta');
             console.error('📦 Resposta completa:', JSON.stringify(response.data, null, 2));
-            
             throw new Error('Token não encontrado na resposta do AliExpress');
             
         } catch (axiosError) {
             console.error('❌ Erro na requisição:', axiosError.response?.data || axiosError.message);
             console.error('📦 Status:', axiosError.response?.status);
-            console.error('📦 Headers:', axiosError.response?.headers);
-            
             throw axiosError;
         }
         
@@ -579,7 +571,7 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 // ==========================================
-// WEBHOOK DO MERCADO PAGO
+// WEBHOOK DO MERCADO PAGO (ATUALIZADO COM LOGS)
 // ==========================================
 app.post('/api/webhook/mercadopago', async (req, res) => {
     try {
@@ -589,6 +581,7 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
         
         if (type === 'payment' || type === 'payment.legacy' || type === 'payment') {
             const paymentId = data.id;
+            console.log(`🔍 Buscando pagamento ID: ${paymentId}`);
             
             const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
                 headers: {
@@ -597,9 +590,15 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
             });
             
             const payment = response.data;
+            console.log(`📊 Status do pagamento: ${payment.status}`);
+            console.log(`🔍 MercadoPagoId: ${paymentId}`);
+            
+            // LISTA TODOS OS PEDIDOS PARA DEBUG
+            const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+            console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
+            console.log(`📋 IDs dos pedidos: ${pedidos.map(p => p.mercadoPagoId).join(', ')}`);
             
             if (payment.status === 'approved') {
-                const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
                 const pedido = pedidos.find(p => p.mercadoPagoId === paymentId);
                 
                 if (pedido) {
@@ -607,13 +606,22 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
                     pedido.dataPagamento = new Date().toISOString();
                     fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
                     console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
+                } else {
+                    console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
+                    console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ id: p.idPedido, mpId: p.mercadoPagoId })));
                 }
+            } else {
+                console.log(`⏳ Pagamento ainda não aprovado. Status: ${payment.status}`);
             }
         }
         
         res.status(200).json({ sucesso: true });
     } catch (error) {
         console.error('❌ Erro no webhook:', error.message);
+        if (error.response) {
+            console.error('📦 Status:', error.response.status);
+            console.error('📦 Dados:', JSON.stringify(error.response.data, null, 2));
+        }
         res.status(500).json({ sucesso: false, erro: error.message });
     }
 });
@@ -657,7 +665,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             });
         }
 
-        // Tenta carregar o access_token do arquivo
         let accessToken = process.env.ALIEXPRESS_ACCESS_TOKEN;
         
         try {
@@ -823,7 +830,6 @@ app.put('/api/pedidos/:id/status', (req, res) => {
 app.get('/api/status', (req, res) => {
     const token = process.env.MERCADO_PAGO_TOKEN;
     
-    // Verifica se o token do AliExpress está disponível
     let aliAccessToken = false;
     try {
         const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
@@ -847,6 +853,58 @@ app.get('/api/status', (req, res) => {
 });
 
 // ==========================================
+// ROTA: TESTE MANUAL DO WEBHOOK
+// ==========================================
+app.post('/api/webhook/test', async (req, res) => {
+    try {
+        const { paymentId, pedidoId } = req.body;
+        
+        if (!paymentId || !pedidoId) {
+            return res.status(400).json({ 
+                sucesso: false, 
+                mensagem: 'Envie paymentId e pedidoId' 
+            });
+        }
+        
+        const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
+            }
+        });
+        
+        const payment = response.data;
+        
+        if (payment.status === 'approved') {
+            const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
+            const pedido = pedidos.find(p => p.idPedido === pedidoId);
+            
+            if (pedido) {
+                pedido.status = 'pago';
+                pedido.dataPagamento = new Date().toISOString();
+                fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
+                console.log(`✅ Pedido ${pedidoId} foi pago!`);
+                
+                return res.json({ 
+                    sucesso: true, 
+                    mensagem: 'Pedido atualizado para "pago"',
+                    pedido 
+                });
+            }
+        }
+        
+        res.json({ 
+            sucesso: false, 
+            mensagem: 'Pagamento não aprovado ou pedido não encontrado',
+            status: payment.status 
+        });
+        
+    } catch (error) {
+        console.error('❌ Erro no webhook de teste:', error.message);
+        res.status(500).json({ sucesso: false, erro: error.message });
+    }
+});
+
+// ==========================================
 // INICIAR SERVIDOR
 // ==========================================
 app.listen(PORT, () => {
@@ -858,7 +916,6 @@ app.listen(PORT, () => {
     console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE (Sandbox)' : 'PRODUÇÃO'}`);
     console.log(`📦 AliExpress: ${process.env.ALIEXPRESS_APP_KEY ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
     
-    // Verifica se o token do AliExpress está disponível
     let aliTokenStatus = '❌ NÃO CONFIGURADO';
     try {
         const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
