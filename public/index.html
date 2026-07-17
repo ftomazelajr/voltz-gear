@@ -532,8 +532,7 @@
                 </button>
             </div>
             <button onclick="fecharModalPix()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full transition-all text-sm">
-                Voltar à Loja
-            </button>
+                Voltar à Loja            </button>
         </div>
     </div>
 
@@ -978,104 +977,125 @@
         }
 
         // ==========================================
-        // FUNÇÃO PRINCIPAL DE PAGAMENTO
+        // FUNÇÃO PRINCIPAL DE PAGAMENTO (CORRIGIDA)
         // ==========================================
         async function processarPagamento() {
-            const nome = document.getElementById('cli-nome').value;
-            const email = document.getElementById('cli-email').value;
-            const whatsapp = document.getElementById('cli-whatsapp').value;
-            const cep = document.getElementById('cli-cep').value;
-            const numero = document.getElementById('cli-numero').value;
-            const cpf = document.getElementById('cli-cpf').value.replace(/\D/g, '');
-            const rua = document.getElementById('cli-rua').value;
-            const bairro = document.getElementById('cli-bairro').value;
-            const cidade = document.getElementById('cli-cidade').value;
-            const estado = document.getElementById('cli-estado').value;
+            console.log('🔄 === INICIO processarPagamento ===');
+            console.log('📋 Método selecionado:', metodoSelecionado);
+            console.log('📦 Carrinho:', carrinho);
+            
+            try {
+                const nome = document.getElementById('cli-nome').value;
+                const email = document.getElementById('cli-email').value;
+                const whatsapp = document.getElementById('cli-whatsapp').value;
+                const cep = document.getElementById('cli-cep').value;
+                const numero = document.getElementById('cli-numero').value;
+                const cpf = document.getElementById('cli-cpf').value.replace(/\D/g, '');
+                const rua = document.getElementById('cli-rua').value;
+                const bairro = document.getElementById('cli-bairro').value;
+                const cidade = document.getElementById('cli-cidade').value;
+                const estado = document.getElementById('cli-estado').value;
 
-            if (!nome || !email || !cep || !numero) {
-                alert("Preencha todos os dados de entrega!");
-                return;
-            }
+                console.log('📝 Dados do cliente:', { nome, email, cep, numero, cpf });
 
-            // ==========================================
-            // SE FOR CARTÃO, GERAR TOKEN
-            // ==========================================
-            let cardToken = null;
-            let parcelas = 1;
-
-            if (metodoSelecionado === 'cartao') {
-                const cardNum = document.getElementById('card-num').value.replace(/\D/g, '');
-                const cardNome = document.getElementById('card-nome').value;
-                const cardValidade = document.getElementById('card-validade').value;
-                const cardCvv = document.getElementById('card-cvv').value;
-                const parcelasSelect = document.getElementById('card-parcelas').value;
-
-                if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
-                    alert("Preencha todos os dados do cartão!");
+                if (!nome || !email || !cep || !numero) {
+                    alert("Preencha todos os dados de entrega!");
+                    console.warn('⚠️ Dados de entrega incompletos');
                     return;
                 }
 
-                parcelas = parseInt(parcelasSelect) || 1;
+                // ==========================================
+                // SE FOR CARTÃO, GERAR TOKEN
+                // ==========================================
+                let cardToken = null;
+                let parcelas = 1;
 
-                // DADOS DO CARTÃO PARA O MERCADO PAGO
-                const cardData = {
-                    cardNumber: cardNum,
-                    cardholderName: cardNome,
-                    cardExpirationMonth: cardValidade.split('/')[0],
-                    cardExpirationYear: '20' + cardValidade.split('/')[1],
-                    securityCode: cardCvv,
-                    identificationType: 'CPF',
-                    identificationNumber: cpf || '00000000000'
+                if (metodoSelecionado === 'cartao') {
+                    console.log('💳 === PROCESSANDO CARTÃO ===');
+                    
+                    const cardNum = document.getElementById('card-num').value.replace(/\D/g, '');
+                    const cardNome = document.getElementById('card-nome').value;
+                    const cardValidade = document.getElementById('card-validade').value;
+                    const cardCvv = document.getElementById('card-cvv').value;
+                    const parcelasSelect = document.getElementById('card-parcelas').value;
+
+                    console.log('📇 Card Num (sem espaços):', cardNum);
+                    console.log('📇 Card Nome:', cardNome);
+                    console.log('📅 Validade:', cardValidade);
+                    console.log('🔐 CVV:', cardCvv);
+
+                    if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
+                        alert("Preencha todos os dados do cartão!");
+                        console.warn('⚠️ Dados do cartão incompletos');
+                        return;
+                    }
+
+                    parcelas = parseInt(parcelasSelect) || 1;
+                    console.log('📦 Parcelas:', parcelas);
+
+                    const cardData = {
+                        cardNumber: cardNum,
+                        cardholderName: cardNome,
+                        cardExpirationMonth: cardValidade.split('/')[0],
+                        cardExpirationYear: '20' + cardValidade.split('/')[1],
+                        securityCode: cardCvv,
+                        identificationType: 'CPF',
+                        identificationNumber: cpf || '00000000000'
+                    };
+
+                    console.log('📤 Enviando dados para criar token...');
+
+                    try {
+                        const tokenResponse = await new Promise((resolve, reject) => {
+                            mp.createCardToken(cardData, (error, response) => {
+                                if (error) {
+                                    console.error('❌ Erro no createCardToken:', error);
+                                    reject(error);
+                                } else {
+                                    console.log('✅ Resposta do createCardToken:', response);
+                                    resolve(response);
+                                }
+                            });
+                        });
+
+                        cardToken = tokenResponse.id;
+                        console.log('✅ Token do cartão gerado:', cardToken);
+                    } catch (error) {
+                        console.error('❌ Erro ao gerar token:', error);
+                        alert('❌ Erro ao gerar token do cartão: ' + (error.message || 'Tente novamente'));
+                        return;
+                    }
+                }
+
+                const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
+                const frete = subtotal >= 199 ? 0 : 1.90;
+                const total = subtotal + frete;
+                console.log('💰 Total:', total);
+
+                const payload = {
+                    cliente: {
+                        nome,
+                        email,
+                        whatsapp,
+                        cpf: cpf || "00000000000"
+                    },
+                    endereco: { cep, numero, rua, bairro, cidade, estado },
+                    itens: carrinho.map(item => ({
+                        id: item.id,
+                        nome: item.nome,
+                        preco: item.preco,
+                        aliexpressId: item.aliexpressId
+                    })),
+                    total: total.toFixed(2),
+                    metodoPagamento: metodoSelecionado,
+                    detalhesCartao: metodoSelecionado === 'cartao' ? {
+                        parcelas: parcelas,
+                        token: cardToken
+                    } : null
                 };
 
-                try {
-                    // GERA O TOKEN DO CARTÃO
-                    const tokenResponse = await new Promise((resolve, reject) => {
-                        mp.createCardToken(cardData, (error, response) => {
-                            if (error) {
-                                reject(error);
-                            } else {
-                                resolve(response);
-                            }
-                        });
-                    });
+                console.log('📤 Payload enviado:', payload);
 
-                    cardToken = tokenResponse.id;
-                    console.log('✅ Token do cartão gerado:', cardToken);
-                } catch (error) {
-                    alert('❌ Erro ao gerar token do cartão: ' + (error.message || 'Tente novamente'));
-                    console.error(error);
-                    return;
-                }
-            }
-
-            const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = subtotal >= 199 ? 0 : 1.90;
-            const total = subtotal + frete;
-
-            const payload = {
-                cliente: {
-                    nome,
-                    email,
-                    whatsapp,
-                    cpf: cpf || "00000000000"
-                },
-                endereco: { cep, numero, rua, bairro, cidade, estado },
-                itens: carrinho.map(item => ({
-                    id: item.id,
-                    nome: item.nome,
-                    preco: item.preco,
-                    aliexpressId: item.aliexpressId
-                })),
-                total: total.toFixed(2),
-                metodoPagamento: metodoSelecionado,
-                detalhesCartao: metodoSelecionado === 'cartao' ? {
-                    parcelas: parcelas,
-                    token: cardToken
-                } : null
-            };
-
-            try {
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
                 btnText.innerText = "Processando...";
@@ -1088,6 +1108,7 @@
                 });
 
                 const resData = await response.json();
+                console.log('📨 Resposta do servidor:', resData);
 
                 if (resData.sucesso) {
                     if (metodoSelecionado === 'pix') {
@@ -1108,11 +1129,12 @@
                 btnFinalizar.disabled = false;
                 selecionarMetodo(metodoSelecionado);
             } catch (err) {
-                alert("❌ Erro ao processar pagamento. Verifique se o backend está online.");
-                console.error(err);
+                console.error('❌ ERRO GERAL:', err);
+                alert("❌ Erro ao processar pagamento. Verifique o console para mais detalhes.");
                 document.getElementById('btn-finalizar').disabled = false;
                 selecionarMetodo(metodoSelecionado);
             }
+            console.log('🔄 === FIM processarPagamento ===');
         }
 
         function copiarPix() {
