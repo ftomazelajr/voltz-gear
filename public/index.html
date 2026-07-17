@@ -187,9 +187,51 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f2937;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+        .toast.info { background: #2563eb; }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
 
     <!-- TOPBAR -->
     <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
@@ -532,7 +574,8 @@
                 </button>
             </div>
             <button onclick="fecharModalPix()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-full transition-all text-sm">
-                Voltar à Loja            </button>
+                Voltar à Loja
+            </button>
         </div>
     </div>
 
@@ -619,8 +662,18 @@
         let carrosselInterval = null;
 
         // ==========================================
-        // FUNÇÕES DO SISTEMA
+        // FUNÇÕES AUXILIARES
         // ==========================================
+        function showToast(msg, type = 'info', duration = 4000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast ${type}`;
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
         function getProdutoUrl(produto) {
             if (produto.slug) return `/produto/${produto.slug}`;
             const slug = produto.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -669,7 +722,7 @@
             if (navigator.share) {
                 navigator.share({ title: titulo, text: texto, url: url }).catch(() => {});
             } else {
-                navigator.clipboard.writeText(url).then(() => alert('🔗 Link copiado! Compartilhe com seus amigos.')).catch(() => prompt('Copie o link do produto:', url));
+                navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copiado!', 'success')).catch(() => prompt('Copie o link do produto:', url));
             }
         }
 
@@ -793,6 +846,7 @@
             if (!prod) return;
             carrinho.push(prod);
             atualizarCarrinho();
+            showToast(`${prod.nome} adicionado ao carrinho!`, 'success', 2500);
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
         }
@@ -952,21 +1006,19 @@
             let tentativas = 0;
             const maxTentativas = 60;
             
+            showToast('⏳ Aguardando confirmação do pagamento...', 'info', 30000);
+            
             const verificar = setInterval(async () => {
                 tentativas++;
-                
                 try {
                     const response = await fetch(`${API_URL}/api/pedidos/${pedidoId}/status`);
                     const data = await response.json();
-                    
                     if (data.status === 'pago') {
                         clearInterval(verificar);
-                        window.location.href = `/success?pedido=${pedidoId}&total=${data.total}`;
+                        showToast('✅ Pagamento confirmado! Redirecionando...', 'success', 5000);
+                        setTimeout(() => window.location.href = `/success?pedido=${pedidoId}&total=${data.total}`, 1500);
                     }
-                } catch (err) {
-                    console.log('Aguardando confirmação do pagamento...');
-                }
-                
+                } catch (err) { /* continua tentando */ }
                 if (tentativas >= maxTentativas) {
                     clearInterval(verificar);
                     if (confirm('⏳ O pagamento ainda está sendo processado. Deseja verificar o status do seu pedido?')) {
@@ -974,6 +1026,51 @@
                     }
                 }
             }, 5000);
+        }
+
+        // ==========================================
+        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO
+        // ==========================================
+        async function detectarBandeira(bin) {
+            try {
+                const response = await fetch(`https://api.mercadopago.com/v1/payment_methods?public_key=${mp.getPublicKey()}`);
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    // Filtrar métodos de pagamento que são cartões de crédito
+                    const creditCards = data.filter(m => m.payment_type_id === 'credit_card');
+                    
+                    // Para cada bandeira, verificar se o BIN corresponde
+                    for (const card of creditCards) {
+                        if (card.bin && bin.startsWith(card.bin)) {
+                            console.log('💳 Bandeira detectada via API:', card.id);
+                            return card.id;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ Erro ao detectar bandeira via API:', err);
+            }
+            
+            // Fallback: detectar por padrões conhecidos
+            const patterns = {
+                'visa': /^4/,
+                'master': /^5[1-5]/,
+                'amex': /^3[47]/,
+                'elo': /^(4011|4312|4389|4514|4573|5041|5067|5090|6277|6362|6363|6504|6505|6506|6507|6508|6509|6516|6550)/,
+                'hipercard': /^(3841|6062)/,
+                'aura': /^50[0-9]/,
+                'diners': /^3(0[0-5]|[68])/
+            };
+            
+            for (const [bandeira, regex] of Object.entries(patterns)) {
+                if (regex.test(bin)) {
+                    console.log('💳 Bandeira detectada por padrão:', bandeira);
+                    return bandeira;
+                }
+            }
+            
+            return 'visa'; // Fallback padrão
         }
 
         // ==========================================
@@ -999,16 +1096,17 @@
                 console.log('📝 Dados do cliente:', { nome, email, cep, numero, cpf });
 
                 if (!nome || !email || !cep || !numero) {
-                    alert("Preencha todos os dados de entrega!");
+                    showToast('❌ Preencha todos os dados de entrega!', 'error');
                     console.warn('⚠️ Dados de entrega incompletos');
                     return;
                 }
 
                 // ==========================================
-                // SE FOR CARTÃO, GERAR TOKEN
+                // SE FOR CARTÃO, GERAR TOKEN E DETECTAR BANDEIRA
                 // ==========================================
                 let cardToken = null;
                 let parcelas = 1;
+                let paymentMethodId = null;
 
                 if (metodoSelecionado === 'cartao') {
                     console.log('💳 === PROCESSANDO CARTÃO ===');
@@ -1025,13 +1123,35 @@
                     console.log('🔐 CVV:', cardCvv);
 
                     if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
-                        alert("Preencha todos os dados do cartão!");
+                        showToast('❌ Preencha todos os dados do cartão!', 'error');
                         console.warn('⚠️ Dados do cartão incompletos');
+                        return;
+                    }
+
+                    if (cardNum.length < 13) {
+                        showToast('❌ Número do cartão inválido!', 'error');
                         return;
                     }
 
                     parcelas = parseInt(parcelasSelect) || 1;
                     console.log('📦 Parcelas:', parcelas);
+
+                    // DETECTAR BANDEIRA PELO BIN (6 primeiros dígitos)
+                    const bin = cardNum.slice(0, 6);
+                    console.log('🔍 BIN detectado:', bin);
+                    
+                    try {
+                        paymentMethodId = await detectarBandeira(bin);
+                        console.log('💳 Bandeira detectada:', paymentMethodId);
+                    } catch (err) {
+                        console.warn('⚠️ Erro ao detectar bandeira, usando fallback:', err);
+                        paymentMethodId = 'visa';
+                    }
+
+                    if (!paymentMethodId) {
+                        showToast('❌ Não foi possível identificar a bandeira do cartão. Verifique o número.', 'error');
+                        return;
+                    }
 
                     const cardData = {
                         cardNumber: cardNum,
@@ -1046,8 +1166,17 @@
                     console.log('📤 Enviando dados para criar token...');
 
                     try {
-                        const tokenResponse = await mp.createCardToken(cardData);
-                        console.log('✅ Resposta do createCardToken:', tokenResponse);
+                        const tokenResponse = await new Promise((resolve, reject) => {
+                            mp.createCardToken(cardData, (error, response) => {
+                                if (error) {
+                                    console.error('❌ Erro no createCardToken:', error);
+                                    reject(error);
+                                } else {
+                                    console.log('✅ Resposta do createCardToken:', response);
+                                    resolve(response);
+                                }
+                            });
+                        });
 
                         if (!tokenResponse || !tokenResponse.id) {
                             throw new Error('Token não retornado pelo Mercado Pago');
@@ -1055,6 +1184,8 @@
 
                         cardToken = tokenResponse.id;
                         console.log('✅ Token do cartão gerado:', cardToken);
+                        console.log('💳 Bandeira final:', paymentMethodId);
+                        
                     } catch (error) {
                         console.error('❌ Erro ao gerar token:', error);
                         let msg = 'Erro ao gerar token do cartão. Verifique os dados e tente novamente.';
@@ -1065,8 +1196,9 @@
                             else if (code === '326') msg = 'Ano de validade inválido.';
                             else if (code === '327') msg = 'Nome do titular inválido.';
                             else if (code === '328') msg = 'CVV inválido.';
+                            else if (code === '329') msg = 'Bandeira do cartão não suportada.';
                         }
-                        alert('❌ ' + msg);
+                        showToast('❌ ' + msg, 'error', 5000);
                         return;
                     }
                 }
@@ -1094,15 +1226,16 @@
                     metodoPagamento: metodoSelecionado,
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
                         parcelas: parcelas,
-                        token: cardToken
+                        token: cardToken,
+                        paymentMethodId: paymentMethodId  // 👈 BANDEIRA DETECTADA
                     } : null
                 };
 
-                console.log('📤 Payload enviado:', payload);
+                console.log('📤 Payload enviado:', JSON.stringify(payload, null, 2));
 
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
-                btnText.innerText = "Processando...";
+                btnText.innerHTML = '<span class="spinner"></span> Processando...';
                 btnFinalizar.disabled = true;
 
                 const response = await fetch(`${API_URL}/api/checkout`, {
@@ -1121,22 +1254,22 @@
                         document.getElementById('pix-modal').classList.remove('hidden');
                         iniciarVerificacaoPagamento(resData.idPedido);
                     } else {
-                        alert("✅ Pagamento aprovado!");
-                        fecharModalPix();
+                        showToast('✅ Pagamento aprovado!', 'success');
+                        setTimeout(() => window.location.href = `/success?pedido=${resData.idPedido}`, 2000);
                     }
                     carrinho = [];
                     atualizarCarrinho();
                 } else {
-                    alert("❌ " + resData.mensagem);
+                    showToast('❌ ' + resData.mensagem, 'error', 5000);
                 }
 
                 btnFinalizar.disabled = false;
-                selecionarMetodo(metodoSelecionado);
+                btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real' : 'Confirmar e Pagar com Cartão';
             } catch (err) {
                 console.error('❌ ERRO GERAL:', err);
-                alert("❌ Erro ao processar pagamento. Verifique o console para mais detalhes.");
+                showToast('❌ Erro ao processar pagamento. Tente novamente.', 'error', 5000);
                 document.getElementById('btn-finalizar').disabled = false;
-                selecionarMetodo(metodoSelecionado);
+                document.getElementById('btn-text').textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real' : 'Confirmar e Pagar com Cartão';
             }
             console.log('🔄 === FIM processarPagamento ===');
         }
@@ -1146,7 +1279,7 @@
             input.select();
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value);
-            alert("Código Pix copiado!");
+            showToast('✅ Código Pix copiado!', 'success');
         }
 
         function fecharModalPix() {
@@ -1176,6 +1309,12 @@
             } else { this.value = value; }
         });
 
+        document.getElementById('card-cvv').addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            this.value = value;
+        });
+
         // ==========================================
         // INICIAR LOJA
         // ==========================================
@@ -1185,6 +1324,7 @@
             console.log('🚀 Voltz Gear carregada!');
             console.log('📡 Backend URL:', API_URL);
             console.log('🛒 Produtos disponíveis:', produtos.length);
+            selecionarMetodo('pix');
         });
 
         function mostrarPagina(pagina) {

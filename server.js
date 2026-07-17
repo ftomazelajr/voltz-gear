@@ -1,4 +1,4 @@
-// server.js - Voltz Gear - VERSÃO COMPLETA
+// server.js - Voltz Gear - VERSÃO COMPLETA CORRIGIDA
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -359,10 +359,6 @@ function gerarAssinaturaAliExpress(params, secret) {
 // ==========================================
 async function obterPaymentMethodId(token, bin) {
     try {
-        const response = await axios.get('https://api.mercadopago.com/v1/payment_methods', {
-            headers: { 'Authorization': `Bearer ${token}` },
-            timeout: 10000
-        });
         // Tenta identificar a bandeira pelos primeiros dígitos
         const firstDigit = bin.charAt(0);
         const firstTwo   = bin.substring(0, 2);
@@ -378,10 +374,27 @@ async function obterPaymentMethodId(token, bin) {
         if (firstTwo === '50' || ['60','63','67'].includes(firstTwo)) return 'elo';
         if (firstTwo === '62') return 'hipercard';
 
-        return 'credit_card'; // fallback genérico
+        // Se não conseguir identificar, tenta via API do Mercado Pago
+        const response = await axios.get('https://api.mercadopago.com/v1/payment_methods', {
+            headers: { 'Authorization': `Bearer ${token}` },
+            timeout: 10000
+        });
+
+        if (response.data && response.data.length > 0) {
+            const creditCards = response.data.filter(m => m.payment_type_id === 'credit_card');
+            for (const card of creditCards) {
+                if (card.bin && bin.startsWith(card.bin)) {
+                    console.log(`💳 Bandeira detectada via API: ${card.id}`);
+                    return card.id;
+                }
+            }
+        }
+
+        console.warn('⚠️ Não foi possível identificar bandeira, usando "visa" como fallback');
+        return 'visa';
     } catch (err) {
-        console.warn('⚠️ Não foi possível identificar bandeira, usando "credit_card":', err.message);
-        return 'credit_card';
+        console.warn('⚠️ Erro ao identificar bandeira, usando "visa" como fallback:', err.message);
+        return 'visa';
     }
 }
 
@@ -496,19 +509,42 @@ app.post('/api/checkout', async (req, res) => {
 
         const cardToken  = detalhesCartao.token;
         const installments = parseInt(detalhesCartao.parcelas) || 1;
-        const bin          = detalhesCartao.bin || detalhesCartao.primeirosSeis || '';
 
-        console.log(`🃏 Token do cartão recebido: ${cardToken}`);
-        console.log(`📦 Parcelas: ${installments}x`);
-        console.log(`🔢 BIN: ${bin}`);
+        // ==========================================
+        // CORREÇÃO: USAR paymentMethodId DO FRONTEND
+        // ==========================================
+        let paymentMethodId = detalhesCartao.paymentMethodId;
 
-        // Descobre a bandeira pelo BIN
-        const paymentMethodId = detalhesCartao.paymentMethodId
-            || await obterPaymentMethodId(token, bin);
+        // Se o frontend não enviou, tenta detectar pelo BIN
+        if (!paymentMethodId) {
+            const bin = detalhesCartao.bin || detalhesCartao.primeirosSeis || '';
+            console.log(`🔢 BIN para detecção: ${bin}`);
+            
+            if (bin && bin.length >= 6) {
+                paymentMethodId = await obterPaymentMethodId(token, bin);
+            } else {
+                // Fallback: tenta extrair do número do cartão se disponível
+                const cardNumber = detalhesCartao.cardNumber || '';
+                if (cardNumber && cardNumber.length >= 6) {
+                    const binFromCard = cardNumber.replace(/\D/g, '').slice(0, 6);
+                    paymentMethodId = await obterPaymentMethodId(token, binFromCard);
+                } else {
+                    paymentMethodId = 'visa'; // Fallback final
+                }
+            }
+        }
 
         console.log(`💳 Bandeira identificada: ${paymentMethodId}`);
 
-        // Adiciona campos obrigatórios para cartão
+        // Validação: se ainda não tiver bandeira, usa fallback
+        if (!paymentMethodId) {
+            paymentMethodId = 'visa';
+            console.warn('⚠️ Usando "visa" como fallback');
+        }
+
+        // ==========================================
+        // CORREÇÃO: Adicionar token no paymentData
+        // ==========================================
         paymentData.payment_method_id = paymentMethodId;
         paymentData.token             = cardToken;           // ← BUG CORRIGIDO: token do cartão
         paymentData.installments      = installments;
@@ -519,6 +555,7 @@ app.post('/api/checkout', async (req, res) => {
         }
 
         console.log('📤 Enviando CARTÃO para o Mercado Pago...');
+        console.log('📦 paymentData:', JSON.stringify(paymentData, null, 2));
 
         const API_URL = isTestMode
             ? 'https://api.mercadopago.com/sandbox/v1/payments'
@@ -539,7 +576,9 @@ app.post('/api/checkout', async (req, res) => {
             idPedido, status: pResponse.status || 'pendente',
             cliente, endereco, itens, total: valorTotal,
             metodoPagamento: 'cartao', mercadoPagoId: pResponse.id,
-            modoTeste: isTestMode, data: new Date().toISOString(), enviadoAliExpress: false
+            modoTeste: isTestMode, data: new Date().toISOString(), enviadoAliExpress: false,
+            bandeira: paymentMethodId,
+            parcelas: installments
         };
         const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
         pedidos.push(novoPedido);
@@ -552,7 +591,9 @@ app.post('/api/checkout', async (req, res) => {
             sucesso: true, idPedido, total: valorTotal,
             metodoPagamento: 'cartao', modoTeste: isTestMode,
             status: pResponse.status,
-            statusDetail: pResponse.status_detail
+            statusDetail: pResponse.status_detail,
+            bandeira: paymentMethodId,
+            parcelas: installments
         });
 
     } catch (error) {
@@ -575,6 +616,7 @@ app.post('/api/checkout', async (req, res) => {
                     else if (codes.includes('2002')) mensagem = '❌ Número do cartão inválido.';
                     else if (codes.includes('2003')) mensagem = '❌ Data de validade inválida.';
                     else if (codes.includes('2004')) mensagem = '❌ CVV inválido.';
+                    else if (codes.includes('329')) mensagem = '❌ Bandeira do cartão não suportada. Tente outro cartão.';
                     else mensagem = '❌ Dados inválidos: ' + (error.response.data?.message || JSON.stringify(codes));
                 } else {
                     mensagem = '❌ Dados inválidos: ' + (error.response.data?.message || '');
