@@ -1046,23 +1046,27 @@
                     console.log('📤 Enviando dados para criar token...');
 
                     try {
-                        const tokenResponse = await new Promise((resolve, reject) => {
-                            mp.createCardToken(cardData, (error, response) => {
-                                if (error) {
-                                    console.error('❌ Erro no createCardToken:', error);
-                                    reject(error);
-                                } else {
-                                    console.log('✅ Resposta do createCardToken:', response);
-                                    resolve(response);
-                                }
-                            });
-                        });
+                        const tokenResponse = await mp.createCardToken(cardData);
+                        console.log('✅ Resposta do createCardToken:', tokenResponse);
+
+                        if (!tokenResponse || !tokenResponse.id) {
+                            throw new Error('Token não retornado pelo Mercado Pago');
+                        }
 
                         cardToken = tokenResponse.id;
                         console.log('✅ Token do cartão gerado:', cardToken);
                     } catch (error) {
                         console.error('❌ Erro ao gerar token:', error);
-                        alert('❌ Erro ao gerar token do cartão: ' + (error.message || 'Tente novamente'));
+                        let msg = 'Erro ao gerar token do cartão. Verifique os dados e tente novamente.';
+                        if (error.cause && error.cause.length > 0) {
+                            const code = error.cause[0].code;
+                            if (code === '324') msg = 'Número do cartão inválido.';
+                            else if (code === '325') msg = 'Mês de validade inválido.';
+                            else if (code === '326') msg = 'Ano de validade inválido.';
+                            else if (code === '327') msg = 'Nome do titular inválido.';
+                            else if (code === '328') msg = 'CVV inválido.';
+                        }
+                        alert('❌ ' + msg);
                         return;
                     }
                 }
@@ -1204,4 +1208,4 @@
     </script>
 
 </body>
-</html>
+</html> corrija esse arquivo para finalizar compra com cartão no mp na minha loja não altere nada so resolva
