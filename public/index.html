@@ -1029,18 +1029,31 @@
         }
 
         // ==========================================
-        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO
+        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO (CORRIGIDA)
         // ==========================================
         async function detectarBandeira(bin) {
+            // Se não tiver BIN, retorna fallback
+            if (!bin || bin.length < 6) {
+                console.warn('⚠️ BIN inválido, usando "visa" como fallback');
+                return 'visa';
+            }
+
             try {
-                const response = await fetch(`https://api.mercadopago.com/v1/payment_methods?public_key=${mp.getPublicKey()}`);
+                // Usar a Public Key diretamente na URL
+                const publicKey = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
+                const response = await fetch(`https://api.mercadopago.com/v1/payment_methods?public_key=${publicKey}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
-                if (data && data.length > 0) {
-                    // Filtrar métodos de pagamento que são cartões de crédito
+                if (data && Array.isArray(data) && data.length > 0) {
+                    // Filtrar apenas cartões de crédito
                     const creditCards = data.filter(m => m.payment_type_id === 'credit_card');
                     
-                    // Para cada bandeira, verificar se o BIN corresponde
+                    // Verificar se o BIN corresponde a alguma bandeira
                     for (const card of creditCards) {
                         if (card.bin && bin.startsWith(card.bin)) {
                             console.log('💳 Bandeira detectada via API:', card.id);
@@ -1049,10 +1062,12 @@
                     }
                 }
             } catch (err) {
-                console.warn('⚠️ Erro ao detectar bandeira via API:', err);
+                console.warn('⚠️ Erro ao detectar bandeira via API:', err.message);
             }
             
-            // Fallback: detectar por padrões conhecidos
+            // ==========================================
+            // FALLBACK: Detectar por padrões conhecidos
+            // ==========================================
             const patterns = {
                 'visa': /^4/,
                 'master': /^5[1-5]/,
@@ -1060,7 +1075,11 @@
                 'elo': /^(4011|4312|4389|4514|4573|5041|5067|5090|6277|6362|6363|6504|6505|6506|6507|6508|6509|6516|6550)/,
                 'hipercard': /^(3841|6062)/,
                 'aura': /^50[0-9]/,
-                'diners': /^3(0[0-5]|[68])/
+                'diners': /^3(0[0-5]|[68])/,
+                'discover': /^(6011|622[1-9]|64[4-9]|65)/,
+                'jcb': /^(35[2-8]|2131|1800)/,
+                'maestro': /^(5018|5020|5038|5893|6304|6759|6761|6762|6763|676[0-9])/,
+                'hiper': /^637095|637568|637599|637609|637612/
             };
             
             for (const [bandeira, regex] of Object.entries(patterns)) {
@@ -1070,7 +1089,9 @@
                 }
             }
             
-            return 'visa'; // Fallback padrão
+            // Fallback final
+            console.warn('⚠️ Bandeira não identificada, usando "visa" como fallback');
+            return 'visa';
         }
 
         // ==========================================
