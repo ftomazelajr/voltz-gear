@@ -580,7 +580,7 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
         const { data, type } = req.body;
         
         if (type === 'payment' || type === 'payment.legacy' || type === 'payment') {
-            const paymentId = data.id;
+            const paymentId = data.id; // ← STRING
             console.log(`🔍 Buscando pagamento ID: ${paymentId}`);
             
             const response = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
@@ -591,37 +591,42 @@ app.post('/api/webhook/mercadopago', async (req, res) => {
             
             const payment = response.data;
             console.log(`📊 Status do pagamento: ${payment.status}`);
-            console.log(`🔍 MercadoPagoId: ${paymentId}`);
+            console.log(`🔍 MercadoPagoId (webhook): ${paymentId}`);
             
-            // LISTA TODOS OS PEDIDOS PARA DEBUG
             const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
             console.log(`📋 Total de pedidos salvos: ${pedidos.length}`);
-            console.log(`📋 IDs dos pedidos: ${pedidos.map(p => p.mercadoPagoId).join(', ')}`);
+            
+            // 🔧 CORREÇÃO: Comparação flexível (string e número)
+            const pedido = pedidos.find(p => {
+                const mpId = p.mercadoPagoId?.toString();
+                const wpId = paymentId?.toString();
+                console.log(`🔍 Comparando: mpId=${mpId} === wpId=${wpId} => ${mpId === wpId}`);
+                return mpId === wpId;
+            });
             
             if (payment.status === 'approved') {
-                const pedido = pedidos.find(p => p.mercadoPagoId === paymentId);
-                
                 if (pedido) {
                     pedido.status = 'pago';
                     pedido.dataPagamento = new Date().toISOString();
                     fs.writeFileSync(PEDIDOS_FILE, JSON.stringify(pedidos, null, 2));
                     console.log(`✅ Pedido ${pedido.idPedido} foi pago!`);
+                    
+                    // ENVIA E-MAIL DE CONFIRMAÇÃO DE PAGAMENTO
+                    // await enviarEmailPagamentoConfirmado(pedido);
                 } else {
                     console.log(`❌ Pedido com mercadoPagoId ${paymentId} NÃO ENCONTRADO!`);
-                    console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ id: p.idPedido, mpId: p.mercadoPagoId })));
+                    console.log(`🔍 Pedidos salvos:`, pedidos.map(p => ({ 
+                        id: p.idPedido, 
+                        mpId: p.mercadoPagoId,
+                        tipo: typeof p.mercadoPagoId 
+                    })));
                 }
-            } else {
-                console.log(`⏳ Pagamento ainda não aprovado. Status: ${payment.status}`);
             }
         }
         
         res.status(200).json({ sucesso: true });
     } catch (error) {
         console.error('❌ Erro no webhook:', error.message);
-        if (error.response) {
-            console.error('📦 Status:', error.response.status);
-            console.error('📦 Dados:', JSON.stringify(error.response.data, null, 2));
-        }
         res.status(500).json({ sucesso: false, erro: error.message });
     }
 });
