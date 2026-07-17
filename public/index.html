@@ -6,7 +6,7 @@
     <title>Voltz Gear | Tech Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SDK DO MERCADO PAGO -->
+    <!-- SDK DO MERCADO PAGO (mantida apenas para compatibilidade) -->
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <style>
         * { box-sizing: border-box; }
@@ -585,14 +585,50 @@
         // CONFIGURAÇÃO
         // ==========================================
         const API_URL = 'https://voltzgear.com';
+        const PUBLIC_KEY = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
 
         // ==========================================
-        // INICIALIZAR MERCADO PAGO SDK
+        // INICIALIZAR MERCADO PAGO SDK (apenas para referência)
         // ==========================================
-        const mp = new MercadoPago('APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3', {
+        const mp = new MercadoPago(PUBLIC_KEY, {
             locale: 'pt-BR'
         });
-        console.log('✅ Mercado Pago SDK inicializado!');
+        console.log('✅ Mercado Pago SDK inicializada (modo compatibilidade)');
+
+        // ==========================================
+        // FUNÇÃO PARA CRIAR TOKEN VIA API REST (CORRIGIDA)
+        // ==========================================
+        async function criarTokenViaAPI(cardData) {
+            const apiData = {
+                card_number: cardData.cardNumber,
+                cardholder_name: cardData.cardholderName,
+                expiration_month: parseInt(cardData.cardExpirationMonth),
+                expiration_year: parseInt(cardData.cardExpirationYear),
+                security_code: cardData.securityCode,
+                identification_type: cardData.identificationType || 'CPF',
+                identification_number: cardData.identificationNumber
+            };
+
+            console.log('📤 Enviando para API REST:', JSON.stringify(apiData, null, 2));
+
+            const response = await fetch(`https://api.mercadopago.com/v1/card_tokens?public_key=${PUBLIC_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(apiData)
+            });
+
+            const data = await response.json();
+            console.log('📥 Resposta da API:', data);
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erro ao criar token');
+            }
+
+            console.log('✅ Token criado via API REST:', data.id);
+            return data.id;
+        }
 
         // ==========================================
         // BANCO DE DADOS DE PRODUTOS
@@ -1029,19 +1065,16 @@
         }
 
         // ==========================================
-        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO (CORRIGIDA)
+        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO
         // ==========================================
         async function detectarBandeira(bin) {
-            // Se não tiver BIN, retorna fallback
             if (!bin || bin.length < 6) {
                 console.warn('⚠️ BIN inválido, usando "visa" como fallback');
                 return 'visa';
             }
 
             try {
-                // Usar a Public Key diretamente na URL
-                const publicKey = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
-                const response = await fetch(`https://api.mercadopago.com/v1/payment_methods?public_key=${publicKey}`);
+                const response = await fetch(`https://api.mercadopago.com/v1/payment_methods?public_key=${PUBLIC_KEY}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
@@ -1050,10 +1083,7 @@
                 const data = await response.json();
                 
                 if (data && Array.isArray(data) && data.length > 0) {
-                    // Filtrar apenas cartões de crédito
                     const creditCards = data.filter(m => m.payment_type_id === 'credit_card');
-                    
-                    // Verificar se o BIN corresponde a alguma bandeira
                     for (const card of creditCards) {
                         if (card.bin && bin.startsWith(card.bin)) {
                             console.log('💳 Bandeira detectada via API:', card.id);
@@ -1065,9 +1095,6 @@
                 console.warn('⚠️ Erro ao detectar bandeira via API:', err.message);
             }
             
-            // ==========================================
-            // FALLBACK: Detectar por padrões conhecidos
-            // ==========================================
             const patterns = {
                 'visa': /^4/,
                 'master': /^5[1-5]/,
@@ -1089,13 +1116,12 @@
                 }
             }
             
-            // Fallback final
             console.warn('⚠️ Bandeira não identificada, usando "visa" como fallback');
             return 'visa';
         }
 
         // ==========================================
-        // FUNÇÃO PRINCIPAL DE PAGAMENTO (CORRIGIDA)
+        // FUNÇÃO PRINCIPAL DE PAGAMENTO (CORRIGIDA - USA API REST)
         // ==========================================
         async function processarPagamento() {
             console.log('🔄 === INICIO processarPagamento ===');
@@ -1123,7 +1149,7 @@
                 }
 
                 // ==========================================
-                // SE FOR CARTÃO, GERAR TOKEN E DETECTAR BANDEIRA
+                // SE FOR CARTÃO, GERAR TOKEN VIA API REST
                 // ==========================================
                 let cardToken = null;
                 let parcelas = 1;
@@ -1157,7 +1183,6 @@
                     parcelas = parseInt(parcelasSelect) || 1;
                     console.log('📦 Parcelas:', parcelas);
 
-                    // DETECTAR BANDEIRA PELO BIN (6 primeiros dígitos)
                     const bin = cardNum.slice(0, 6);
                     console.log('🔍 BIN detectado:', bin);
                     
@@ -1174,51 +1199,36 @@
                         return;
                     }
 
+                    const [mes, ano] = cardValidade.split('/');
+                    if (!mes || !ano || mes.length !== 2 || ano.length !== 2) {
+                        showToast('❌ Data de validade inválida (use MM/AA)!', 'error');
+                        return;
+                    }
+
                     const cardData = {
                         cardNumber: cardNum,
                         cardholderName: cardNome,
-                        cardExpirationMonth: cardValidade.split('/')[0],
-                        cardExpirationYear: '20' + cardValidade.split('/')[1],
+                        cardExpirationMonth: mes,
+                        cardExpirationYear: '20' + ano,
                         securityCode: cardCvv,
                         identificationType: 'CPF',
                         identificationNumber: cpf || '00000000000'
                     };
 
-                    console.log('📤 Enviando dados para criar token...');
+                    console.log('📤 Enviando dados para criar token via API REST...');
 
                     try {
-                        const tokenResponse = await new Promise((resolve, reject) => {
-                            mp.createCardToken(cardData, (error, response) => {
-                                if (error) {
-                                    console.error('❌ Erro no createCardToken:', error);
-                                    reject(error);
-                                } else {
-                                    console.log('✅ Resposta do createCardToken:', response);
-                                    resolve(response);
-                                }
-                            });
-                        });
-
-                        if (!tokenResponse || !tokenResponse.id) {
-                            throw new Error('Token não retornado pelo Mercado Pago');
-                        }
-
-                        cardToken = tokenResponse.id;
+                        // ==========================================
+                        // USAR API REST EM VEZ DA SDK
+                        // ==========================================
+                        cardToken = await criarTokenViaAPI(cardData);
                         console.log('✅ Token do cartão gerado:', cardToken);
                         console.log('💳 Bandeira final:', paymentMethodId);
                         
                     } catch (error) {
                         console.error('❌ Erro ao gerar token:', error);
                         let msg = 'Erro ao gerar token do cartão. Verifique os dados e tente novamente.';
-                        if (error.cause && error.cause.length > 0) {
-                            const code = error.cause[0].code;
-                            if (code === '324') msg = 'Número do cartão inválido.';
-                            else if (code === '325') msg = 'Mês de validade inválido.';
-                            else if (code === '326') msg = 'Ano de validade inválido.';
-                            else if (code === '327') msg = 'Nome do titular inválido.';
-                            else if (code === '328') msg = 'CVV inválido.';
-                            else if (code === '329') msg = 'Bandeira do cartão não suportada.';
-                        }
+                        if (error.message) msg = error.message;
                         showToast('❌ ' + msg, 'error', 5000);
                         return;
                     }
@@ -1248,7 +1258,7 @@
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
                         parcelas: parcelas,
                         token: cardToken,
-                        paymentMethodId: paymentMethodId  // 👈 BANDEIRA DETECTADA
+                        paymentMethodId: paymentMethodId
                     } : null
                 };
 
