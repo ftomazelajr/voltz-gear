@@ -6,6 +6,8 @@
     <title>Voltz Gear | Tech Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SDK DO MERCADO PAGO -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -422,7 +424,6 @@
                     <input type="text" id="cli-cep" placeholder="CEP" onblur="buscarCEP()" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                     <input type="text" id="cli-numero" placeholder="Número" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
-                <!-- 🆕 CAMPO CPF ADICIONADO -->
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="cli-cpf" placeholder="CPF (apenas números)" maxlength="14" oninput="mascaraCPF(this)" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
@@ -538,8 +539,22 @@
 
     <!-- SCRIPTS -->
     <script>
+        // ==========================================
+        // CONFIGURAÇÃO
+        // ==========================================
         const API_URL = 'https://voltzgear.com';
 
+        // ==========================================
+        // INICIALIZAR MERCADO PAGO SDK
+        // ==========================================
+        const mp = new MercadoPago('APP_USR-5406807602347319-071513-4aaf964edc51fdf70ae4b58d02f94e9a', {
+            locale: 'pt-BR'
+        });
+        console.log('✅ Mercado Pago SDK inicializado!');
+
+        // ==========================================
+        // BANCO DE DADOS DE PRODUTOS
+        // ==========================================
         const produtos = [
             { 
                 id: 1, 
@@ -604,6 +619,9 @@
         let slideIndex = 0;
         let carrosselInterval = null;
 
+        // ==========================================
+        // FUNÇÕES DO SISTEMA
+        // ==========================================
         function getProdutoUrl(produto) {
             if (produto.slug) return `/produto/${produto.slug}`;
             const slug = produto.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -656,7 +674,6 @@
             }
         }
 
-        // 🆕 MÁSCARA DE CPF
         function mascaraCPF(input) {
             let value = input.value.replace(/\D/g, '');
             if (value.length > 11) value = value.slice(0, 11);
@@ -770,6 +787,7 @@
         }
 
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
+
         function adicionarAoCarrinho(id) {
             if (!id) return;
             const prod = produtos.find(p => p.id === id);
@@ -779,6 +797,7 @@
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
         }
+
         function removerDoCarrinho(index) { carrinho.splice(index, 1); atualizarCarrinho(); }
 
         function atualizarCarrinho() {
@@ -924,15 +943,15 @@
             const query = document.getElementById('search-input').value.toLowerCase();
             renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
         }
+
         function filtrarProdutosMobile() {
             const query = document.getElementById('search-input-mobile').value.toLowerCase();
             renderProdutos(produtos.filter(p => p.nome.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query)));
         }
 
-        // 🆕 FUNÇÃO PARA VERIFICAR STATUS DO PAGAMENTO
         function iniciarVerificacaoPagamento(pedidoId) {
             let tentativas = 0;
-            const maxTentativas = 60; // 60 tentativas = 5 minutos
+            const maxTentativas = 60;
             
             const verificar = setInterval(async () => {
                 tentativas++;
@@ -943,7 +962,6 @@
                     
                     if (data.status === 'pago') {
                         clearInterval(verificar);
-                        // Redireciona para a página de sucesso
                         window.location.href = `/success?pedido=${pedidoId}&total=${data.total}`;
                     }
                 } catch (err) {
@@ -952,14 +970,16 @@
                 
                 if (tentativas >= maxTentativas) {
                     clearInterval(verificar);
-                    // Se passou 5 minutos, oferece a opção
                     if (confirm('⏳ O pagamento ainda está sendo processado. Deseja verificar o status do seu pedido?')) {
                         window.location.href = `/success?pedido=${pedidoId}`;
                     }
                 }
-            }, 5000); // Verifica a cada 5 segundos
+            }, 5000);
         }
 
+        // ==========================================
+        // FUNÇÃO PRINCIPAL DE PAGAMENTO
+        // ==========================================
         async function processarPagamento() {
             const nome = document.getElementById('cli-nome').value;
             const email = document.getElementById('cli-email').value;
@@ -971,56 +991,109 @@
             const bairro = document.getElementById('cli-bairro').value;
             const cidade = document.getElementById('cli-cidade').value;
             const estado = document.getElementById('cli-estado').value;
-            
-            if (!nome || !email || !cep || !numero) { alert("Preencha todos os dados de entrega!"); return; }
-            
+
+            if (!nome || !email || !cep || !numero) {
+                alert("Preencha todos os dados de entrega!");
+                return;
+            }
+
+            // ==========================================
+            // SE FOR CARTÃO, GERAR TOKEN
+            // ==========================================
+            let cardToken = null;
+            let parcelas = 1;
+
             if (metodoSelecionado === 'cartao') {
-                const cardNum = document.getElementById('card-num').value;
+                const cardNum = document.getElementById('card-num').value.replace(/\D/g, '');
                 const cardNome = document.getElementById('card-nome').value;
                 const cardValidade = document.getElementById('card-validade').value;
                 const cardCvv = document.getElementById('card-cvv').value;
-                if (!cardNum || !cardNome || !cardValidade || !cardCvv) { alert("Preencha todos os dados do cartão!"); return; }
+                const parcelasSelect = document.getElementById('card-parcelas').value;
+
+                if (!cardNum || !cardNome || !cardValidade || !cardCvv) {
+                    alert("Preencha todos os dados do cartão!");
+                    return;
+                }
+
+                parcelas = parseInt(parcelasSelect) || 1;
+
+                // DADOS DO CARTÃO PARA O MERCADO PAGO
+                const cardData = {
+                    cardNumber: cardNum,
+                    cardholderName: cardNome,
+                    cardExpirationMonth: cardValidade.split('/')[0],
+                    cardExpirationYear: '20' + cardValidade.split('/')[1],
+                    securityCode: cardCvv,
+                    identificationType: 'CPF',
+                    identificationNumber: cpf || '00000000000'
+                };
+
+                try {
+                    // GERA O TOKEN DO CARTÃO
+                    const tokenResponse = await new Promise((resolve, reject) => {
+                        mp.createCardToken(cardData, (error, response) => {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                resolve(response);
+                            }
+                        });
+                    });
+
+                    cardToken = tokenResponse.id;
+                    console.log('✅ Token do cartão gerado:', cardToken);
+                } catch (error) {
+                    alert('❌ Erro ao gerar token do cartão: ' + (error.message || 'Tente novamente'));
+                    console.error(error);
+                    return;
+                }
             }
-            
+
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const frete = subtotal >= 199 ? 0 : 1.90;
             const total = subtotal + frete;
-            
+
             const payload = {
-                cliente: { 
-                    nome, 
-                    email, 
-                    whatsapp, 
+                cliente: {
+                    nome,
+                    email,
+                    whatsapp,
                     cpf: cpf || "00000000000"
                 },
                 endereco: { cep, numero, rua, bairro, cidade, estado },
-                itens: carrinho.map(item => ({ id: item.id, nome: item.nome, preco: item.preco, aliexpressId: item.aliexpressId })),
+                itens: carrinho.map(item => ({
+                    id: item.id,
+                    nome: item.nome,
+                    preco: item.preco,
+                    aliexpressId: item.aliexpressId
+                })),
                 total: total.toFixed(2),
                 metodoPagamento: metodoSelecionado,
-                detalhesCartao: metodoSelecionado === 'cartao' ? { parcelas: document.getElementById('card-parcelas').value } : null
+                detalhesCartao: metodoSelecionado === 'cartao' ? {
+                    parcelas: parcelas,
+                    token: cardToken
+                } : null
             };
-            
+
             try {
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
                 btnText.innerText = "Processando...";
                 btnFinalizar.disabled = true;
-                
+
                 const response = await fetch(`${API_URL}/api/checkout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
+
                 const resData = await response.json();
-                
+
                 if (resData.sucesso) {
                     if (metodoSelecionado === 'pix') {
                         document.getElementById('pix-qr-img').src = resData.pixQRCode;
                         document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
                         document.getElementById('pix-modal').classList.remove('hidden');
-                        
-                        // 🆕 INICIA VERIFICAÇÃO DO PAGAMENTO
                         iniciarVerificacaoPagamento(resData.idPedido);
                     } else {
                         alert("✅ Pagamento aprovado!");
@@ -1028,10 +1101,10 @@
                     }
                     carrinho = [];
                     atualizarCarrinho();
-                } else { 
-                    alert("❌ " + resData.mensagem); 
+                } else {
+                    alert("❌ " + resData.mensagem);
                 }
-                
+
                 btnFinalizar.disabled = false;
                 selecionarMetodo(metodoSelecionado);
             } catch (err) {
@@ -1055,6 +1128,9 @@
             toggleCart();
         }
 
+        // ==========================================
+        // MÁSCARAS DOS CAMPOS
+        // ==========================================
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 16) value = value.slice(0, 16);
@@ -1074,6 +1150,9 @@
             } else { this.value = value; }
         });
 
+        // ==========================================
+        // INICIAR LOJA
+        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             carregarProdutoPorSlug();
             if (!window.location.pathname.includes('/produto/')) renderProdutos();
