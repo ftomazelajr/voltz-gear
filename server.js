@@ -399,7 +399,7 @@ async function obterPaymentMethodId(token, bin) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO)
+// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO COM CARDHOLDER)
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
@@ -446,6 +446,16 @@ app.post('/api/checkout', async (req, res) => {
                     neighborhood: endereco.bairro  || 'Bairro',
                     city:         endereco.cidade  || 'Cidade',
                     federal_unit: endereco.estado  || 'SP'
+                }
+            },
+            // ==========================================
+            // CORREÇÃO: ADICIONAR CARDHOLDER AQUI!
+            // ==========================================
+            cardholder: {
+                name: cliente.nome || 'Titular do Cartão',
+                identification: {
+                    type: 'CPF',
+                    number: (cliente.cpf || '00000000000').replace(/\D/g, '')
                 }
             }
         };
@@ -548,6 +558,19 @@ app.post('/api/checkout', async (req, res) => {
         paymentData.payment_method_id = paymentMethodId;
         paymentData.token             = cardToken;           // ← BUG CORRIGIDO: token do cartão
         paymentData.installments      = installments;
+
+        // ==========================================
+        // GARANTIR QUE O CARDHOLDER ESTÁ NO PAYMENT DATA
+        // ==========================================
+        if (!paymentData.cardholder) {
+            paymentData.cardholder = {
+                name: cliente.nome || 'Titular do Cartão',
+                identification: {
+                    type: 'CPF',
+                    number: (cliente.cpf || '00000000000').replace(/\D/g, '')
+                }
+            };
+        }
 
         // issuer_id opcional — ajuda o MP a identificar a bandeira
         if (detalhesCartao.issuerId) {
