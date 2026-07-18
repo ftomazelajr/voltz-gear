@@ -1224,13 +1224,25 @@
             document.getElementById('btn-next-step').classList.add('hidden');
             atualizarResumoValores();
             
-            // Atualizar barra de progresso
-            document.querySelector('.checkout-steps .step.done').classList.remove('done');
-            document.querySelector('.checkout-steps .step.active').classList.remove('active');
-            document.querySelectorAll('.checkout-steps .step')[1].classList.add('active');
-            document.querySelectorAll('.checkout-steps .step-line')[1].classList.add('done');
+            // Atualizar barra de progresso - COM VERIFICAÇÃO DE SEGURANÇA
+            const steps = document.querySelectorAll('.checkout-steps .step');
+            const stepLines = document.querySelectorAll('.checkout-steps .step-line');
+            
+            if (steps.length >= 2) {
+                // Remover classes antigas
+                steps.forEach(step => step.classList.remove('done', 'active'));
+                stepLines.forEach(line => line.classList.remove('done'));
+                
+                // Definir estado atual
+                if (steps[0]) { steps[0].classList.add('done'); }
+                if (steps[1]) { steps[1].classList.add('active'); }
+                if (stepLines[0]) { stepLines[0].classList.add('done'); }
+            }
         }
 
+        // ==========================================
+        // FUNÇÃO CORRIGIDA - selecionarMetodo
+        // ==========================================
         function selecionarMetodo(metodo) {
             metodoSelecionado = metodo;
             const btnPix = document.getElementById('btn-metodo-pix');
@@ -1239,9 +1251,22 @@
             const btnText = document.getElementById('btn-text');
             const btnFinalizar = document.getElementById('btn-finalizar');
             
-            // Atualizar barra de progresso
-            document.querySelectorAll('.checkout-steps .step')[2].classList.add('active');
-            document.querySelectorAll('.checkout-steps .step-line')[2].classList.add('done');
+            // ==========================================
+            // CORREÇÃO: Verificar se os elementos existem
+            // ==========================================
+            const steps = document.querySelectorAll('.checkout-steps .step');
+            const stepLines = document.querySelectorAll('.checkout-steps .step-line');
+            
+            // Atualizar barra de progresso para o passo "Pagamento"
+            if (steps.length > 2) {
+                // Remover active de todos
+                steps.forEach(step => step.classList.remove('active'));
+                // Adicionar active no passo 2 (Pagamento)
+                steps[2].classList.add('active');
+            }
+            if (stepLines.length > 2) {
+                stepLines[2].classList.add('done');
+            }
             
             if (metodo === 'pix') {
                 btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
