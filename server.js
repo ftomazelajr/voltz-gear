@@ -399,7 +399,7 @@ async function obterPaymentMethodId(token, bin) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO)
+// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO - ESTRUTURA CORRETA DA API)
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
@@ -542,28 +542,15 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`📦 Parcelas: ${installments}`);
 
         // ==========================================
-        // PAYMENT DATA PARA CARTÃO - COM CARDHOLDER DENTRO DO PAYMENT_METHOD!
+        // PAYMENT DATA PARA CARTÃO - ESTRUTURA CORRETA DA API REST
         // ==========================================
         paymentData.payment_method_id = paymentMethodId;
         paymentData.token = cardToken;
         paymentData.installments = installments;
 
-        // ==========================================
-        // CORREÇÃO: CARDHOLDER DENTRO DO PAYMENT_METHOD
-        // ==========================================
-        paymentData.payment_method = {
-            id: paymentMethodId,
-            type: 'credit_card'
-        };
-
-        // O cardholder.name é obrigatório para cartão
-        paymentData.cardholder = {
-            name: cliente.nome || 'Titular do Cartão',
-            identification: {
-                type: 'CPF',
-                number: (cliente.cpf || '00000000000').replace(/\D/g, '')
-            }
-        };
+        // 🔥 CORREÇÃO: REMOVIDOS os campos payment_method e cardholder
+        // O token já contém todas as informações do cartão (nome, CPF, etc.)
+        // A API REST do MP aceita apenas: payment_method_id, token, installments
 
         if (detalhesCartao.issuerId) {
             paymentData.issuer_id = detalhesCartao.issuerId;
@@ -651,6 +638,7 @@ app.post('/api/checkout', async (req, res) => {
         res.status(500).json({ sucesso: false, mensagem: 'Erro interno: ' + error.message });
     }
 });
+
 // ==========================================
 // WEBHOOK DO MERCADO PAGO
 // ==========================================
