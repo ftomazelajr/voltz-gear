@@ -399,7 +399,7 @@ async function obterPaymentMethodId(token, bin) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO - SEM CARDHOLDER)
+// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO)
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
@@ -542,13 +542,28 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`📦 Parcelas: ${installments}`);
 
         // ==========================================
-        // PAYMENT DATA PARA CARTÃO - SEM cardholder!
+        // PAYMENT DATA PARA CARTÃO - COM CARDHOLDER DENTRO DO PAYMENT_METHOD!
         // ==========================================
         paymentData.payment_method_id = paymentMethodId;
         paymentData.token = cardToken;
         paymentData.installments = installments;
 
-        // ❌ REMOVIDO: cardholder não é necessário, o token já contém essas informações
+        // ==========================================
+        // CORREÇÃO: CARDHOLDER DENTRO DO PAYMENT_METHOD
+        // ==========================================
+        paymentData.payment_method = {
+            id: paymentMethodId,
+            type: 'credit_card'
+        };
+
+        // O cardholder.name é obrigatório para cartão
+        paymentData.cardholder = {
+            name: cliente.nome || 'Titular do Cartão',
+            identification: {
+                type: 'CPF',
+                number: (cliente.cpf || '00000000000').replace(/\D/g, '')
+            }
+        };
 
         if (detalhesCartao.issuerId) {
             paymentData.issuer_id = detalhesCartao.issuerId;
