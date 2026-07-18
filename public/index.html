@@ -1316,8 +1316,9 @@
                         document.getElementById('pix-modal').classList.remove('hidden');
                         iniciarVerificacaoPagamento(resData.idPedido);
                     } else {
-                        showToast('✅ Pagamento aprovado!', 'success');
-                        setTimeout(() => window.location.href = `/success?pedido=${resData.idPedido}`, 2000);
+showToast('✅ Pagamento aprovado!', 'success');
+const totalFormatado = Number(resData.total).toFixed(2).replace('.', ',');
+setTimeout(() => window.location.href = `/success?pedido=${resData.idPedido}&total=${totalFormatado}`, 2000);
                     }
                     carrinho = [];
                     atualizarCarrinho();
