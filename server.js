@@ -399,7 +399,7 @@ async function obterPaymentMethodId(token, bin) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO COM CARDHOLDER)
+// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO - SEM CARDHOLDER)
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
@@ -446,16 +446,6 @@ app.post('/api/checkout', async (req, res) => {
                     neighborhood: endereco.bairro  || 'Bairro',
                     city:         endereco.cidade  || 'Cidade',
                     federal_unit: endereco.estado  || 'SP'
-                }
-            },
-            // ==========================================
-            // CORREÇÃO: ADICIONAR CARDHOLDER AQUI!
-            // ==========================================
-            cardholder: {
-                name: cliente.nome || 'Titular do Cartão',
-                identification: {
-                    type: 'CPF',
-                    number: (cliente.cpf || '00000000000').replace(/\D/g, '')
                 }
             }
         };
@@ -511,7 +501,7 @@ app.post('/api/checkout', async (req, res) => {
         }
 
         // ==========================================
-        // CARTÃO DE CRÉDITO  ← BUGFIX PRINCIPAL
+        // CARTÃO DE CRÉDITO
         // ==========================================
         if (!detalhesCartao || !detalhesCartao.token) {
             return res.status(400).json({ sucesso: false, mensagem: '❌ Token do cartão não enviado. Verifique o frontend.' });
@@ -521,11 +511,10 @@ app.post('/api/checkout', async (req, res) => {
         const installments = parseInt(detalhesCartao.parcelas) || 1;
 
         // ==========================================
-        // CORREÇÃO: USAR paymentMethodId DO FRONTEND
+        // USAR paymentMethodId DO FRONTEND
         // ==========================================
         let paymentMethodId = detalhesCartao.paymentMethodId;
 
-        // Se o frontend não enviou, tenta detectar pelo BIN
         if (!paymentMethodId) {
             const bin = detalhesCartao.bin || detalhesCartao.primeirosSeis || '';
             console.log(`🔢 BIN para detecção: ${bin}`);
@@ -533,46 +522,34 @@ app.post('/api/checkout', async (req, res) => {
             if (bin && bin.length >= 6) {
                 paymentMethodId = await obterPaymentMethodId(token, bin);
             } else {
-                // Fallback: tenta extrair do número do cartão se disponível
                 const cardNumber = detalhesCartao.cardNumber || '';
                 if (cardNumber && cardNumber.length >= 6) {
                     const binFromCard = cardNumber.replace(/\D/g, '').slice(0, 6);
                     paymentMethodId = await obterPaymentMethodId(token, binFromCard);
                 } else {
-                    paymentMethodId = 'visa'; // Fallback final
+                    paymentMethodId = 'visa';
                 }
             }
         }
 
-        console.log(`💳 Bandeira identificada: ${paymentMethodId}`);
-
-        // Validação: se ainda não tiver bandeira, usa fallback
         if (!paymentMethodId) {
             paymentMethodId = 'visa';
             console.warn('⚠️ Usando "visa" como fallback');
         }
 
+        console.log(`💳 Bandeira identificada: ${paymentMethodId}`);
+        console.log(`🃏 Token do cartão: ${cardToken}`);
+        console.log(`📦 Parcelas: ${installments}`);
+
         // ==========================================
-        // CORREÇÃO: Adicionar token no paymentData
+        // PAYMENT DATA PARA CARTÃO - SEM cardholder!
         // ==========================================
         paymentData.payment_method_id = paymentMethodId;
-        paymentData.token             = cardToken;           // ← BUG CORRIGIDO: token do cartão
-        paymentData.installments      = installments;
+        paymentData.token = cardToken;
+        paymentData.installments = installments;
 
-        // ==========================================
-        // GARANTIR QUE O CARDHOLDER ESTÁ NO PAYMENT DATA
-        // ==========================================
-        if (!paymentData.cardholder) {
-            paymentData.cardholder = {
-                name: cliente.nome || 'Titular do Cartão',
-                identification: {
-                    type: 'CPF',
-                    number: (cliente.cpf || '00000000000').replace(/\D/g, '')
-                }
-            };
-        }
+        // ❌ REMOVIDO: cardholder não é necessário, o token já contém essas informações
 
-        // issuer_id opcional — ajuda o MP a identificar a bandeira
         if (detalhesCartao.issuerId) {
             paymentData.issuer_id = detalhesCartao.issuerId;
         }
@@ -632,7 +609,6 @@ app.post('/api/checkout', async (req, res) => {
             if (error.response.status === 401) {
                 mensagem = '❌ Token do Mercado Pago inválido ou expirado.';
             } else if (error.response.status === 400) {
-                // Mensagens amigáveis para erros comuns do MP
                 if (cause) {
                     const codes = Array.isArray(cause) ? cause.map(c => c.code) : [];
                     if (codes.includes('2001') || codes.includes('E201')) mensagem = '❌ Token do cartão inválido ou expirado. Tente novamente.';
@@ -660,7 +636,6 @@ app.post('/api/checkout', async (req, res) => {
         res.status(500).json({ sucesso: false, mensagem: 'Erro interno: ' + error.message });
     }
 });
-
 // ==========================================
 // WEBHOOK DO MERCADO PAGO
 // ==========================================
