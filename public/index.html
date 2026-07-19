@@ -416,6 +416,29 @@
                 margin-left: 4px;
             }
         }
+
+        /* ==========================================
+           DESCONTO PIX - ESTILO
+           ========================================== */
+        .pix-discount-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            border: 1px solid #bbf7d0;
+            display: inline-block;
+        }
+        .price-with-discount {
+            color: #059669;
+            font-weight: 700;
+        }
+        .price-original {
+            text-decoration: line-through;
+            color: #9ca3af;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -427,7 +450,7 @@
     <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
         <span>🚀 FRETE GRÁTIS ACIMA DE R$ 199</span>
         <span class="hidden md:inline">•</span>
-        <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 6X SEM JUROS</span>
+        <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 12X SEM JUROS</span>
     </div>
 
     <!-- HEADER -->
@@ -472,7 +495,7 @@
         <div class="inner">
             <div class="price">
                 <span id="sticky-price">R$ 0,00</span>
-                <small>ou 6x sem juros</small>
+                <small>ou 12x sem juros</small>
             </div>
             <button class="btn-buy" onclick="comprarAgora()">
                 <i class="fa-solid fa-bag-shopping"></i> Comprar Agora
@@ -559,7 +582,7 @@
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex items-end gap-4 flex-wrap">
                         <span id="produto-preco" class="text-3xl font-black text-blue-600">R$ 0,00</span>
-                        <span class="text-sm text-green-600 font-medium">ou 6x sem juros</span>
+                        <span class="text-sm text-green-600 font-medium">ou 12x sem juros</span>
                     </div>
                 </div>
 
@@ -718,12 +741,12 @@
                     <button type="button" onclick="selecionarMetodo('pix')" id="btn-metodo-pix" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200">
                         <i class="fa-brands fa-pix text-lg mb-1"></i>
                         <span class="text-xs font-bold">Pix Instantâneo</span>
-                        <span class="text-[9px] text-green-600 font-medium">Aprovação imediata</span>
+                        <span class="text-[9px] text-green-600 font-medium">5% de desconto</span>
                     </button>
                     <button type="button" onclick="selecionarMetodo('cartao')" id="btn-metodo-cartao" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200">
                         <i class="fa-solid fa-credit-card text-lg mb-1"></i>
                         <span class="text-xs font-bold">Cartão de Crédito</span>
-                        <span class="text-[9px] text-gray-500 font-medium">Até 6x sem juros</span>
+                        <span class="text-[9px] text-gray-500 font-medium">Até 12x sem juros</span>
                     </button>
                 </div>
                 <div id="campos-cartao" class="hidden space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 transition-all">
@@ -758,6 +781,11 @@
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mt-6 text-sm text-gray-700 space-y-2">
                 <div class="flex justify-between"><span>Subtotal:</span><span id="summary-subtotal" class="font-semibold">R$ 0,00</span></div>
                 <div class="flex justify-between"><span>Frete:</span><span id="summary-frete" class="font-semibold text-green-600">Grátis</span></div>
+                <!-- DESCONTO PIX -->
+                <div id="pix-discount-row" class="flex justify-between text-green-600 hidden">
+                    <span>Desconto PIX (5%):</span>
+                    <span id="pix-discount-value" class="font-bold">- R$ 0,00</span>
+                </div>
                 <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-extrabold text-gray-900">
                     <span>Total Final:</span>
                     <span id="summary-total" class="text-blue-600">R$ 0,00</span>
@@ -793,7 +821,7 @@
                 <i class="fa-solid fa-circle-check text-green-600 text-xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-1">Seu pedido foi reservado!</h3>
-            <p class="text-gray-500 text-xs mb-6">Pague via Pix para garantir o envio automático do produto.</p>
+            <p class="text-gray-500 text-xs mb-6">Pague via Pix e ganhe <strong>5% de desconto</strong>!</p>
             <img id="pix-qr-img" src="" alt="QR Code Pix" class="mx-auto w-44 h-44 mb-6 border border-gray-200 rounded-xl p-1 bg-gray-50">
             <div class="mb-6">
                 <input type="text" id="pix-copia-cola" readonly class="w-full bg-gray-100 text-[10px] text-gray-600 p-3 rounded-lg border border-gray-200 select-all mb-2 text-center">
@@ -814,6 +842,7 @@
         // ==========================================
         const API_URL = 'https://voltzgear.com';
         const PUBLIC_KEY = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
+        const MAX_PARCELAS = 12; // ← ALTERADO PARA 12
 
         // ==========================================
         // INICIALIZAR MERCADO PAGO SDK (apenas para referência)
@@ -932,6 +961,24 @@
         let stickyVisible = false;
 
         // ==========================================
+        // FUNÇÃO PARA CALCULAR O TOTAL COM DESCONTO PIX
+        // ==========================================
+        function calcularTotalComDesconto(subtotal, frete) {
+            if (metodoSelecionado === 'pix') {
+                const total = subtotal + frete;
+                const desconto = total * 0.05; // 5%
+                return {
+                    totalComDesconto: total - desconto,
+                    desconto: desconto
+                };
+            }
+            return {
+                totalComDesconto: subtotal + frete,
+                desconto: 0
+            };
+        }
+
+        // ==========================================
         // FUNÇÕES AUXILIARES
         // ==========================================
         function showToast(msg, type = 'info', duration = 4000) {
@@ -960,7 +1007,7 @@
             }
             countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
             grid.innerHTML = listaFiltrada.map(p => {
-                const valorParcela = (p.preco / 6).toFixed(2).replace('.', ',');
+                const valorParcela = (p.preco / MAX_PARCELAS).toFixed(2).replace('.', ',');
                 const url = getProdutoUrl(p);
                 return `<div class="product-card" onclick="window.location.href='${url}'">
                     <div class="relative bg-gray-100">
@@ -975,8 +1022,8 @@
                                 <span class="text-xl font-black text-gray-900">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
                                 <button onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">Adicionar</button>
                             </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <p class="text-xs text-green-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-credit-card text-[10px]"></i> ou 6x de R$ ${valorParcela} sem juros</p>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                <p class="text-xs text-green-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-credit-card text-[10px]"></i> ou 12x de R$ ${valorParcela} sem juros</p>
                                 <button onclick="event.stopPropagation(); comprarRapido(${p.id})" class="btn-comprar-rapido">
                                     <i class="fa-solid fa-bolt"></i> Comprar Rápido
                                 </button>
@@ -1194,7 +1241,7 @@
             trustBadges.style.display = 'grid';
             
             container.innerHTML = carrinho.map((p, index) => {
-                const valorParcelaProd = (p.preco / 6).toFixed(2).replace('.', ',');
+                const valorParcelaProd = (p.preco / MAX_PARCELAS).toFixed(2).replace('.', ',');
                 return `<div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div class="flex items-center gap-3">
                         <img src="${p.img}" class="w-12 h-12 object-cover rounded-lg border border-gray-100">
@@ -1202,7 +1249,7 @@
                             <h4 class="text-xs font-bold text-gray-900 max-w-[180px] truncate">${p.nome}</h4>
                             <div class="flex flex-col">
                                 <span class="text-xs text-blue-600 font-semibold">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
-                                <span class="text-[10px] text-green-600">6x de R$ ${valorParcelaProd}</span>
+                                <span class="text-[10px] text-green-600">12x de R$ ${valorParcelaProd}</span>
                             </div>
                         </div>
                     </div>
@@ -1211,10 +1258,10 @@
             }).join('');
             
             const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const totalParcela = (total / 6).toFixed(2).replace('.', ',');
+            const totalParcela = (total / MAX_PARCELAS).toFixed(2).replace('.', ',');
             totalSpan.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
             if (miniTotal) miniTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            installmentsSpan.innerHTML = `<i class="fa-solid fa-credit-card text-[10px] mr-1"></i> ou em até 6x de R$ ${totalParcela} sem juros`;
+            installmentsSpan.innerHTML = `<i class="fa-solid fa-credit-card text-[10px] mr-1"></i> ou em até 12x de R$ ${totalParcela} sem juros`;
             btnNext.classList.remove('hidden');
             atualizarResumoValores();
         }
@@ -1272,7 +1319,7 @@
                 btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
                 btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
                 camposCartao.classList.add('hidden');
-                btnText.innerText = "Confirmar e Gerar Pix Real";
+                btnText.innerText = "Confirmar e Gerar Pix Real (5% OFF)";
                 btnFinalizar.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
             } else {
                 btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
@@ -1286,13 +1333,13 @@
         }
 
         function calcularParcelasDropdown() {
-            const totalMercadorias = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = totalMercadorias >= 199 ? 0 : 1.90;
-            const totalFinal = totalMercadorias + frete;
+            const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
+            const frete = subtotal >= 199 ? 0 : 1.90;
+            const total = subtotal + frete;
             const select = document.getElementById('card-parcelas');
             select.innerHTML = '';
-            for (let i = 1; i <= 6; i++) {
-                const valorParcela = (totalFinal / i).toFixed(2).replace('.', ',');
+            for (let i = 1; i <= MAX_PARCELAS; i++) {
+                const valorParcela = (total / i).toFixed(2).replace('.', ',');
                 const option = document.createElement('option');
                 option.value = i;
                 option.text = `${i}x de R$ ${valorParcela} sem juros`;
@@ -1320,8 +1367,10 @@
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const frete = subtotal >= 199 ? 0 : 1.90;
-            const totalFinal = subtotal + frete;
+            const total = subtotal + frete;
+            
             document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            
             const infoFrete = document.getElementById('frete-info');
             const valorFreteTxt = document.getElementById('frete-valor');
             const summaryFrete = document.getElementById('summary-frete');
@@ -1337,7 +1386,25 @@
                     summaryFrete.className = "font-semibold text-gray-700";
                 }
             } else { infoFrete.classList.add('hidden'); }
-            document.getElementById('summary-total').innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+            
+            // ==========================================
+            // CALCULAR DESCONTO PIX
+            // ==========================================
+            const pixDiscountRow = document.getElementById('pix-discount-row');
+            const pixDiscountValue = document.getElementById('pix-discount-value');
+            const summaryTotal = document.getElementById('summary-total');
+            
+            if (metodoSelecionado === 'pix' && carrinho.length > 0) {
+                const desconto = total * 0.05;
+                const totalComDesconto = total - desconto;
+                pixDiscountRow.classList.remove('hidden');
+                pixDiscountValue.textContent = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;
+                summaryTotal.textContent = `R$ ${totalComDesconto.toFixed(2).replace('.', ',')}`;
+            } else {
+                pixDiscountRow.classList.add('hidden');
+                summaryTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            }
+            
             if (metodoSelecionado === 'cartao') calcularParcelasDropdown();
         }
 
@@ -1586,15 +1653,27 @@
                         showToast('❌ ' + msg, 'error', 5000);
                         processando = false;
                         btnFinalizar.disabled = false;
-                        btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real' : 'Confirmar e Pagar com Cartão';
+                        btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 'Confirmar e Pagar com Cartão';
                         return;
                     }
                 }
 
+                // ==========================================
+                // CALCULAR TOTAL COM DESCONTO PIX
+                // ==========================================
                 const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
                 const frete = subtotal >= 199 ? 0 : 1.90;
-                const total = subtotal + frete;
-                console.log('💰 Total:', total);
+                let total = subtotal + frete;
+                
+                // Aplicar desconto de 5% no PIX
+                let descontoAplicado = 0;
+                if (metodoSelecionado === 'pix') {
+                    descontoAplicado = total * 0.05;
+                    total = total - descontoAplicado;
+                }
+                
+                console.log('💰 Total com desconto:', total);
+                console.log('💰 Desconto aplicado:', descontoAplicado);
 
                 // IMPORTANTE: Usar o token NOVO gerado nesta tentativa
                 const payload = {
@@ -1613,6 +1692,7 @@
                     })),
                     total: total.toFixed(2),
                     metodoPagamento: metodoSelecionado,
+                    desconto: descontoAplicado.toFixed(2),
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
                         parcelas: parcelas,
                         token: cardToken,  // ← TOKEN NOVO, NÃO REUTILIZADO!
@@ -1652,13 +1732,13 @@
                 }
 
                 btnFinalizar.disabled = false;
-                btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real' : 'Confirmar e Pagar com Cartão';
+                btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 'Confirmar e Pagar com Cartão';
                 
             } catch (err) {
                 console.error('❌ ERRO GERAL:', err);
                 showToast('❌ Erro ao processar pagamento. Tente novamente.', 'error', 5000);
                 document.getElementById('btn-finalizar').disabled = false;
-                document.getElementById('btn-text').textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real' : 'Confirmar e Pagar com Cartão';
+                document.getElementById('btn-text').textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 'Confirmar e Pagar com Cartão';
             }
             
             processando = false;
