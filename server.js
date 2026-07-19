@@ -35,10 +35,54 @@ const transporter = nodemailer.createTransport({
 });
 
 // ==========================================
-// FUNÇÃO PARA ENVIAR E-MAIL DE CONFIRMAÇÃO
+// CONFIGURAÇÃO DO E-MAIL (GMAIL) - CORRIGIDA
+// ==========================================
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
+    },
+    timeout: 60000,
+    connectionTimeout: 60000,
+    socketTimeout: 60000
+});
+
+// ==========================================
+// VERIFICAR CONEXÃO SMTP (ADICIONAR)
+// ==========================================
+transporter.verify(function(error, success) {
+    if (error) {
+        console.error('❌ Erro na configuração do e-mail:');
+        console.error('🔍 Detalhes:', error.message);
+        console.log('📧 Email User:', process.env.EMAIL_USER ? '✅ Configurado' : '❌ NÃO CONFIGURADO');
+        console.log('🔑 Email Pass:', process.env.EMAIL_PASS ? '✅ Configurado' : '❌ NÃO CONFIGURADO');
+    } else {
+        console.log('✅ E-mail configurado corretamente!');
+        console.log('📧 Servidor SMTP conectado com sucesso!');
+    }
+});
+
+// ==========================================
+// FUNÇÃO PARA ENVIAR E-MAIL DE CONFIRMAÇÃO (CORRIGIDA)
 // ==========================================
 async function enviarEmailConfirmacao(pedido) {
     try {
+        console.log('📧 Iniciando envio de e-mail...');
+        console.log('📧 Para:', pedido.cliente?.email || 'E-mail não informado');
+        console.log('📧 Pedido:', pedido.idPedido);
+
+        // Verificar se o cliente tem e-mail
+        if (!pedido.cliente || !pedido.cliente.email) {
+            console.warn('⚠️ E-mail do cliente não informado. E-mail não enviado.');
+            return { sucesso: false, erro: 'E-mail do cliente não informado' };
+        }
+
         const { cliente, idPedido, itens, total, endereco, metodoPagamento } = pedido;
 
         const produtosLista = itens.map(item =>
@@ -172,19 +216,25 @@ async function enviarEmailConfirmacao(pedido) {
             from: `Voltz Gear <${process.env.EMAIL_USER}>`,
             to: cliente.email,
             subject: `✅ Pedido Confirmado! #${idPedido} - Voltz Gear`,
-            html
+            html: html,
+            replyTo: process.env.EMAIL_USER
         };
 
+        console.log('📤 Enviando e-mail...');
         const info = await transporter.sendMail(mailOptions);
-        console.log('📧 E-mail enviado para:', cliente.email, '| ID:', info.messageId);
+        console.log('✅ E-mail enviado com sucesso!');
+        console.log('📧 Para:', cliente.email);
+        console.log('📧 ID da mensagem:', info.messageId);
+        console.log('📧 Resposta:', info.response);
+
         return { sucesso: true, messageId: info.messageId };
 
     } catch (error) {
         console.error('❌ Erro ao enviar e-mail:', error.message);
+        console.error('❌ Detalhes completos:', error);
         return { sucesso: false, erro: error.message };
     }
 }
-
 // ==========================================
 // MIDDLEWARES
 // ==========================================
