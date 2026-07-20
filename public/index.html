@@ -439,6 +439,20 @@
             color: #9ca3af;
             font-size: 14px;
         }
+
+        /* ==========================================
+           FRETE GRÁTIS PARA TODOS
+           ========================================== */
+        .frete-gratis-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -448,7 +462,7 @@
 
     <!-- TOPBAR -->
     <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
-        <span>🚀 FRETE GRÁTIS ACIMA DE R$ 199</span>
+        <span>🚀 FRETE GRÁTIS PARA TODO BRASIL</span>
         <span class="hidden md:inline">•</span>
         <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 12X SEM JUROS</span>
     </div>
@@ -509,7 +523,7 @@
             <div class="max-w-4xl mx-auto text-center">
                 <span class="text-blue-600 text-xs font-bold tracking-widest uppercase mb-3 inline-block bg-blue-100 px-4 py-1.5 rounded-full">Curadoria Exclusiva</span>
                 <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Acessórios que Elevam a sua Produtividade</h2>
-                <p class="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">Tecnologia minimalista, design funcional e frete seguro direto para a sua casa.</p>
+                <p class="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">Tecnologia minimalista, design funcional e <strong>frete grátis</strong> para todo Brasil.</p>
             </div>
         </div>
 
@@ -567,7 +581,7 @@
                     </div>
                     <div class="flex items-center gap-2 text-gray-500">
                         <i class="fa-solid fa-truck"></i>
-                        <span>Frete: <span class="font-semibold text-green-600">Grátis</span></span>
+                        <span>Frete: <span class="font-semibold text-green-600">🚚 Grátis</span></span>
                     </div>
                     <div class="flex items-center gap-2 text-gray-500">
                         <i class="fa-regular fa-clock"></i>
@@ -595,8 +609,8 @@
                         </div>
                         <div class="flex flex-col items-center text-center p-3 bg-blue-50 rounded-xl border border-blue-100">
                             <i class="fa-solid fa-truck-fast text-2xl text-blue-600"></i>
-                            <span class="text-xs font-bold text-blue-700 mt-1">Frete Grátis*</span>
-                            <span class="text-[10px] text-blue-600">Acima de R$ 199</span>
+                            <span class="text-xs font-bold text-blue-700 mt-1">Frete Grátis</span>
+                            <span class="text-[10px] text-blue-600">Para todo Brasil</span>
                         </div>
                         <div class="flex flex-col items-center text-center p-3 bg-purple-50 rounded-xl border border-purple-100">
                             <i class="fa-solid fa-rotate-left text-2xl text-purple-600"></i>
@@ -628,7 +642,7 @@
                 </div>
 
                 <div class="border-t border-gray-200 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-truck-fast text-blue-600 text-xl"></i><span>Frete Grátis*</span></div>
+                    <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-truck-fast text-blue-600 text-xl"></i><span>Frete Grátis</span></div>
                     <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-shield-halved text-blue-600 text-xl"></i><span>Garantia 90 dias</span></div>
                     <div class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-rotate-left text-blue-600 text-xl"></i><span>Devolução fácil</span></div>
                 </div>
@@ -680,7 +694,7 @@
             <div class="trust-badges" id="trust-badges" style="display:none;">
                 <div class="item"><i class="fa-solid fa-shield-halved"></i> Compra 100% segura</div>
                 <div class="item"><i class="fa-solid fa-rotate-left"></i> Devolução fácil 7 dias</div>
-                <div class="item"><i class="fa-solid fa-truck-fast"></i> Frete grátis acima R$199</div>
+                <div class="item"><i class="fa-solid fa-truck-fast"></i> Frete grátis para todo Brasil</div>
                 <div class="item"><i class="fa-solid fa-lock"></i> Dados criptografados</div>
             </div>
 
@@ -726,9 +740,9 @@
                     <input type="text" id="cli-cidade" placeholder="Cidade" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
                     <input type="text" id="cli-estado" placeholder="UF" class="w-full bg-gray-50 border border-gray-300 p-2.5 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500">
                 </div>
-                <div id="frete-info" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-lg flex justify-between items-center text-xs text-blue-800">
+                <div id="frete-info" class="bg-blue-50 border border-blue-200 p-3 rounded-lg flex justify-between items-center text-xs text-blue-800">
                     <span class="font-semibold flex items-center gap-1"><i class="fa-solid fa-truck-fast"></i> Método de Envio:</span>
-                    <span id="frete-valor" class="font-bold">Calculando...</span>
+                    <span id="frete-valor" class="font-bold text-green-600">🚚 GRÁTIS</span>
                 </div>
             </div>
 
@@ -780,7 +794,7 @@
 
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mt-6 text-sm text-gray-700 space-y-2">
                 <div class="flex justify-between"><span>Subtotal:</span><span id="summary-subtotal" class="font-semibold">R$ 0,00</span></div>
-                <div class="flex justify-between"><span>Frete:</span><span id="summary-frete" class="font-semibold text-green-600">Grátis</span></div>
+                <div class="flex justify-between"><span>Frete:</span><span id="summary-frete" class="font-semibold text-green-600">🚚 Grátis</span></div>
                 <!-- DESCONTO PIX -->
                 <div id="pix-discount-row" class="flex justify-between text-green-600 hidden">
                     <span>Desconto PIX (5%):</span>
@@ -842,7 +856,7 @@
         // ==========================================
         const API_URL = 'https://voltzgear.com';
         const PUBLIC_KEY = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
-        const MAX_PARCELAS = 12; // ← ALTERADO PARA 12
+        const MAX_PARCELAS = 12;
 
         // ==========================================
         // INICIALIZAR MERCADO PAGO SDK (apenas para referência)
@@ -961,20 +975,24 @@
         let stickyVisible = false;
 
         // ==========================================
-        // FUNÇÃO PARA CALCULAR O TOTAL COM DESCONTO PIX
+        // FUNÇÃO PARA CALCULAR O TOTAL (FRETE GRÁTIS SEMPRE)
         // ==========================================
         function calcularTotalComDesconto(subtotal, frete) {
+            // O frete sempre será 0 (grátis)
+            const freteReal = 0;
             if (metodoSelecionado === 'pix') {
-                const total = subtotal + frete;
+                const total = subtotal + freteReal;
                 const desconto = total * 0.05; // 5%
                 return {
                     totalComDesconto: total - desconto,
-                    desconto: desconto
+                    desconto: desconto,
+                    frete: freteReal
                 };
             }
             return {
-                totalComDesconto: subtotal + frete,
-                desconto: 0
+                totalComDesconto: subtotal + freteReal,
+                desconto: 0,
+                frete: freteReal
             };
         }
 
@@ -1013,6 +1031,7 @@
                     <div class="relative bg-gray-100">
                         <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
                         <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
+                        <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
                     </div>
                     <div class="p-6 flex flex-col flex-1">
                         <h3 class="text-lg font-bold mb-2 text-gray-900">${p.nome}</h3>
@@ -1250,6 +1269,7 @@
                             <div class="flex flex-col">
                                 <span class="text-xs text-blue-600 font-semibold">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
                                 <span class="text-[10px] text-green-600">12x de R$ ${valorParcelaProd}</span>
+                                <span class="text-[10px] text-green-600"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
                             </div>
                         </div>
                     </div>
@@ -1261,7 +1281,7 @@
             const totalParcela = (total / MAX_PARCELAS).toFixed(2).replace('.', ',');
             totalSpan.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
             if (miniTotal) miniTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            installmentsSpan.innerHTML = `<i class="fa-solid fa-credit-card text-[10px] mr-1"></i> ou em até 12x de R$ ${totalParcela} sem juros`;
+            installmentsSpan.innerHTML = `<i class="fa-solid fa-credit-card text-[10px] mr-1"></i> ou em até 12x de R$ ${totalParcela} sem juros • 🚚 Frete Grátis`;
             btnNext.classList.remove('hidden');
             atualizarResumoValores();
         }
@@ -1334,8 +1354,8 @@
 
         function calcularParcelasDropdown() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = subtotal >= 199 ? 0 : 1.90;
-            const total = subtotal + frete;
+            // Frete sempre grátis
+            const total = subtotal;
             const select = document.getElementById('card-parcelas');
             select.innerHTML = '';
             for (let i = 1; i <= MAX_PARCELAS; i++) {
@@ -1366,26 +1386,20 @@
 
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const frete = subtotal >= 199 ? 0 : 1.90;
+            // FRETE SEMPRE GRÁTIS
+            const frete = 0;
             const total = subtotal + frete;
             
             document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             
             const infoFrete = document.getElementById('frete-info');
-            const valorFreteTxt = document.getElementById('frete-valor');
             const summaryFrete = document.getElementById('summary-frete');
-            if (carrinho.length > 0) {
-                infoFrete.classList.remove('hidden');
-                if (frete === 0) {
-                    valorFreteTxt.innerHTML = `<span class="text-green-600 font-bold">GRÁTIS (Desconto Aplicado)</span>`;
-                    summaryFrete.innerText = "Grátis";
-                    summaryFrete.className = "font-semibold text-green-600";
-                } else {
-                    valorFreteTxt.innerText = `R$ 1,90 (Envio Premium Correios)`;
-                    summaryFrete.innerText = "R$ 1,90";
-                    summaryFrete.className = "font-semibold text-gray-700";
-                }
-            } else { infoFrete.classList.add('hidden'); }
+            
+            // Sempre mostrar frete grátis
+            infoFrete.classList.remove('hidden');
+            document.getElementById('frete-valor').innerHTML = `<span class="text-green-600 font-bold">🚚 GRÁTIS</span>`;
+            summaryFrete.innerText = "🚚 Grátis";
+            summaryFrete.className = "font-semibold text-green-600";
             
             // ==========================================
             // CALCULAR DESCONTO PIX
@@ -1459,7 +1473,7 @@
         }
 
         // ==========================================
-        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO (CORRIGIDA - SUPORTA MASTERCARD 2-SÉRIE)
+        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO
         // ==========================================
         async function detectarBandeira(bin) {
             if (!bin || bin.length < 6) {
@@ -1489,13 +1503,9 @@
                 console.warn('⚠️ Erro ao detectar bandeira via API:', err.message);
             }
             
-            // ==========================================
-            // FALLBACK: Detectar por padrões conhecidos
-            // INCLUI MASTERCARD 2-SÉRIE (BIN 22xxxx)
-            // ==========================================
             const patterns = {
                 'visa': /^4/,
-                'master': /^(5[1-5]|2[2-7])/,  // ← MASTERCARD (5xxx e 2xxx)
+                'master': /^(5[1-5]|2[2-7])/,
                 'amex': /^3[47]/,
                 'elo': /^(4011|4312|4389|4514|4573|5041|5067|5090|6277|6362|6363|6504|6505|6506|6507|6508|6509|6516|6550)/,
                 'hipercard': /^(3841|6062)/,
@@ -1527,7 +1537,6 @@
         // FUNÇÃO PRINCIPAL DE PAGAMENTO (CORRIGIDA - TOKEN NOVO A CADA TENTATIVA)
         // ==========================================
         async function processarPagamento() {
-            // Prevenir múltiplos cliques
             if (processando) {
                 console.warn('⏳ Processamento já em andamento. Aguarde...');
                 return;
@@ -1542,12 +1551,10 @@
                 const btnFinalizar = document.getElementById('btn-finalizar');
                 const btnText = document.getElementById('btn-text');
                 
-                // Resetar token anterior (garantir que não será reutilizado)
                 let cardToken = null;
                 let parcelas = 1;
                 let paymentMethodId = null;
 
-                // Coletar dados do cliente
                 const nome = document.getElementById('cli-nome').value;
                 const email = document.getElementById('cli-email').value;
                 const whatsapp = document.getElementById('cli-whatsapp').value;
@@ -1567,9 +1574,6 @@
                     return;
                 }
 
-                // ==========================================
-                // SE FOR CARTÃO, GERAR NOVO TOKEN VIA API REST
-                // ==========================================
                 if (metodoSelecionado === 'cartao') {
                     console.log('💳 === PROCESSANDO CARTÃO ===');
                     
@@ -1636,9 +1640,6 @@
                     console.log('📤 Criando NOVO token para esta tentativa...');
 
                     try {
-                        // ==========================================
-                        // GERAR NOVO TOKEN A CADA TENTATIVA
-                        // ==========================================
                         btnText.innerHTML = '<span class="spinner"></span> Gerando token...';
                         btnFinalizar.disabled = true;
                         
@@ -1658,14 +1659,11 @@
                     }
                 }
 
-                // ==========================================
-                // CALCULAR TOTAL COM DESCONTO PIX
-                // ==========================================
                 const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-                const frete = subtotal >= 199 ? 0 : 1.90;
+                // FRETE SEMPRE GRÁTIS
+                const frete = 0;
                 let total = subtotal + frete;
                 
-                // Aplicar desconto de 5% no PIX
                 let descontoAplicado = 0;
                 if (metodoSelecionado === 'pix') {
                     descontoAplicado = total * 0.05;
@@ -1675,7 +1673,6 @@
                 console.log('💰 Total com desconto:', total);
                 console.log('💰 Desconto aplicado:', descontoAplicado);
 
-                // IMPORTANTE: Usar o token NOVO gerado nesta tentativa
                 const payload = {
                     cliente: {
                         nome,
@@ -1691,11 +1688,12 @@
                         aliexpressId: item.aliexpressId
                     })),
                     total: total.toFixed(2),
+                    frete: 0, // SEMPRE GRÁTIS
                     metodoPagamento: metodoSelecionado,
                     desconto: descontoAplicado.toFixed(2),
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
                         parcelas: parcelas,
-                        token: cardToken,  // ← TOKEN NOVO, NÃO REUTILIZADO!
+                        token: cardToken,
                         paymentMethodId: paymentMethodId
                     } : null
                 };
