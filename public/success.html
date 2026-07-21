@@ -6,6 +6,28 @@
     <title>Pedido Confirmado! 🎉 | Voltz Gear</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ========================================== -->
+    <!-- FACEBOOK PIXEL - META -->
+    <!-- ========================================== -->
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1543045330852470');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <style>
         body {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%);
@@ -223,17 +245,57 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- RASTREAMENTO DE COMPRA - FACEBOOK PIXEL -->
+    <!-- ========================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Pegar parâmetros da URL
             const params = new URLSearchParams(window.location.search);
             const pedidoId = params.get('pedido') || 'VOLTZ-' + Date.now();
-            const total = params.get('total') || '0,00';
+            const totalParam = params.get('total') || '0,00';
             const data = new Date().toLocaleDateString('pt-BR');
 
+            // Atualizar os dados na página
             document.getElementById('pedido-id').textContent = pedidoId;
-            document.getElementById('pedido-total').textContent = `R$ ${total}`;
+            document.getElementById('pedido-total').textContent = `R$ ${totalParam}`;
             document.getElementById('pedido-data').textContent = data;
 
+            // ==========================================
+            // RASTREAR COMPRA NO FACEBOOK PIXEL
+            // ==========================================
+            try {
+                // Converter total para número (substituir vírgula por ponto)
+                const valorTotal = parseFloat(totalParam.replace(',', '.'));
+                
+                console.log('🔍 Rastreando compra no Facebook Pixel');
+                console.log('📦 Pedido:', pedidoId);
+                console.log('💰 Total:', totalParam);
+                
+                if (!isNaN(valorTotal) && valorTotal > 0) {
+                    // Enviar evento de compra para o Facebook
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Purchase', {
+                            value: valorTotal,
+                            currency: 'BRL',
+                            content_ids: [pedidoId],
+                            content_type: 'product',
+                            num_items: 1
+                        });
+                        console.log('✅ Compra rastreada no Facebook Pixel: R$ ' + totalParam);
+                    } else {
+                        console.warn('⚠️ Facebook Pixel não carregado');
+                    }
+                } else {
+                    console.warn('⚠️ Valor total inválido:', totalParam);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao rastrear compra:', error);
+            }
+
+            // ==========================================
+            // CONFETTI (efeito visual)
+            // ==========================================
             const emojis = ['🎉', '✨', '🎊', '💫', '⭐', '🌟', '🥳', '🎈', '🎁', '💝'];
             for (let i = 0; i < 40; i++) {
                 setTimeout(() => {
