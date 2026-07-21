@@ -233,6 +233,17 @@
                         const enviadoAli = p.enviadoAliExpress || false;
                         const temAliId = p.itens.some(item => item.aliexpressId);
                         
+                        // Formatar CPF para exibição (se existir)
+                        let cpfDisplay = 'N/A';
+                        if (p.cliente && p.cliente.cpf) {
+                            const cpf = p.cliente.cpf.replace(/\D/g, '');
+                            if (cpf.length === 11) {
+                                cpfDisplay = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                            } else {
+                                cpfDisplay = cpf;
+                            }
+                        }
+                        
                         return `<div class="pedido-card">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
@@ -246,6 +257,7 @@
                                     <div class="mt-1">
                                         <p class="text-sm font-medium text-gray-900">${p.cliente.nome}</p>
                                         <p class="text-xs text-gray-500">${p.cliente.email} • ${p.cliente.whatsapp || 'N/A'}</p>
+                                        <p class="text-xs text-gray-500"><span class="font-medium text-gray-700">CPF:</span> ${cpfDisplay}</p>
                                         <p class="text-xs text-gray-400">${p.endereco.rua}, ${p.endereco.numero} - ${p.endereco.cidade}/${p.endereco.estado}</p>
                                     </div>
                                     ${p.codigoRastreio ? `<div class="mt-1"><span class="status-rastreio"><i class="fa-solid fa-truck"></i> ${p.codigoRastreio}</span></div>` : ''}
@@ -254,6 +266,8 @@
                                     <div class="text-right">
                                         <span class="text-lg font-bold text-blue-600">R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</span>
                                         <p class="text-xs text-gray-400">${p.itens.length} item(ns)</p>
+                                        ${p.bandeira ? `<p class="text-xs text-purple-600 font-medium">💳 ${p.bandeira}</p>` : ''}
+                                        ${p.parcelas && p.parcelas > 1 ? `<p class="text-xs text-gray-400">${p.parcelas}x</p>` : ''}
                                     </div>
                                     <div class="flex flex-col gap-1 items-end">
                                         ${p.status !== 'pago' && p.status !== 'enviado' ? `<button onclick="atualizarStatus('${p.idPedido}', 'pago')" class="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full transition">Pago</button>` : ''}

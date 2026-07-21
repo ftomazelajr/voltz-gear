@@ -226,9 +226,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ==========================================
-           NOVAS MELHORIAS - STICKY CTA
-           ========================================== */
         .sticky-buy {
             position: fixed;
             bottom: 0;
@@ -310,9 +307,6 @@
             }
         }
 
-        /* ==========================================
-           NOVAS MELHORIAS - COMPRAR RÁPIDO
-           ========================================== */
         .btn-comprar-rapido {
             background: #f0fdf4;
             color: #065f46;
@@ -332,9 +326,6 @@
             transform: scale(1.05);
         }
 
-        /* ==========================================
-           NOVAS MELHORIAS - GARANTIAS NO CARRINHO
-           ========================================== */
         .trust-badges {
             margin-top: 12px;
             padding: 12px 16px;
@@ -363,9 +354,6 @@
             }
         }
 
-        /* ==========================================
-           NOVAS MELHORIAS - BARRA DE PROGRESSO
-           ========================================== */
         .checkout-steps {
             display: flex;
             align-items: center;
@@ -401,9 +389,6 @@
             background: #059669;
         }
 
-        /* ==========================================
-           NOVAS MELHORIAS - MINI CARRINHO HEADER
-           ========================================== */
         .cart-header-info {
             display: none;
         }
@@ -417,9 +402,6 @@
             }
         }
 
-        /* ==========================================
-           DESCONTO PIX - ESTILO
-           ========================================== */
         .pix-discount-badge {
             background: #d1fae5;
             color: #065f46;
@@ -440,9 +422,6 @@
             font-size: 14px;
         }
 
-        /* ==========================================
-           FRETE GRÁTIS PARA TODOS
-           ========================================== */
         .frete-gratis-badge {
             background: #d1fae5;
             color: #065f46;
@@ -452,6 +431,104 @@
             font-weight: 600;
             border: 1px solid #bbf7d0;
             display: inline-block;
+        }
+
+        /* BOTÃO FLUTUANTE WHATSAPP */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            animation: pulse-whatsapp 2s infinite;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+        }
+        @keyframes pulse-whatsapp {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .whatsapp-float .tooltip {
+            position: absolute;
+            right: 70px;
+            background: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .whatsapp-float:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* FOOTER */
+        .footer-link {
+            color: #9ca3af;
+            transition: color 0.2s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-link:hover {
+            color: #60a5fa;
+        }
+        .footer-title {
+            color: #f3f4f6;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .footer {
+            background: #111827;
+            border-top: 1px solid #1f2937;
+        }
+        .footer .social-icon {
+            color: #9ca3af;
+            transition: color 0.2s;
+            font-size: 20px;
+        }
+        .footer .social-icon:hover {
+            color: #60a5fa;
+        }
+        .footer-payment-icon {
+            font-size: 32px;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .footer-payment-icon:hover {
+            color: #f3f4f6;
+        }
+
+        @media (max-width: 640px) {
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 26px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .whatsapp-float .tooltip {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -671,6 +748,100 @@
             </div>
         </div>
     </section>
+
+    <!-- ========================================== -->
+    <!-- FOOTER COMPLETO                             -->
+    <!-- ========================================== -->
+    <footer class="footer">
+        <div class="max-w-7xl mx-auto px-4 py-16">
+            <!-- Grid principal do footer -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Coluna 1: Navegação -->
+                <div>
+                    <h4 class="footer-title">Navegação</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="footer-link">Início</a></li>
+                        <li><a href="/#catalogo" class="footer-link">Produtos</a></li>
+                        <li><a href="/#novidades" class="footer-link">Novidades</a></li>
+                        <li><a href="/#suporte" class="footer-link">Suporte</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 2: Institucional -->
+  <div>
+    <h4 class="footer-title">Institucional</h4>
+    <ul class="space-y-2">
+        <li><a href="#" onclick="showToast('📖 Página Quem Somos em construção.', 'info')" class="footer-link">Quem Somos</a></li>
+        <li><a href="#" onclick="showToast('📋 Termos de Garantia - Consulte nosso SAC.', 'info')" class="footer-link">Termos de Garantia</a></li>
+        <li><a href="#" onclick="showToast('🔒 Política de Privacidade - Seus dados estão seguros.', 'info')" class="footer-link">Política de Privacidade</a></li>
+        <li><a href="#" onclick="showToast('🔄 Trocas e Devoluções - 7 dias para desistência.', 'info')" class="footer-link">Trocas, Devoluções e Reembolsos</a></li>
+    </ul>
+</div>
+                <!-- Coluna 3: Atendimento -->
+                <div>
+                    <h4 class="footer-title">Atendimento</h4>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="https://wa.me/5514991435438" target="_blank" class="footer-link flex items-center gap-2 hover:text-green-400">
+                                <i class="fa-brands fa-whatsapp text-green-500 text-lg"></i> Compras / Suporte no WhatsApp
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.correios.com.br/" target="_blank" class="footer-link flex items-center gap-2 hover:text-blue-400">
+                                <i class="fa-solid fa-box text-blue-400 text-lg"></i> Rastrear meu Pedido
+                            </a>
+                        </li>
+                        <li><a href="#" onclick="showToast('❓ FAQ: Em breve disponível.', 'info')" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 4: Redes Sociais -->
+                <div>
+                    <h4 class="footer-title">Redes Sociais</h4>
+                    <div class="flex gap-4 mb-4">
+                        <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
+                    <p class="text-gray-500 text-sm">Siga-nos e fique por dentro das novidades e promoções exclusivas!</p>
+                </div>
+            </div>
+
+            <!-- Linha divisória -->
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Meios de Pagamento -->
+                <div>
+                    <p class="text-gray-400 text-sm font-semibold mb-3 text-center md:text-left">Meios de Pagamento</p>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                        <i class="fa-brands fa-cc-visa footer-payment-icon"></i>
+                        <i class="fa-brands fa-cc-mastercard footer-payment-icon"></i>
+                        <i class="fa-brands fa-cc-amex footer-payment-icon"></i>
+                        <i class="fa-brands fa-cc-diners-club footer-payment-icon"></i>
+                        <i class="fa-brands fa-cc-discover footer-payment-icon"></i>
+                        <i class="fa-brands fa-pix text-3xl text-green-500 footer-payment-icon"></i>
+                        <i class="fa-solid fa-bolt text-2xl text-yellow-500 footer-payment-icon"></i>
+                        <span class="text-gray-500 text-sm font-medium">Boleto</span>
+                    </div>
+                </div>
+
+                <!-- Copyright -->
+                <div class="text-center md:text-right">
+                    <p class="text-gray-500 text-sm">
+                        &copy; VoltzGear do Brasil - 40.136.528/0001-07 - 2026. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- BOTÃO FLUTUANTE WHATSAPP                    -->
+    <!-- ========================================== -->
+    <a href="https://wa.me/5514991435438" target="_blank" class="whatsapp-float" aria-label="Fale conosco no WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="tooltip">Fale conosco!</span>
+    </a>
 
     <!-- CARRINHO LATERAL -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
@@ -978,11 +1149,10 @@
         // FUNÇÃO PARA CALCULAR O TOTAL (FRETE GRÁTIS SEMPRE)
         // ==========================================
         function calcularTotalComDesconto(subtotal, frete) {
-            // O frete sempre será 0 (grátis)
             const freteReal = 0;
             if (metodoSelecionado === 'pix') {
                 const total = subtotal + freteReal;
-                const desconto = total * 0.05; // 5%
+                const desconto = total * 0.05;
                 return {
                     totalComDesconto: total - desconto,
                     desconto: desconto,
@@ -1053,9 +1223,6 @@
             }).join('');
         }
 
-        // ==========================================
-        // NOVA FUNÇÃO: COMPRAR RÁPIDO
-        // ==========================================
         function comprarRapido(id) {
             const produto = produtos.find(p => p.id === id);
             if (!produto) return;
@@ -1144,16 +1311,12 @@
             document.getElementById('page-produto').classList.remove('hidden');
             window.scrollTo(0, 0);
 
-            // Atualizar sticky
             const stickyPrice = document.getElementById('sticky-price');
             if (stickyPrice) {
                 stickyPrice.textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             }
         }
 
-        // ==========================================
-        // SCROLL PARA STICKY CTA
-        // ==========================================
         window.addEventListener('scroll', function() {
             const productSection = document.getElementById('page-produto');
             const sticky = document.getElementById('sticky-buy');
@@ -1291,25 +1454,19 @@
             document.getElementById('btn-next-step').classList.add('hidden');
             atualizarResumoValores();
             
-            // Atualizar barra de progresso - COM VERIFICAÇÃO DE SEGURANÇA
             const steps = document.querySelectorAll('.checkout-steps .step');
             const stepLines = document.querySelectorAll('.checkout-steps .step-line');
             
             if (steps.length >= 2) {
-                // Remover classes antigas
                 steps.forEach(step => step.classList.remove('done', 'active'));
                 stepLines.forEach(line => line.classList.remove('done'));
                 
-                // Definir estado atual
                 if (steps[0]) { steps[0].classList.add('done'); }
                 if (steps[1]) { steps[1].classList.add('active'); }
                 if (stepLines[0]) { stepLines[0].classList.add('done'); }
             }
         }
 
-        // ==========================================
-        // FUNÇÃO CORRIGIDA - selecionarMetodo
-        // ==========================================
         function selecionarMetodo(metodo) {
             metodoSelecionado = metodo;
             const btnPix = document.getElementById('btn-metodo-pix');
@@ -1318,17 +1475,11 @@
             const btnText = document.getElementById('btn-text');
             const btnFinalizar = document.getElementById('btn-finalizar');
             
-            // ==========================================
-            // CORREÇÃO: Verificar se os elementos existem
-            // ==========================================
             const steps = document.querySelectorAll('.checkout-steps .step');
             const stepLines = document.querySelectorAll('.checkout-steps .step-line');
             
-            // Atualizar barra de progresso para o passo "Pagamento"
             if (steps.length > 2) {
-                // Remover active de todos
                 steps.forEach(step => step.classList.remove('active'));
-                // Adicionar active no passo 2 (Pagamento)
                 steps[2].classList.add('active');
             }
             if (stepLines.length > 2) {
@@ -1354,7 +1505,6 @@
 
         function calcularParcelasDropdown() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            // Frete sempre grátis
             const total = subtotal;
             const select = document.getElementById('card-parcelas');
             select.innerHTML = '';
@@ -1386,7 +1536,6 @@
 
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            // FRETE SEMPRE GRÁTIS
             const frete = 0;
             const total = subtotal + frete;
             
@@ -1395,15 +1544,11 @@
             const infoFrete = document.getElementById('frete-info');
             const summaryFrete = document.getElementById('summary-frete');
             
-            // Sempre mostrar frete grátis
             infoFrete.classList.remove('hidden');
             document.getElementById('frete-valor').innerHTML = `<span class="text-green-600 font-bold">🚚 GRÁTIS</span>`;
             summaryFrete.innerText = "🚚 Grátis";
             summaryFrete.className = "font-semibold text-green-600";
             
-            // ==========================================
-            // CALCULAR DESCONTO PIX
-            // ==========================================
             const pixDiscountRow = document.getElementById('pix-discount-row');
             const pixDiscountValue = document.getElementById('pix-discount-value');
             const summaryTotal = document.getElementById('summary-total');
@@ -1472,9 +1617,6 @@
             }, 5000);
         }
 
-        // ==========================================
-        // FUNÇÃO PARA DETECTAR BANDEIRA DO CARTÃO
-        // ==========================================
         async function detectarBandeira(bin) {
             if (!bin || bin.length < 6) {
                 console.warn('⚠️ BIN inválido, usando "visa" como fallback');
@@ -1528,14 +1670,8 @@
             return 'visa';
         }
 
-        // ==========================================
-        // VARIÁVEL PARA CONTROLAR O ESTADO DO BOTÃO
-        // ==========================================
         let processando = false;
 
-        // ==========================================
-        // FUNÇÃO PRINCIPAL DE PAGAMENTO (CORRIGIDA - TOKEN NOVO A CADA TENTATIVA)
-        // ==========================================
         async function processarPagamento() {
             if (processando) {
                 console.warn('⏳ Processamento já em andamento. Aguarde...');
@@ -1660,7 +1796,6 @@
                 }
 
                 const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-                // FRETE SEMPRE GRÁTIS
                 const frete = 0;
                 let total = subtotal + frete;
                 
@@ -1688,7 +1823,7 @@
                         aliexpressId: item.aliexpressId
                     })),
                     total: total.toFixed(2),
-                    frete: 0, // SEMPRE GRÁTIS
+                    frete: 0,
                     metodoPagamento: metodoSelecionado,
                     desconto: descontoAplicado.toFixed(2),
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
@@ -1756,9 +1891,6 @@
             toggleCart();
         }
 
-        // ==========================================
-        // MÁSCARAS DOS CAMPOS
-        // ==========================================
         document.getElementById('card-num').addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 16) value = value.slice(0, 16);
@@ -1784,9 +1916,6 @@
             this.value = value;
         });
 
-        // ==========================================
-        // INICIAR LOJA
-        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
             carregarProdutoPorSlug();
             if (!window.location.pathname.includes('/produto/')) renderProdutos();
