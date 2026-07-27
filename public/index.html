@@ -547,6 +547,76 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 display: none;
             }
         }
+
+        /* ==========================================
+           SENSO DE URGÊNCIA - ESTILOS
+           ========================================== */
+        .estoque-baixo {
+            color: #dc2626;
+            font-weight: 700;
+            animation: pulse-urgente 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-urgente {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        .ultimas-unidades {
+            background: #dc2626;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            animation: pulse-badge 2s infinite;
+        }
+        .vendas-hoje {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .vendas-hoje i {
+            color: #22c55e;
+        }
+        .timer-urgente {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: monospace;
+        }
+        .timer-urgente i {
+            color: #dc2626;
+        }
+        .boleto-badge {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .pagamento-boleto {
+            border-color: #f59e0b !important;
+        }
+        .pagamento-boleto:hover {
+            border-color: #d97706 !important;
+            background: #fffbeb !important;
+        }
     </style>
 </head>
 <body>
@@ -559,6 +629,8 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         <span>🚀 FRETE GRÁTIS PARA TODO BRASIL</span>
         <span class="hidden md:inline">•</span>
         <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 12X SEM JUROS</span>
+        <span class="hidden md:inline">•</span>
+        <span><i class="fa-solid fa-barcode"></i> BOLETO DISPONÍVEL</span>
     </div>
 
     <!-- HEADER -->
@@ -940,6 +1012,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                         <i class="fa-brands fa-cc-discover footer-payment-icon"></i>
                         <i class="fa-brands fa-pix text-3xl text-green-500 footer-payment-icon"></i>
                         <i class="fa-solid fa-bolt text-2xl text-yellow-500 footer-payment-icon"></i>
+                        <i class="fa-solid fa-barcode text-2xl text-yellow-600 footer-payment-icon"></i>
                         <span class="text-gray-500 text-sm font-medium">Boleto</span>
                     </div>
                 </div>
@@ -1051,6 +1124,12 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                         <i class="fa-solid fa-credit-card text-lg mb-1"></i>
                         <span class="text-xs font-bold">Cartão de Crédito</span>
                         <span class="text-[9px] text-gray-500 font-medium">Até 12x sem juros</span>
+                    </button>
+                    <!-- BOLETO -->
+                    <button type="button" onclick="selecionarMetodo('boleto')" id="btn-metodo-boleto" class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200">
+                        <i class="fa-solid fa-barcode text-lg mb-1"></i>
+                        <span class="text-xs font-bold">Boleto</span>
+                        <span class="text-[9px] text-gray-500 font-medium">Pague em até 3 dias</span>
                     </button>
                 </div>
                 <div id="campos-cartao" class="hidden space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 transition-all">
@@ -1434,6 +1513,67 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             if (stickyPrice) {
                 stickyPrice.textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             }
+
+            // ==========================================
+            // SENSO DE URGÊNCIA - ADICIONAR NA PÁGINA DO PRODUTO
+            // ==========================================
+            const estoqueRestante = Math.floor(Math.random() * 8) + 3;
+            const vendasHoje = Math.floor(Math.random() * 15) + 5;
+
+            const container = document.querySelector('#produto-preco')?.closest('.border-t.border-gray-200.pt-6');
+            if (container) {
+                container.querySelectorAll('.urgente-container').forEach(el => el.remove());
+                
+                const urgenteDiv = document.createElement('div');
+                urgenteDiv.className = 'urgente-container space-y-3 mt-4';
+                urgenteDiv.innerHTML = `
+                    <div class="timer-urgente">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>⏳ Oferta termina em: <strong id="timer-contador">02:00:00</strong></span>
+                    </div>
+                    <div class="vendas-hoje">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        <span><strong>${vendasHoje}</strong> pessoas compraram este produto hoje</span>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">📦 Estoque disponível:</span>
+                            <span class="text-sm font-bold ${estoqueRestante <= 5 ? 'estoque-baixo' : 'text-gray-900'}">
+                                ${estoqueRestante} unidades
+                            </span>
+                        </div>
+                        ${estoqueRestante <= 5 ? `
+                        <div class="mt-2">
+                            <span class="ultimas-unidades">⚠️ ÚLTIMAS UNIDADES! Compre agora!</span>
+                        </div>
+                        ` : ''}
+                        <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 rounded-full h-2 transition-all duration-1000" 
+                                 style="width: ${(estoqueRestante / 10) * 100}%"></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(urgenteDiv);
+            }
+
+            // Timer
+            let tempoRestante = 7200;
+            clearInterval(window._timerInterval);
+            const timerElement = document.getElementById('timer-contador');
+            if (timerElement) {
+                window._timerInterval = setInterval(() => {
+                    tempoRestante--;
+                    if (tempoRestante <= 0) {
+                        clearInterval(window._timerInterval);
+                        timerElement.textContent = '00:00:00';
+                        return;
+                    }
+                    const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
+                    const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
+                    const s = String(tempoRestante % 60).padStart(2, '0');
+                    timerElement.textContent = `${h}:${m}:${s}`;
+                }, 1000);
+            }
         }
 
         window.addEventListener('scroll', function() {
@@ -1590,6 +1730,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             metodoSelecionado = metodo;
             const btnPix = document.getElementById('btn-metodo-pix');
             const btnCartao = document.getElementById('btn-metodo-cartao');
+            const btnBoleto = document.getElementById('btn-metodo-boleto');
             const camposCartao = document.getElementById('campos-cartao');
             const btnText = document.getElementById('btn-text');
             const btnFinalizar = document.getElementById('btn-finalizar');
@@ -1605,15 +1746,23 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 stepLines[2].classList.add('done');
             }
             
+            // Resetar todos os botões
+            btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
+            btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
+            btnBoleto.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
+            
             if (metodo === 'pix') {
                 btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
-                btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
                 camposCartao.classList.add('hidden');
                 btnText.innerText = "Confirmar e Gerar Pix Real (5% OFF)";
                 btnFinalizar.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
+            } else if (metodo === 'boleto') {
+                btnBoleto.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-yellow-500 bg-yellow-50/50 text-yellow-700 transition duration-200";
+                camposCartao.classList.add('hidden');
+                btnText.innerText = "Confirmar e Gerar Boleto";
+                btnFinalizar.className = "w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
             } else {
                 btnCartao.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-blue-600 bg-blue-50/50 text-blue-900 transition duration-200";
-                btnPix.className = "flex flex-col items-center justify-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white transition duration-200";
                 camposCartao.classList.remove('hidden');
                 btnText.innerText = "Confirmar e Pagar com Cartão";
                 btnFinalizar.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-full transition-all shadow-md mt-4 text-base flex items-center justify-center gap-2";
@@ -1972,6 +2121,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                         document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
                         document.getElementById('pix-modal').classList.remove('hidden');
                         iniciarVerificacaoPagamento(resData.idPedido);
+                    } else if (metodoSelecionado === 'boleto') {
+                        showToast('✅ Boleto gerado com sucesso!', 'success');
+                        setTimeout(() => window.location.href = `/boleto?pedido=${resData.idPedido}`, 2000);
                     } else {
                         showToast('✅ Pagamento aprovado!', 'success');
                         const totalFormatado = Number(resData.total).toFixed(2).replace('.', ',');
@@ -1984,13 +2136,17 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 }
 
                 btnFinalizar.disabled = false;
-                btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 'Confirmar e Pagar com Cartão';
+                btnText.textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 
+                                       metodoSelecionado === 'boleto' ? 'Confirmar e Gerar Boleto' :
+                                       'Confirmar e Pagar com Cartão';
                 
             } catch (err) {
                 console.error('❌ ERRO GERAL:', err);
                 showToast('❌ Erro ao processar pagamento. Tente novamente.', 'error', 5000);
                 document.getElementById('btn-finalizar').disabled = false;
-                document.getElementById('btn-text').textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 'Confirmar e Pagar com Cartão';
+                document.getElementById('btn-text').textContent = metodoSelecionado === 'pix' ? 'Confirmar e Gerar Pix Real (5% OFF)' : 
+                                                                           metodoSelecionado === 'boleto' ? 'Confirmar e Gerar Boleto' :
+                                                                           'Confirmar e Pagar com Cartão';
             }
             
             processando = false;
