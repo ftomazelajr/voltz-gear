@@ -2968,31 +2968,74 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             this.value = value;
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            carregarProdutoPorSlug();
-            if (!window.location.pathname.includes('/produto/')) renderProdutos();
-            console.log('🚀 Voltz Gear carregada!');
-            console.log('📡 Backend URL:', API_URL);
-            console.log('🛒 Produtos disponíveis:', produtos.length);
-            selecionarMetodo('pix');
+       document.addEventListener('DOMContentLoaded', function() {
+    carregarProdutoPorSlug();
+    if (!window.location.pathname.includes('/produto/')) renderProdutos();
+    console.log('🚀 Voltz Gear carregada!');
+    console.log('📡 Backend URL:', API_URL);
+    console.log('🛒 Produtos disponíveis:', produtos.length);
+    selecionarMetodo('pix');
 
-            // ==========================================
-            // CONFIGURAR EXIT-INTENT POPUP
-            // ==========================================
-            // Detecta quando o mouse sai da página (intenção de fechar)
-            document.addEventListener('mouseleave', function(event) {
-                if (event.clientY < 0) {
-                    mostrarExitPopup();
-                }
-            });
-            
-            // Detecta tecla ESC (outra forma de saída)
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    mostrarExitPopup();
-                }
-            });
-        });
+    // ==========================================
+    // CONFIGURAR EXIT-INTENT POPUP (PC + CELULAR)
+    // ==========================================
+    
+    // 🔵 PC/DESKTOP: Detecta quando o mouse sai da página
+    document.addEventListener('mouseleave', function(event) {
+        if (event.clientY < 0) {
+            mostrarExitPopup();
+        }
+    });
+    
+    // 🔵 PC/DESKTOP: Detecta tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            mostrarExitPopup();
+        }
+    });
+    
+    // 🟢 CELULAR: Detecta quando o usuário tenta voltar a página
+    window.addEventListener('popstate', function(event) {
+        if (carrinho.length > 0) {
+            mostrarExitPopup();
+            // Previne que a página volte imediatamente
+            window.history.pushState(null, '', window.location.href);
+        }
+    });
+    
+    // 🟡 CELULAR: Detecta quando o usuário sai da aba
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && carrinho.length > 0) {
+            setTimeout(mostrarExitPopup, 1000);
+        }
+    });
+    
+    // 🟣 CELULAR: Previne o popup de aparecer quando o carrinho está vazio
+    // Adiciona um estado de histórico para prevenir o popstate
+    if (window.history && window.history.pushState) {
+        window.history.pushState(null, '', window.location.href);
+    }
+});
+
+function mostrarPagina(pagina) {
+    document.getElementById('page-home').classList.add('hidden');
+    document.getElementById('page-produto').classList.add('hidden');
+    if (pagina === 'home') {
+        document.getElementById('page-home').classList.remove('hidden');
+        renderProdutos();
+        window.scrollTo(0, 0);
+    } else if (pagina === 'produto') {
+        document.getElementById('page-produto').classList.remove('hidden');
+        window.scrollTo(0, 0);
+    }
+}
+
+window.abrirProduto = function(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto) return;
+    window.location.href = getProdutoUrl(produto);
+};
+           
 
         function mostrarPagina(pagina) {
             document.getElementById('page-home').classList.add('hidden');
