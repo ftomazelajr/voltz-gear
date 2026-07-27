@@ -617,6 +617,308 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             border-color: #d97706 !important;
             background: #fffbeb !important;
         }
+
+        /* ==========================================
+           EXIT-INTENT POPUP - ESTILOS
+           ========================================== */
+        #exit-popup-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        #exit-popup-overlay.show {
+            display: flex;
+        }
+        #exit-popup {
+            background: white;
+            max-width: 450px;
+            width: 90%;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+        #exit-popup .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #exit-popup .close-btn:hover {
+            color: #333;
+            transform: rotate(90deg);
+        }
+        #exit-popup .emoji {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        #exit-popup h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        #exit-popup p.sub {
+            color: #6b7280;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+        #exit-popup .offer-box {
+            background: #fef2f2;
+            border: 2px dashed #dc2626;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        #exit-popup .offer-box .label {
+            font-size: 12px;
+            color: #991b1b;
+            font-weight: 600;
+        }
+        #exit-popup .offer-box .value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #dc2626;
+        }
+        #exit-popup .offer-box .desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        #exit-popup .btn-accept {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        #exit-popup .btn-accept:hover {
+            background: #b91c1c;
+            transform: scale(1.02);
+        }
+        #exit-popup .btn-reject {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        #exit-popup .btn-reject:hover {
+            color: #6b7280;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 480px) {
+            #exit-popup {
+                padding: 30px 20px;
+            }
+            #exit-popup .offer-box .value {
+                font-size: 24px;
+            }
+        }
+
+        /* ==========================================
+           SEÇÃO DE CREDIBILIDADE - ESTILOS
+           ========================================== */
+        .credibility-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 24px;
+            padding: 48px 32px;
+            margin: 40px 0;
+            color: white;
+        }
+        .credibility-section .title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .credibility-section .title span {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            padding: 4px 16px;
+            border-radius: 12px;
+        }
+        .cred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .cred-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        .cred-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+        }
+        .cred-card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .cred-card h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #f1f5f9;
+        }
+        .cred-card p {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        .cred-card .badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+        .cred-card .badge.green { background: #22c55e; }
+        .cred-card .badge.yellow { background: #eab308; }
+        .cred-card .badge.purple { background: #8b5cf6; }
+
+        @media (max-width: 640px) {
+            .credibility-section {
+                padding: 32px 16px;
+                margin: 24px 0;
+            }
+            .credibility-section .title {
+                font-size: 22px;
+            }
+            .cred-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal de credibilidade */
+        .cred-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 99998;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .cred-modal.show {
+            display: flex;
+        }
+        .cred-modal-content {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        .cred-modal-content .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 28px;
+            color: #9ca3af;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.2s;
+        }
+        .cred-modal-content .close-modal:hover {
+            color: #1f2937;
+            transform: rotate(90deg);
+        }
+        .cred-modal-content h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .cred-modal-content .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 16px;
+        }
+        .cred-modal-content .content {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .cred-modal-content .content ul {
+            list-style: disc;
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        .cred-modal-content .content ul li {
+            margin-bottom: 8px;
+        }
+        .cred-modal-content .content strong {
+            color: #1f2937;
+        }
+        .cred-modal-content .highlight-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .cred-modal-content .highlight-box.warning {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+        .cred-modal-content .highlight-box.blue {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .cred-modal-content .highlight-box.purple-box {
+            background: #f5f3ff;
+            border-color: #ddd6fe;
+        }
+        @media (max-width: 480px) {
+            .cred-modal-content {
+                padding: 24px 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -698,6 +1000,62 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             <span id="results-count" class="text-sm text-gray-500">Mostrando todos os produtos</span>
         </div>
         <div id="grid-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE CREDIBILIDADE                     -->
+        <!-- ========================================== -->
+        <div class="credibility-section">
+            <h3 class="title">🔒 <span>Confiança e Transparência</span></h3>
+            <div class="cred-grid">
+                <!-- Quem Somos -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('quem-somos')">
+                    <span class="icon">🏢</span>
+                    <h4>Quem Somos</h4>
+                    <p>Conheça a história da VoltzGear, nossa missão e os valores que nos guiam.</p>
+                    <span class="badge">Saiba mais →</span>
+                </div>
+
+                <!-- Termos de Garantia -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('termos-garantia')">
+                    <span class="icon">🛡️</span>
+                    <h4>Termos de Garantia</h4>
+                    <p>Entenda como funciona nossa garantia de 90 dias e como acioná-la.</p>
+                    <span class="badge green">Garantia inclusa</span>
+                </div>
+
+                <!-- Política de Privacidade -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('politica-privacidade')">
+                    <span class="icon">🔐</span>
+                    <h4>Política de Privacidade</h4>
+                    <p>Como protegemos seus dados e garantimos sua segurança.</p>
+                    <span class="badge purple">LGPD</span>
+                </div>
+
+                <!-- Trocas e Devoluções -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('trocas-devolucoes')">
+                    <span class="icon">🔄</span>
+                    <h4>Trocas, Devoluções e Reembolsos</h4>
+                    <p>Política de devolução em até 7 dias e processo de reembolso.</p>
+                    <span class="badge yellow">7 dias</span>
+                </div>
+
+                <!-- FAQ -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('faq')">
+                    <span class="icon">❓</span>
+                    <h4>Perguntas Frequentes (FAQ)</h4>
+                    <p>Respostas para as dúvidas mais comuns sobre compras, entrega e mais.</p>
+                    <span class="badge">Leia mais</span>
+                </div>
+
+                <!-- Selos de Segurança -->
+                <div class="cred-card" onclick="abrirModalCredibilidade('selos-seguranca')">
+                    <span class="icon">✅</span>
+                    <h4>Selos de Segurança</h4>
+                    <p>Ambiente seguro, SSL certificado e pagamentos protegidos.</p>
+                    <span class="badge green">100% Seguro</span>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- PÁGINA DE PRODUTO INDIVIDUAL -->
@@ -941,6 +1299,16 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
     </section>
 
     <!-- ========================================== -->
+    <!-- MODAL DE CREDIBILIDADE                     -->
+    <!-- ========================================== -->
+    <div id="cred-modal" class="cred-modal">
+        <div class="cred-modal-content">
+            <button class="close-modal" onclick="fecharModalCredibilidade()">✕</button>
+            <div id="cred-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- FOOTER COMPLETO                             -->
     <!-- ========================================== -->
     <footer class="footer">
@@ -959,15 +1327,17 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 </div>
 
                 <!-- Coluna 2: Institucional -->
-  <div>
-    <h4 class="footer-title">Institucional</h4>
-    <ul class="space-y-2">
-        <li><a href="#" onclick="showToast('📖 Página Quem Somos em construção.', 'info')" class="footer-link">Quem Somos</a></li>
-        <li><a href="#" onclick="showToast('📋 Termos de Garantia - Consulte nosso SAC.', 'info')" class="footer-link">Termos de Garantia</a></li>
-        <li><a href="#" onclick="showToast('🔒 Política de Privacidade - Seus dados estão seguros.', 'info')" class="footer-link">Política de Privacidade</a></li>
-        <li><a href="#" onclick="showToast('🔄 Trocas e Devoluções - 7 dias para desistência.', 'info')" class="footer-link">Trocas, Devoluções e Reembolsos</a></li>
-    </ul>
-</div>
+                <div>
+                    <h4 class="footer-title">Institucional</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" onclick="abrirModalCredibilidade('quem-somos')" class="footer-link">Quem Somos</a></li>
+                        <li><a href="#" onclick="abrirModalCredibilidade('termos-garantia')" class="footer-link">Termos de Garantia</a></li>
+                        <li><a href="#" onclick="abrirModalCredibilidade('politica-privacidade')" class="footer-link">Política de Privacidade</a></li>
+                        <li><a href="#" onclick="abrirModalCredibilidade('trocas-devolucoes')" class="footer-link">Trocas, Devoluções e Reembolsos</a></li>
+                        <li><a href="#" onclick="abrirModalCredibilidade('faq')" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+
                 <!-- Coluna 3: Atendimento -->
                 <div>
                     <h4 class="footer-title">Atendimento</h4>
@@ -982,7 +1352,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                                 <i class="fa-solid fa-box text-blue-400 text-lg"></i> Rastrear meu Pedido
                             </a>
                         </li>
-                        <li><a href="#" onclick="showToast('❓ FAQ: Em breve disponível.', 'info')" class="footer-link">FAQ</a></li>
+                        <li><a href="#" onclick="abrirModalCredibilidade('faq')" class="footer-link">FAQ</a></li>
                     </ul>
                 </div>
 
@@ -1034,6 +1404,29 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         <i class="fa-brands fa-whatsapp"></i>
         <span class="tooltip">Fale conosco!</span>
     </a>
+
+    <!-- ========================================== -->
+    <!-- EXIT-INTENT POPUP - OFERTA DE DESISTÊNCIA  -->
+    <!-- ========================================== -->
+    <div id="exit-popup-overlay">
+        <div id="exit-popup">
+            <button class="close-btn" onclick="fecharExitPopup()">✕</button>
+            <div class="emoji">😱</div>
+            <h2>Não vá ainda!</h2>
+            <p class="sub">Percebemos que você estava prestes a finalizar sua compra.</p>
+            <div class="offer-box">
+                <p class="label">🎁 OFERTA EXCLUSIVA PARA VOCÊ</p>
+                <p class="value">R$ 10,00 OFF</p>
+                <p class="desc">Use no seu pedido agora mesmo!</p>
+            </div>
+            <button class="btn-accept" onclick="aplicarDescontoDesistencia()">
+                ✅ Quero meu desconto de R$10
+            </button>
+            <button class="btn-reject" onclick="fecharExitPopup()">
+                Não, obrigado. Quero sair.
+            </button>
+        </div>
+    </div>
 
     <!-- CARRINHO LATERAL -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto flex flex-col p-6">
@@ -1169,6 +1562,11 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     <span>Desconto PIX (5%):</span>
                     <span id="pix-discount-value" class="font-bold">- R$ 0,00</span>
                 </div>
+                <!-- DESCONTO DE DESISTÊNCIA (R$10) -->
+                <div id="exit-discount-row" class="flex justify-between text-red-600 hidden">
+                    <span>🎁 Desconto especial:</span>
+                    <span id="exit-discount-value" class="font-bold">- R$ 10,00</span>
+                </div>
                 <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-extrabold text-gray-900">
                     <span>Total Final:</span>
                     <span id="summary-total" class="text-blue-600">R$ 0,00</span>
@@ -1218,6 +1616,15 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         </div>
     </div>
 
+    <!-- CLARITY -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "vuc3txjxqx");
+    </script>
+
     <!-- SCRIPTS -->
     <script>
         // ==========================================
@@ -1226,6 +1633,338 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         const API_URL = 'https://voltzgear.com';
         const PUBLIC_KEY = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
         const MAX_PARCELAS = 12;
+        const DESCONTO_DESISTENCIA = 10; // R$10 de desconto
+
+        // ==========================================
+        // MODAL DE CREDIBILIDADE
+        // ==========================================
+        const credibilidadeConteudo = {
+            'quem-somos': {
+                titulo: '🏢 Quem Somos',
+                conteudo: `
+                    <p class="subtitle">Conheça a história da VoltzGear</p>
+                    <div class="content">
+                        <p><strong>Fundada em 2020</strong>, a <strong>VoltzGear</strong> nasceu com a missão de democratizar o acesso a acessórios tecnológicos de alta qualidade no Brasil.</p>
+                        <p style="margin-top:12px;">Somos uma empresa <strong>100% brasileira</strong> que acredita que a tecnologia deve ser acessível, funcional e estilosa. Por isso, curamos um catálogo exclusivo com os melhores produtos do mercado, selecionados criteriosamente para atender às necessidades de quem busca performance e design.</p>
+                        <div class="highlight-box blue" style="margin-top:16px;">
+                            <p><strong>🎯 Nossa Missão:</strong> Entregar produtos tecnológicos que realmente fazem diferença no dia a dia, com preços justos e atendimento humanizado.</p>
+                        </div>
+                        <div class="highlight-box" style="margin-top:12px;">
+                            <p><strong>👥 Nossa Equipe:</strong> Somos um time apaixonado por tecnologia e inovação. Cada produto da VoltzGear é testado e aprovado por nós antes de chegar até você.</p>
+                        </div>
+                        <div style="margin-top:16px; display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+                            <span style="background:#f1f5f9; padding:8px 20px; border-radius:20px; font-size:13px; font-weight:600;">📍 São Paulo - SP</span>
+                            <span style="background:#f1f5f9; padding:8px 20px; border-radius:20px; font-size:13px; font-weight:600;">📦 Entregamos para todo Brasil</span>
+                            <span style="background:#f1f5f9; padding:8px 20px; border-radius:20px; font-size:13px; font-weight:600;">⭐ +2.000 clientes atendidos</span>
+                        </div>
+                    </div>
+                `
+            },
+            'termos-garantia': {
+                titulo: '🛡️ Termos de Garantia',
+                conteudo: `
+                    <p class="subtitle">Entenda como funciona nossa garantia</p>
+                    <div class="content">
+                        <p><strong>Garantia de 90 dias</strong> contra defeitos de fabricação em todos os produtos comercializados pela VoltzGear.</p>
+                        <div class="highlight-box" style="margin-top:12px;">
+                            <p><strong>✅ O que nossa garantia cobre:</strong></p>
+                            <ul>
+                                <li>Defeitos de fabricação</li>
+                                <li>Mau funcionamento do produto</li>
+                                <li>Problemas elétricos comprovados</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-box warning" style="margin-top:12px;">
+                            <p><strong>❌ O que NÃO cobre:</strong></p>
+                            <ul>
+                                <li>Danos causados por quedas ou impactos</li>
+                                <li>Uso inadequado ou desrespeito às instruções</li>
+                                <li>Desgaste natural do produto</li>
+                                <li>Danos causados por água ou líquidos</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-box blue" style="margin-top:12px;">
+                            <p><strong>🔧 Como acionar a garantia:</strong></p>
+                            <ol style="list-style:decimal; padding-left:20px;">
+                                <li>Entre em contato pelo WhatsApp <strong>(14) 99143-5438</strong></li>
+                                <li>Envie fotos/vídeos do problema</li>
+                                <li>Nossa equipe analisará em até <strong>48h</strong></li>
+                                <li>Se aprovado, emitimos a <strong>troca ou reembolso</strong></li>
+                            </ol>
+                        </div>
+                        <p style="margin-top:12px; font-size:13px; color:#6b7280;">* Prazo de garantia começa a contar a partir da data de recebimento do produto.</p>
+                    </div>
+                `
+            },
+            'politica-privacidade': {
+                titulo: '🔐 Política de Privacidade',
+                conteudo: `
+                    <p class="subtitle">Seus dados estão seguros conosco</p>
+                    <div class="content">
+                        <p>A <strong>VoltzGear</strong> está comprometida com a proteção da sua privacidade. Todas as informações fornecidas durante a compra são tratadas com o mais alto nível de segurança e sigilo.</p>
+                        <div class="highlight-box blue" style="margin-top:12px;">
+                            <p><strong>📋 Quais dados coletamos:</strong></p>
+                            <ul>
+                                <li>Nome completo</li>
+                                <li>E-mail</li>
+                                <li>Endereço de entrega</li>
+                                <li>CPF (para emissão de nota fiscal)</li>
+                                <li>Telefone para contato</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-box" style="margin-top:12px;">
+                            <p><strong>🔒 Como protegemos seus dados:</strong></p>
+                            <ul>
+                                <li><strong>Criptografia SSL</strong> em todas as páginas</li>
+                                <li>Armazenamento seguro em servidores protegidos</li>
+                                <li>Nunca compartilhamos seus dados com terceiros sem sua autorização</li>
+                                <li>Em conformidade com a <strong>LGPD</strong> (Lei Geral de Proteção de Dados)</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-box warning" style="margin-top:12px;">
+                            <p><strong>🔑 Seus direitos:</strong></p>
+                            <ul>
+                                <li>Solicitar a exclusão dos seus dados</li>
+                                <li>Corrigir informações incorretas</li>
+                                <li>Saber quais dados temos sobre você</li>
+                            </ul>
+                            <p style="margin-top:8px;">Para exercer seus direitos, entre em contato pelo e-mail: <strong>privacidade@voltzgear.com</strong></p>
+                        </div>
+                        <p style="margin-top:12px; font-size:13px; color:#6b7280;">* Esta política pode ser atualizada periodicamente. Recomendamos sua consulta regular.</p>
+                    </div>
+                `
+            },
+            'trocas-devolucoes': {
+                titulo: '🔄 Trocas, Devoluções e Reembolsos',
+                conteudo: `
+                    <p class="subtitle">Política de devolução em até 7 dias</p>
+                    <div class="content">
+                        <p>De acordo com o <strong>Código de Defesa do Consumidor</strong>, você tem até <strong>7 dias corridos</strong> a partir do recebimento do produto para solicitar a devolução ou troca.</p>
+                        <div class="highlight-box" style="margin-top:12px;">
+                            <p><strong>📦 Como solicitar devolução:</strong></p>
+                            <ol style="list-style:decimal; padding-left:20px;">
+                                <li>Entre em contato pelo WhatsApp <strong>(14) 99143-5438</strong> em até 7 dias após o recebimento</li>
+                                <li>Informe o número do seu pedido e o motivo da devolução</li>
+                                <li>Nossa equipe enviará instruções para devolução</li>
+                                <li>Após recebermos o produto, o reembolso será processado em até <strong>5 dias úteis</strong></li>
+                            </ol>
+                        </div>
+                        <div class="highlight-box blue" style="margin-top:12px;">
+                            <p><strong>💰 Opções de reembolso:</strong></p>
+                            <ul>
+                                <li><strong>Pix:</strong> Em até 24h após a confirmação</li>
+                                <li><strong>Cartão de Crédito:</strong> Em até 2 faturas (dependendo da administradora)</li>
+                                <li><strong>Boleto:</strong> Reembolso em conta corrente em até 5 dias úteis</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-box warning" style="margin-top:12px;">
+                            <p><strong>⚠️ Condições para devolução:</strong></p>
+                            <ul>
+                                <li>O produto deve estar em <strong>perfeito estado</strong>, sem sinais de uso</li>
+                                <li>Deve ser devolvido na <strong>embalagem original</strong></li>
+                                <li>O prazo de 7 dias é <strong>corrido</strong> (inclui finais de semana e feriados)</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            'faq': {
+                titulo: '❓ Perguntas Frequentes (FAQ)',
+                conteudo: `
+                    <p class="subtitle">Respostas para as dúvidas mais comuns</p>
+                    <div class="content">
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>🛒 Como faço para comprar?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Basta adicionar os produtos ao carrinho, preencher seus dados de entrega e escolher a forma de pagamento. É simples e rápido!</p>
+                        </div>
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>🚚 Quanto tempo demora a entrega?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">O prazo médio de entrega é de <strong>15 a 20 dias úteis</strong> para todo o Brasil. O frete é <strong>GRÁTIS</strong> para todos os produtos.</p>
+                        </div>
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>💳 Quais formas de pagamento aceitam?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Aceitamos <strong>Pix</strong> (com 5% de desconto), <strong>Cartão de Crédito</strong> (em até 12x sem juros) e <strong>Boleto</strong>.</p>
+                        </div>
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>🔒 Meus dados estão seguros?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Sim! Utilizamos <strong>criptografia SSL</strong> e seguimos todas as diretrizes da LGPD para proteger suas informações.</p>
+                        </div>
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>🔄 Posso trocar o produto se não gostar?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Sim! Você tem <strong>7 dias corridos</strong> a partir do recebimento para solicitar a devolução ou troca, de acordo com o Código de Defesa do Consumidor.</p>
+                        </div>
+                        <div style="margin-bottom:16px; border-bottom:1px solid #f3f4f6; padding-bottom:12px;">
+                            <p><strong>📦 Como rastrear meu pedido?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Assim que seu pedido for enviado, você receberá um <strong>código de rastreamento</strong> por e-mail. Você pode acompanhar diretamente no site dos Correios.</p>
+                        </div>
+                        <div style="margin-bottom:8px;">
+                            <p><strong>📞 Como entro em contato?</strong></p>
+                            <p style="color:#6b7280; font-size:14px;">Nosso atendimento está disponível de <strong>segunda a sexta, das 9h às 18h</strong>, pelo WhatsApp <strong>(14) 99143-5438</strong>.</p>
+                        </div>
+                    </div>
+                `
+            },
+            'selos-seguranca': {
+                titulo: '✅ Selos de Segurança',
+                conteudo: `
+                    <p class="subtitle">Ambiente 100% seguro para suas compras</p>
+                    <div class="content">
+                        <p>A VoltzGear utiliza as melhores práticas de segurança para garantir que sua experiência de compra seja <strong>protegida e confiável</strong>.</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0;">
+                            <div class="highlight-box blue" style="text-align:center;">
+                                <span style="font-size:32px;">🔒</span>
+                                <p><strong>SSL Certificate</strong></p>
+                                <p style="font-size:12px; color:#6b7280;">Todas as páginas são criptografadas</p>
+                            </div>
+                            <div class="highlight-box" style="text-align:center;">
+                                <span style="font-size:32px;">💳</span>
+                                <p><strong>PCI Compliance</strong></p>
+                                <p style="font-size:12px; color:#6b7280;">Padrões internacionais de segurança</p>
+                            </div>
+                            <div class="highlight-box purple-box" style="text-align:center;">
+                                <span style="font-size:32px;">📋</span>
+                                <p><strong>LGPD</strong></p>
+                                <p style="font-size:12px; color:#6b7280;">Proteção de dados pessoais</p>
+                            </div>
+                            <div class="highlight-box warning" style="text-align:center;">
+                                <span style="font-size:32px;">🛡️</span>
+                                <p><strong>Fraude Zero</strong></p>
+                                <p style="font-size:12px; color:#6b7280;">Monitoramento contra fraudes</p>
+                            </div>
+                        </div>
+                        <div class="highlight-box" style="margin-top:12px;">
+                            <p><strong>🔐 Nossos compromissos:</strong></p>
+                            <ul>
+                                <li>Nunca armazenamos dados de cartão de crédito</li>
+                                <li>Utilizamos tokens temporários para pagamentos</li>
+                                <li>Monitoramento 24/7 contra atividades suspeitas</li>
+                                <li>Parceria com <strong>Mercado Pago</strong>, plataforma líder em segurança</li>
+                            </ul>
+                        </div>
+                        <div style="text-align:center; margin-top:16px; padding:12px; background:#f0fdf4; border-radius:12px;">
+                            <p style="font-size:14px; font-weight:700; color:#065f46;">✅ Você pode comprar com total tranquilidade na VoltzGear!</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        function abrirModalCredibilidade(tipo) {
+            const modal = document.getElementById('cred-modal');
+            const body = document.getElementById('cred-modal-body');
+            const conteudo = credibilidadeConteudo[tipo];
+            
+            if (conteudo) {
+                body.innerHTML = `
+                    <h2>${conteudo.titulo}</h2>
+                    ${conteudo.conteudo}
+                `;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                showToast('📄 Conteúdo em breve.', 'info');
+            }
+        }
+
+        function fecharModalCredibilidade() {
+            const modal = document.getElementById('cred-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('cred-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModalCredibilidade();
+            }
+        });
+
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                fecharModalCredibilidade();
+            }
+        });
+
+        // ==========================================
+        // EXIT-INTENT POPUP - LÓGICA
+        // ==========================================
+        let exitIntentShown = false;
+        let descontoDesistenciaAplicado = false;
+
+        // Verifica se o usuário já comprou
+        function usuarioJaComprou() {
+            return document.cookie.includes('compra_finalizada=true') || 
+                   sessionStorage.getItem('compra_finalizada') === 'true';
+        }
+
+        // Verifica se o desconto de desistência já foi usado
+        function descontoJaUsado() {
+            return sessionStorage.getItem('descontoDesistencia_usado') === 'true';
+        }
+
+        function mostrarExitPopup() {
+            if (exitIntentShown) return;
+            if (usuarioJaComprou()) {
+                console.log('✅ Usuário já comprou, popup de desistência desativado.');
+                return;
+            }
+            if (descontoJaUsado()) {
+                console.log('❌ Desconto de desistência já foi usado.');
+                return;
+            }
+            if (carrinho.length === 0) {
+                console.log('📦 Carrinho vazio, popup de desistência não será mostrado.');
+                return;
+            }
+
+            exitIntentShown = true;
+            const overlay = document.getElementById('exit-popup-overlay');
+            overlay.classList.add('show');
+        }
+
+        function fecharExitPopup() {
+            const overlay = document.getElementById('exit-popup-overlay');
+            overlay.classList.remove('show');
+        }
+
+        function aplicarDescontoDesistencia() {
+            if (descontoDesistenciaAplicado) return;
+            if (descontoJaUsado()) {
+                showToast('❌ Este desconto já foi utilizado.', 'error');
+                fecharExitPopup();
+                return;
+            }
+
+            descontoDesistenciaAplicado = true;
+            sessionStorage.setItem('descontoDesistencia_usado', 'true');
+            
+            // Fecha o popup
+            fecharExitPopup();
+            
+            // Aplica o desconto visualmente
+            aplicarDescontoVisual();
+            
+            // Mostra confirmação
+            showToast('🎉 R$10 de desconto aplicado! Continue sua compra.', 'success', 4000);
+            
+            // Abre o carrinho
+            const sidebar = document.getElementById('cart-sidebar');
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+            }
+            showCheckoutForm();
+        }
+
+        function aplicarDescontoVisual() {
+            // Mostra a linha de desconto no resumo
+            const exitDiscountRow = document.getElementById('exit-discount-row');
+            if (exitDiscountRow) {
+                exitDiscountRow.classList.remove('hidden');
+            }
+            // Atualiza os totais
+            atualizarResumoValores();
+        }
 
         // ==========================================
         // INICIALIZAR MERCADO PAGO SDK (apenas para referência)
@@ -1236,7 +1975,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         console.log('✅ Mercado Pago SDK inicializada (modo compatibilidade)');
 
         // ==========================================
-        // FUNÇÃO PARA CRIAR TOKEN VIA API REST (CORRIGIDA - ESTRUTURA CORRETA)
+        // FUNÇÃO PARA CRIAR TOKEN VIA API REST
         // ==========================================
         async function criarTokenViaAPI(cardData) {
             const apiData = {
@@ -1348,18 +2087,25 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         // ==========================================
         function calcularTotalComDesconto(subtotal, frete) {
             const freteReal = 0;
+            let total = subtotal + freteReal;
+            let descontoTotal = 0;
+            
+            // Desconto PIX (5%)
             if (metodoSelecionado === 'pix') {
-                const total = subtotal + freteReal;
-                const desconto = total * 0.05;
-                return {
-                    totalComDesconto: total - desconto,
-                    desconto: desconto,
-                    frete: freteReal
-                };
+                const descontoPix = total * 0.05;
+                total = total - descontoPix;
+                descontoTotal += descontoPix;
             }
+            
+            // Desconto de desistência (R$10)
+            if (descontoDesistenciaAplicado) {
+                total = total - DESCONTO_DESISTENCIA;
+                descontoTotal += DESCONTO_DESISTENCIA;
+            }
+            
             return {
-                totalComDesconto: subtotal + freteReal,
-                desconto: 0,
+                totalComDesconto: total,
+                desconto: descontoTotal,
                 frete: freteReal
             };
         }
@@ -1773,7 +2519,10 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
 
         function calcularParcelasDropdown() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
-            const total = subtotal;
+            let total = subtotal;
+            if (descontoDesistenciaAplicado) {
+                total = total - DESCONTO_DESISTENCIA;
+            }
             const select = document.getElementById('card-parcelas');
             select.innerHTML = '';
             for (let i = 1; i <= MAX_PARCELAS; i++) {
@@ -1805,7 +2554,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         function atualizarResumoValores() {
             const subtotal = carrinho.reduce((sum, item) => sum + item.preco, 0);
             const frete = 0;
-            const total = subtotal + frete;
+            let total = subtotal + frete;
             
             document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             
@@ -1819,18 +2568,33 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             
             const pixDiscountRow = document.getElementById('pix-discount-row');
             const pixDiscountValue = document.getElementById('pix-discount-value');
+            const exitDiscountRow = document.getElementById('exit-discount-row');
+            const exitDiscountValue = document.getElementById('exit-discount-value');
             const summaryTotal = document.getElementById('summary-total');
             
+            let descontoPix = 0;
+            let descontoExit = 0;
+            
+            // Desconto PIX (5%)
             if (metodoSelecionado === 'pix' && carrinho.length > 0) {
-                const desconto = total * 0.05;
-                const totalComDesconto = total - desconto;
+                descontoPix = total * 0.05;
                 pixDiscountRow.classList.remove('hidden');
-                pixDiscountValue.textContent = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;
-                summaryTotal.textContent = `R$ ${totalComDesconto.toFixed(2).replace('.', ',')}`;
+                pixDiscountValue.textContent = `- R$ ${descontoPix.toFixed(2).replace('.', ',')}`;
             } else {
                 pixDiscountRow.classList.add('hidden');
-                summaryTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
             }
+            
+            // Desconto de desistência (R$10)
+            if (descontoDesistenciaAplicado && carrinho.length > 0) {
+                descontoExit = DESCONTO_DESISTENCIA;
+                exitDiscountRow.classList.remove('hidden');
+                exitDiscountValue.textContent = `- R$ ${DESCONTO_DESISTENCIA.toFixed(2).replace('.', ',')}`;
+            } else {
+                exitDiscountRow.classList.add('hidden');
+            }
+            
+            const totalFinal = total - descontoPix - descontoExit;
+            summaryTotal.textContent = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
             
             if (metodoSelecionado === 'cartao') calcularParcelasDropdown();
         }
@@ -2073,6 +2837,12 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     total = total - descontoAplicado;
                 }
                 
+                // Desconto de desistência (R$10)
+                if (descontoDesistenciaAplicado) {
+                    total = total - DESCONTO_DESISTENCIA;
+                    descontoAplicado += DESCONTO_DESISTENCIA;
+                }
+                
                 console.log('💰 Total com desconto:', total);
                 console.log('💰 Desconto aplicado:', descontoAplicado);
 
@@ -2094,6 +2864,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     frete: 0,
                     metodoPagamento: metodoSelecionado,
                     desconto: descontoAplicado.toFixed(2),
+                    descontoDesistencia: descontoDesistenciaAplicado ? DESCONTO_DESISTENCIA : 0,
                     detalhesCartao: metodoSelecionado === 'cartao' ? {
                         parcelas: parcelas,
                         token: cardToken,
@@ -2116,6 +2887,10 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 console.log('📨 Resposta do servidor:', resData);
 
                 if (resData.sucesso) {
+                    // Marca que o usuário comprou
+                    document.cookie = 'compra_finalizada=true; path=/; max-age=2592000';
+                    sessionStorage.setItem('compra_finalizada', 'true');
+                    
                     if (metodoSelecionado === 'pix') {
                         document.getElementById('pix-qr-img').src = resData.pixQRCode;
                         document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
@@ -2198,6 +2973,23 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             console.log('📡 Backend URL:', API_URL);
             console.log('🛒 Produtos disponíveis:', produtos.length);
             selecionarMetodo('pix');
+
+            // ==========================================
+            // CONFIGURAR EXIT-INTENT POPUP
+            // ==========================================
+            // Detecta quando o mouse sai da página (intenção de fechar)
+            document.addEventListener('mouseleave', function(event) {
+                if (event.clientY < 0) {
+                    mostrarExitPopup();
+                }
+            });
+            
+            // Detecta tecla ESC (outra forma de saída)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    mostrarExitPopup();
+                }
+            });
         });
 
         function mostrarPagina(pagina) {
