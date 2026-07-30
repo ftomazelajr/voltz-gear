@@ -141,11 +141,19 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         .carousel-slide {
             min-width: 100%;
             aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f3f4f6;
         }
-        .carousel-slide img {
+        .carousel-slide img,
+        .carousel-slide video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        .carousel-slide video {
+            background: #000;
         }
         .carousel-btn {
             position: absolute;
@@ -201,6 +209,24 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             font-weight: 700;
             z-index: 10;
             animation: pulse-badge 2s infinite;
+        }
+        .video-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .video-badge i {
+            font-size: 12px;
         }
         @keyframes pulse-badge {
             0%, 100% { transform: scale(1); }
@@ -1073,6 +1099,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     <button class="carousel-btn prev" onclick="moverCarrossel(-1)">‹</button>
                     <button class="carousel-btn next" onclick="moverCarrossel(1)">›</button>
                     <div class="carousel-badge">🔥 +500 vendidos</div>
+                    <div class="video-badge"><i class="fa-solid fa-play"></i> Vídeo</div>
                 </div>
                 <div class="carousel-dots" id="carousel-dots" style="display:none;"></div>
                 <img id="produto-imagem" src="" alt="Produto" class="product-detail-image" style="display:none;">
@@ -2028,15 +2055,14 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
   preco: 119.90, 
   desc: "Som de alta fidelidade, zero delay e cancelamento de ruído com Bluetooth 5.3 e homologação ANATEL.", 
   tag: "🔥 MAIS VENDIDO",
-  //img: "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
   video: "https://video.aliexpress-media.com/play/u/ae_sg_item/3000004200160/p/1/e/6/t/10301/5000561750774.mp4?from=chrome",
   aliexpressId: "1005010755900045",
   imagens: [
-   // "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
-    //"https://ae-pic-a1.aliexpress-media.com/kf/S006983eea656469f95f94c78c9e14dc2c.jpg",
-    //"https://ae-pic-a1.aliexpress-media.com/kf/S50ca9ca3711d406b8deae8cf645d4b55Y.jpg",
     "https://ae-pic-a1.aliexpress-media.com/kf/S68575717f3d64873971f74462264729bK.jpg_220x220q75.jpg_.avif",
-    "https://ae-pic-a1.aliexpress-media.com/kf/S561514213d1c43e88701a0ec1dc7ad4dH.jpg_220x220q75.jpg_.avif"
+    "https://ae-pic-a1.aliexpress-media.com/kf/S561514213d1c43e88701a0ec1dc7ad4dH.jpg_220x220q75.jpg_.avif",
+    "https://ae-pic-a1.aliexpress-media.com/kf/Sf8bdc60bb8974ed9b10f6116ce132783v.jpg",
+    "https://ae-pic-a1.aliexpress-media.com/kf/S006983eea656469f95f94c78c9e14dc2c.jpg",
+    "https://ae-pic-a1.aliexpress-media.com/kf/S50ca9ca3711d406b8deae8cf645d4b55Y.jpg"
   ],
   descricaoCompleta: `
 <div class="space-y-4 text-gray-700">
@@ -2155,11 +2181,20 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             grid.innerHTML = listaFiltrada.map(p => {
                 const valorParcela = (p.preco / MAX_PARCELAS).toFixed(2).replace('.', ',');
                 const url = getProdutoUrl(p);
+                // Verifica se o produto tem vídeo para exibir na página inicial
+                const hasVideo = p.video && p.id === 1;
                 return `<div class="product-card" onclick="window.location.href='${url}'">
                     <div class="relative bg-gray-100">
+                        ${hasVideo ? `
+                        <video src="${p.video}" autoplay loop muted playsinline class="w-full h-64 object-cover" style="background:#000;"></video>
+                        <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
+                        <span class="absolute top-3 right-3 bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-play"></i> Vídeo</span>
+                        <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
+                        ` : `
                         <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
                         <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
                         <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
+                        `}
                     </div>
                     <div class="p-6 flex flex-col flex-1">
                         <h3 class="text-lg font-bold mb-2 text-gray-900">${p.nome}</h3>
@@ -2237,22 +2272,42 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             produtoAtual = produto;
             quantidadeAtual = 1;
             
-            if (produto.imagens && produto.imagens.length > 1) {
+            // Verifica se tem vídeo (produto ID 1)
+            const hasVideo = produto.video && produto.id === 1;
+            
+            if (produto.imagens && produto.imagens.length > 0) {
                 document.querySelector('.carousel-container').style.display = 'block';
                 document.getElementById('carousel-dots').style.display = 'flex';
                 document.getElementById('produto-imagem').style.display = 'none';
                 const track = document.getElementById('carousel-track');
                 track.innerHTML = '';
+                
+                // Se tiver vídeo, adiciona como primeiro slide
+                if (hasVideo) {
+                    const videoSlide = document.createElement('div');
+                    videoSlide.className = 'carousel-slide';
+                    videoSlide.innerHTML = `<video src="${produto.video}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;background:#000;"></video>`;
+                    track.appendChild(videoSlide);
+                }
+                
+                // Adiciona as imagens
                 produto.imagens.forEach((img, index) => {
                     const slide = document.createElement('div');
                     slide.className = 'carousel-slide';
                     slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
                     track.appendChild(slide);
                 });
+                
                 criarDots();
                 slideIndex = 0;
                 irParaSlide(0);
                 iniciarCarrossel();
+                
+                // Mostra badge de vídeo se tiver
+                const videoBadge = document.querySelector('.video-badge');
+                if (videoBadge) {
+                    videoBadge.style.display = hasVideo ? 'flex' : 'none';
+                }
             } else {
                 document.querySelector('.carousel-container').style.display = 'none';
                 document.getElementById('carousel-dots').style.display = 'none';
@@ -2365,6 +2420,16 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             if (track) track.style.transform = `translateX(-${slideIndex * 100}%)`;
             document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
                 dot.className = 'carousel-dot' + (i === slideIndex ? ' active' : '');
+            });
+            
+            // Controla autoplay do vídeo quando está visível
+            const slidesElements = track ? track.querySelectorAll('.carousel-slide video') : [];
+            slidesElements.forEach((video, i) => {
+                if (i === slideIndex) {
+                    video.play().catch(() => {});
+                } else {
+                    video.pause();
+                }
             });
         }
 
