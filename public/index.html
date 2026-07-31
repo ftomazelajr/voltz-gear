@@ -954,49 +954,64 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
     <!-- TOAST -->
     <div id="toast" class="toast"></div>
 
-    <!-- TOPBAR -->
-    <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
-        <span>🚀 FRETE GRÁTIS PARA TODO BRASIL</span>
-        <span class="hidden md:inline">•</span>
-        <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 12X SEM JUROS</span>
-        <span class="hidden md:inline">•</span>
-        <span><i class="fa-solid fa-barcode"></i> BOLETO DISPONÍVEL</span>
-    </div>
+<!-- TOPBAR -->
+<div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
+    <span>🚚 <strong>FRETE GRÁTIS</strong> PARA TODO BRASIL</span>
+    <span class="hidden sm:inline">|</span>
+    <span><i class="fa-solid fa-credit-card mr-1"></i> ATÉ 12X SEM JUROS</span>
+    <span class="hidden sm:inline">|</span>
+    <span><i class="fa-solid fa-barcode mr-1"></i> BOLETO DISPONÍVEL</span>
+    <span class="hidden sm:inline">|</span>
+    <span><i class="fa-solid fa-star mr-1"></i> <strong>+5.000</strong> CLIENTES ATENDIDOS</span>
+    <span class="hidden sm:inline">|</span>
+    <span><i class="fa-solid fa-shield-halved mr-1"></i> COMPRA <strong>100% SEGURA</strong></span>
+</div>
 
-    <!-- HEADER -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-between h-20 gap-4">
-                <div class="flex items-center gap-8">
-                    <a href="/" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
-                        VOLTZ<span class="text-blue-600">GEAR</span>
-                    </a>
-                    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-                        <a href="/" class="hover:text-blue-600 transition">Início</a>
-                        <a href="/#catalogo" class="hover:text-blue-600 transition">Produtos</a>
-                        <a href="/#novidades" class="hover:text-blue-600 transition">Novidades</a>
-                        <a href="/#suporte" class="hover:text-blue-600 transition">Suporte</a>
-                    </nav>
-                </div>
-                <div class="flex-1 max-w-md mx-4 relative hidden sm:block">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                    </span>
-                    <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleCart()" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition group">
-                        <i class="fa-solid fa-bag-shopping text-xl"></i>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
-                        <span id="cart-mini-total" class="cart-header-info">R$ 0,00</span>
-                    </button>
-                </div>
+<!-- HEADER -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between h-20 gap-4">
+            <div class="flex items-center gap-8">
+                <a href="/" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
+                    VOLTZ<span class="text-blue-600">GEAR</span>
+                </a>
+                <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+                    <a href="/" class="hover:text-blue-600 transition">Início</a>
+                    <a href="/#catalogo" class="hover:text-blue-600 transition">Produtos</a>
+                    <a href="/#novidades" class="hover:text-blue-600 transition">Novidades</a>
+                    <a href="/#suporte" class="hover:text-blue-600 transition">Suporte</a>
+                </nav>
             </div>
-            <div class="pb-4 sm:hidden">
-                <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="flex-1 max-w-md mx-4 relative hidden sm:block">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </span>
+                <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+            </div>
+            <!-- CADEADO DE SEGURANÇA -->
+            <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+                <i class="fa-solid fa-lock text-green-600"></i>
+                <span>Compra <strong>100% Segura</strong></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- WHATSAPP/SUPORTE -->
+                <a href="https://wa.me/5514991435438" target="_blank" class="hidden md:flex items-center gap-2 text-sm font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200 hover:bg-green-100 transition">
+                    <i class="fa-brands fa-whatsapp text-green-600 text-base"></i>
+                    <span class="hidden xl:inline">Suporte: (14) 99143-5438</span>
+                    <span class="xl:hidden">WhatsApp</span>
+                </a>
+                <button onclick="toggleCart()" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition group">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                    <span id="cart-mini-total" class="cart-header-info">R$ 0,00</span>
+                </button>
             </div>
         </div>
-    </header>
+        <div class="pb-4 sm:hidden">
+            <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+    </div>
+</header>
 
     <!-- ========================================== -->
     <!-- STICKY BUY - Botão flutuante de compra      -->
@@ -2079,7 +2094,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
   video: "https://video.aliexpress-media.com/play/u/ae_sg_item/3000004200160/p/1/e/6/t/10301/5000561750774.mp4?from=chrome",
   aliexpressId: "1005010755900045",
   imagens: [
-    "https://ibb.co/Q7JjHPn7",
+    "https://i.ibb.co/5X1xjrvX/Gemini-Generated-Image-lsgiuclsgiuclsgi.png",
     "https://ae-pic-a1.aliexpress-media.com/kf/S561514213d1c43e88701a0ec1dc7ad4dH.jpg_220x220q75.jpg_.avif",
     
   ],
