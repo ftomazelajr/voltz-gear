@@ -947,6 +947,100 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 padding: 24px 16px;
             }
         }
+
+        /* ==========================================
+           PÁGINAS DE TERMOS E PRIVACIDADE
+           ========================================== */
+        .legal-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .legal-page h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .legal-page .last-update {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 16px;
+        }
+        .legal-page h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        .legal-page h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        .legal-page p {
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+        .legal-page ul {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+        .legal-page ul li {
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 6px;
+        }
+        .legal-page .highlight-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .legal-page .highlight-box.warning {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+        .legal-page .highlight-box.blue {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .legal-page .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+            margin-top: 32px;
+        }
+        .legal-page .back-link:hover {
+            color: #2563eb;
+        }
+        @media (max-width: 640px) {
+            .legal-page {
+                padding: 24px 16px;
+            }
+            .legal-page h1 {
+                font-size: 24px;
+            }
+            .legal-page h2 {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1028,6 +1122,183 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- PÁGINA DE TERMOS DE USO                     -->
+    <!-- ========================================== -->
+    <section id="page-termos" class="max-w-7xl mx-auto px-4 py-12 hidden">
+        <div class="legal-page">
+            <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a loja</a>
+            <h1>📜 Termos de Uso</h1>
+            <p class="last-update">Última atualização: 30 de julho de 2026</p>
+
+            <p>Bem-vindo à <strong>VoltzGear</strong>. Ao acessar e utilizar nosso site, você concorda com os seguintes Termos de Uso. Recomendamos a leitura atenta deste documento antes de realizar qualquer compra ou navegação em nossa plataforma.</p>
+
+            <h2>1. Aceitação dos Termos</h2>
+            <p>Ao utilizar o site <strong>voltzgear.com</strong> e seus serviços, você declara ter lido, compreendido e aceitado integralmente estes Termos de Uso, bem como nossa <a href="/privacidade" class="text-blue-600 hover:underline">Política de Privacidade</a>. Caso não concorde com qualquer parte destes termos, recomendamos que não utilize nossa plataforma.</p>
+
+            <h2>2. Cadastro e Conta do Usuário</h2>
+            <p>Para realizar compras em nossa loja, você pode navegar como convidado ou criar uma conta. Ao criar uma conta, você se compromete a:</p>
+            <ul>
+                <li>Fornecer informações verdadeiras, precisas e atualizadas;</li>
+                <li>Manter a confidencialidade de suas credenciais de acesso;</li>
+                <li>Notificar imediatamente a VoltzGear sobre qualquer uso não autorizado de sua conta;</li>
+                <li>Ser responsável por todas as atividades realizadas em sua conta.</li>
+            </ul>
+
+            <h2>3. Produtos e Preços</h2>
+            <p>Nossos produtos são cuidadosamente selecionados para oferecer a melhor experiência aos nossos clientes. Todos os preços estão em <strong>Real (R$)</strong> e podem ser alterados sem aviso prévio. A VoltzGear se reserva o direito de:</p>
+            <ul>
+                <li>Atualizar preços e descrições a qualquer momento;</li>
+                <li>Corrigir erros de precificação ou informações de produtos;</li>
+                <li>Limitar a quantidade de itens por pedido;</li>
+                <li>Recusar ou cancelar pedidos a seu critério.</li>
+            </ul>
+
+            <div class="highlight-box blue">
+                <p><strong>✅ Garantia de Melhor Preço:</strong> Se você encontrar o mesmo produto por um preço menor em outro site brasileiro, entraremos em contato para ajustar o valor. Consulte nossos canais de atendimento para mais informações.</p>
+            </div>
+
+            <h2>4. Formas de Pagamento</h2>
+            <p>A VoltzGear oferece as seguintes opções de pagamento:</p>
+            <ul>
+                <li><strong>Pix:</strong> Pagamento instantâneo com 5% de desconto;</li>
+                <li><strong>Cartão de Crédito:</strong> Parcelamento em até 12x sem juros;</li>
+                <li><strong>Boleto:</strong> Pagamento em até 3 dias úteis.</li>
+            </ul>
+            <p>Todas as transações são processadas com segurança através da plataforma <strong>Mercado Pago</strong>, garantindo a proteção dos seus dados.</p>
+
+            <h2>5. Política de Entrega</h2>
+            <p>Oferecemos <strong>frete grátis</strong> para todo o Brasil em todos os nossos produtos. O prazo estimado de entrega é de <strong>15 a 20 dias úteis</strong> a partir da confirmação do pagamento. Todos os pedidos são enviados com <strong>rastreamento completo</strong>, e você receberá o código para acompanhamento por e-mail.</p>
+
+            <div class="highlight-box">
+                <p><strong>🛡️ Garantia de Entrega:</strong> Se o seu pedido não for entregue no prazo estimado, você tem direito ao reembolso integral. Entre em contato com nosso suporte para mais detalhes.</p>
+            </div>
+
+            <h2>6. Política de Trocas e Devoluções</h2>
+            <p>De acordo com o <strong>Código de Defesa do Consumidor</strong>, você tem até <strong>7 dias corridos</strong> a partir do recebimento do produto para solicitar a devolução ou troca. Para isso, o produto deve estar em perfeito estado, com a embalagem original e sem sinais de uso.</p>
+            <p>Para iniciar o processo, entre em contato pelo WhatsApp <strong>(14) 99143-5438</strong>.</p>
+
+            <h2>7. Propriedade Intelectual</h2>
+            <p>Todo o conteúdo disponível em nosso site, incluindo textos, imagens, logotipos, vídeos e design, é de propriedade exclusiva da <strong>VoltzGear</strong> e está protegido pelas leis de direitos autorais. É proibida a reprodução, distribuição ou uso comercial sem nossa autorização expressa.</p>
+
+            <h2>8. Responsabilidades</h2>
+            <p>A VoltzGear não se responsabiliza por:</p>
+            <ul>
+                <li>Danos decorrentes de mau uso dos produtos;</li>
+                <li>Interrupções temporárias do site por manutenção ou falhas técnicas;</li>
+                <li>Conteúdos de terceiros acessados através de links externos.</li>
+            </ul>
+
+            <h2>9. Alterações nos Termos</h2>
+            <p>Estes Termos de Uso podem ser atualizados periodicamente. Recomendamos que você revise esta página regularmente para estar ciente de quaisquer alterações. A data da última atualização está indicada no início deste documento.</p>
+
+            <h2>10. Contato</h2>
+            <p>Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco:</p>
+            <ul>
+                <li><strong>WhatsApp:</strong> (14) 99143-5438</li>
+                <li><strong>E-mail:</strong> contato@voltzgear.com</li>
+            </ul>
+
+            <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a loja</a>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- PÁGINA DE POLÍTICA DE PRIVACIDADE          -->
+    <!-- ========================================== -->
+    <section id="page-privacidade" class="max-w-7xl mx-auto px-4 py-12 hidden">
+        <div class="legal-page">
+            <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a loja</a>
+            <h1>🔐 Política de Privacidade</h1>
+            <p class="last-update">Última atualização: 30 de julho de 2026</p>
+
+            <p>A <strong>VoltzGear</strong> valoriza a sua privacidade e está comprometida com a proteção dos seus dados pessoais. Esta Política de Privacidade explica como coletamos, utilizamos e protegemos as informações que você nos fornece ao utilizar nosso site e serviços.</p>
+
+            <h2>1. Informações que Coletamos</h2>
+            <p>Para processar seus pedidos e oferecer uma experiência personalizada, coletamos as seguintes informações:</p>
+            <ul>
+                <li><strong>Dados Pessoais:</strong> Nome completo, CPF, e-mail, telefone e endereço de entrega;</li>
+                <li><strong>Dados de Navegação:</strong> Endereço IP, tipo de dispositivo, páginas visitadas e interações no site;</li>
+                <li><strong>Dados de Pagamento:</strong> Informações de cartão de crédito (processadas com segurança pelo Mercado Pago, não armazenamos esses dados em nossos servidores).</li>
+            </ul>
+
+            <h2>2. Como Utilizamos seus Dados</h2>
+            <p>As informações coletadas são utilizadas para:</p>
+            <ul>
+                <li>Processar e entregar seus pedidos;</li>
+                <li>Enviar comunicações sobre o status do seu pedido;</li>
+                <li>Oferecer suporte ao cliente e atendimento personalizado;</li>
+                <li>Enviar ofertas e novidades (apenas com seu consentimento);</li>
+                <li>Melhorar nosso site e serviços com base em análises de navegação;</li>
+                <li>Cumprir obrigações legais e fiscais.</li>
+            </ul>
+
+            <div class="highlight-box blue">
+                <p><strong>🔒 Compromisso com a Segurança:</strong> Utilizamos criptografia SSL em todas as páginas e seguimos rigorosamente as diretrizes da LGPD (Lei Geral de Proteção de Dados).</p>
+            </div>
+
+            <h2>3. Compartilhamento de Dados</h2>
+            <p>A VoltzGear não vende, aluga ou compartilha seus dados pessoais com terceiros para fins de marketing. Seus dados podem ser compartilhados apenas quando necessário para:</p>
+            <ul>
+                <li>Processar pagamentos (com a plataforma Mercado Pago);</li>
+                <li>Realizar entregas (com transportadoras parceiras);</li>
+                <li>Cumprir obrigações legais ou judiciais.</li>
+            </ul>
+
+            <h2>4. Seus Direitos</h2>
+            <p>De acordo com a <strong>LGPD</strong>, você tem o direito de:</p>
+            <ul>
+                <li>Confirmar a existência de tratamento de seus dados;</li>
+                <li>Acessar seus dados pessoais;</li>
+                <li>Corrigir dados incompletos, inexatos ou desatualizados;</li>
+                <li>Solicitar a anonimização, bloqueio ou eliminação de dados desnecessários;</li>
+                <li>Solicitar a portabilidade dos seus dados para outro fornecedor;</li>
+                <li>Revogar seu consentimento a qualquer momento.</li>
+            </ul>
+            <p>Para exercer seus direitos, entre em contato pelo e-mail <strong>privacidade@voltzgear.com</strong>.</p>
+
+            <h2>5. Cookies</h2>
+            <p>Utilizamos cookies para melhorar sua experiência de navegação. Eles nos ajudam a:</p>
+            <ul>
+                <li>Manter sua sessão ativa;</li>
+                <li>Lembrar suas preferências;</li>
+                <li>Analisar o tráfego e o comportamento dos usuários.</li>
+            </ul>
+            <p>Você pode desativar os cookies nas configurações do seu navegador a qualquer momento.</p>
+
+            <h2>6. Armazenamento e Segurança</h2>
+            <p>Seus dados são armazenados em servidores seguros com proteção contra acessos não autorizados. Utilizamos as melhores práticas de segurança da informação, incluindo:</p>
+            <ul>
+                <li>Criptografia SSL em todas as comunicações;</li>
+                <li>Firewalls e sistemas de detecção de intrusão;</li>
+                <li>Controle de acesso restrito aos dados;</li>
+                <li>Monitoramento contínuo de vulnerabilidades.</li>
+            </ul>
+
+            <div class="highlight-box warning">
+                <p><strong>⚠️ Importante:</strong> Nenhum sistema de segurança é 100% infalível. Embora adotemos todas as medidas possíveis, não podemos garantir a segurança absoluta das informações transmitidas pela internet.</p>
+            </div>
+
+            <h2>7. Retenção de Dados</h2>
+            <p>Mantemos seus dados pessoais apenas pelo tempo necessário para cumprir as finalidades descritas nesta política, a menos que um período de retenção mais longo seja exigido por lei. Após esse período, seus dados serão anonimizados ou excluídos de forma segura.</p>
+
+            <h2>8. Links para Sites de Terceiros</h2>
+            <p>Nosso site pode conter links para sites externos. Não somos responsáveis pelas práticas de privacidade ou pelo conteúdo desses sites. Recomendamos que você leia as políticas de privacidade de cada site que visitar.</p>
+
+            <h2>9. Alterações nesta Política</h2>
+            <p>Esta Política de Privacidade pode ser atualizada periodicamente. Recomendamos que você revise esta página regularmente para estar ciente de quaisquer alterações. A data da última atualização está indicada no início deste documento.</p>
+
+            <h2>10. Contato</h2>
+            <p>Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade, entre em contato:</p>
+            <ul>
+                <li><strong>E-mail:</strong> privacidade@voltzgear.com</li>
+                <li><strong>WhatsApp:</strong> (14) 99143-5438</li>
+            </ul>
+
+            <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a loja</a>
+        </div>
+    </section>
+
     <!-- PÁGINA HOME -->
     <section id="page-home" class="max-w-7xl mx-auto px-4 py-12">
         <div class="bg-gradient-to-b from-blue-50 to-transparent py-8 px-4 -mx-4 mb-8 rounded-3xl">
@@ -1066,8 +1337,8 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     <span class="badge green">Garantia inclusa</span>
                 </div>
 
-                <!-- Política de Privacidade -->
-                <div class="cred-card" onclick="abrirModalCredibilidade('politica-privacidade')">
+                <!-- Política de Privacidade - LINK PARA PÁGINA -->
+                <div class="cred-card" onclick="window.location.href='/privacidade'">
                     <span class="icon">🔐</span>
                     <h4>Política de Privacidade</h4>
                     <p>Como protegemos seus dados e garantimos sua segurança.</p>
@@ -1090,12 +1361,12 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     <span class="badge">Leia mais</span>
                 </div>
 
-                <!-- Selos de Segurança -->
-                <div class="cred-card" onclick="abrirModalCredibilidade('selos-seguranca')">
-                    <span class="icon">✅</span>
-                    <h4>Selos de Segurança</h4>
-                    <p>Ambiente seguro, SSL certificado e pagamentos protegidos.</p>
-                    <span class="badge green">100% Seguro</span>
+                <!-- Termos de Uso - LINK PARA PÁGINA -->
+                <div class="cred-card" onclick="window.location.href='/termos'">
+                    <span class="icon">📜</span>
+                    <h4>Termos de Uso</h4>
+                    <p>Conheça as regras e condições de uso da nossa plataforma.</p>
+                    <span class="badge">Leia mais</span>
                 </div>
             </div>
         </div>
@@ -1341,8 +1612,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 <span class="text-xs text-gray-400">Há 5 dias</span>
                 <img src="https://ae-pic-a1.aliexpress-media.com/kf/Ad561aa8fea014db7a294673e7bb121eca.jpg_220x220.jpg_.avif" alt="Avaliação da Mariana L." class="w-16 h-16 object-cover rounded-lg border border-gray-200 ml-auto">
             </div>
-            <p class="text-sm text-gray-600 mt-2">Qualidade ABSURDA para essa faixa de preço! Comprei com muito receio de não ser bom, ou de não ser original, porém é original sim e atende absurdamente bem! Nessa faixa de preço não dá pra encontrar nada melhor, não pretendo comprar outro fone tão cedo! Podem comprar sem medo! Volume excelente, supressão de ruim externo é ótima, graves muito bem distribuídos e tem uma autonomia de bateria excelente também! Só comprem!
-</p>
+            <p class="text-sm text-gray-600 mt-2">Qualidade ABSURDA para essa faixa de preço! Comprei com muito receio de não ser bom, ou de não ser original, porém é original sim e atende absurdamente bem! Nessa faixa de preço não dá pra encontrar nada melhor, não pretendo comprar outro fone tão cedo! Podem comprar sem medo! Volume excelente, supressão de ruim externo é ótima, graves muito bem distribuídos e tem uma autonomia de bateria excelente também! Só comprem!</p>
         </div>
     </div>
 
@@ -1360,8 +1630,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 <span class="text-xs text-gray-400">Há 3 dias</span>
                 <img src="https://ae-pic-a1.aliexpress-media.com/kf/Ab8297924691c4c789e238367d47d38ccA.jpg_220x220.jpg_.avif" alt="Avaliação da Mariana L." class="w-16 h-16 object-cover rounded-lg border border-gray-200 ml-auto">
             </div>
-            <p class="text-sm text-gray-600 mt-2">Excelente, o som e os graves são muitos bom, cabe bem nos ouvidos e segura bem, difícil de cair... Além de muito bonito o produto é muito bom.. Recomendo comprar, sem dúvidas uns dos melhores fontes que já comprei...
-</p>
+            <p class="text-sm text-gray-600 mt-2">Excelente, o som e os graves são muitos bom, cabe bem nos ouvidos e segura bem, difícil de cair... Além de muito bonito o produto é muito bom.. Recomendo comprar, sem dúvidas uns dos melhores fontes que já comprei...</p>
         </div>
     </div>
 
@@ -1410,8 +1679,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                     <ul class="space-y-2">
                         <li><a href="#" onclick="abrirModalCredibilidade('quem-somos')" class="footer-link">Quem Somos</a></li>
                         <li><a href="#" onclick="abrirModalCredibilidade('termos-garantia')" class="footer-link">Termos de Garantia</a></li>
-                        <li><a href="#" onclick="abrirModalCredibilidade('politica-privacidade')" class="footer-link">Política de Privacidade</a></li>
+                        <li><a href="/privacidade" class="footer-link">Política de Privacidade</a></li>
                         <li><a href="#" onclick="abrirModalCredibilidade('trocas-devolucoes')" class="footer-link">Trocas, Devoluções e Reembolsos</a></li>
+                        <li><a href="/termos" class="footer-link">Termos de Uso</a></li>
                         <li><a href="#" onclick="abrirModalCredibilidade('faq')" class="footer-link">FAQ</a></li>
                     </ul>
                 </div>
@@ -1712,6 +1982,72 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         const PUBLIC_KEY = 'APP_USR-56ecc889-ee50-4a8e-b887-4c3fca79dbe3';
         const MAX_PARCELAS = 12;
         const DESCONTO_DESISTENCIA = 10; // R$10 de desconto
+
+        // ==========================================
+        // CONTROLE DE PÁGINAS
+        // ==========================================
+        function mostrarPagina(pagina) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-produto').classList.add('hidden');
+            document.getElementById('page-termos').classList.add('hidden');
+            document.getElementById('page-privacidade').classList.add('hidden');
+            
+            if (pagina === 'home') {
+                document.getElementById('page-home').classList.remove('hidden');
+                renderProdutos();
+                window.scrollTo(0, 0);
+            } else if (pagina === 'produto') {
+                document.getElementById('page-produto').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } else if (pagina === 'termos') {
+                document.getElementById('page-termos').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            } else if (pagina === 'privacidade') {
+                document.getElementById('page-privacidade').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Roteamento baseado na URL
+        function rotear() {
+            const path = window.location.pathname;
+            if (path === '/termos' || path === '/termos.html') {
+                mostrarPagina('termos');
+            } else if (path === '/privacidade' || path === '/privacidade.html') {
+                mostrarPagina('privacidade');
+            } else if (path.includes('/produto/')) {
+                carregarProdutoPorSlug();
+            } else {
+                mostrarPagina('home');
+            }
+        }
+
+        // Sobrescrever navegação para links internos
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.href && link.href.startsWith(window.location.origin)) {
+                const url = new URL(link.href);
+                const path = url.pathname;
+                if (path === '/termos' || path === '/termos.html') {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/termos');
+                    mostrarPagina('termos');
+                } else if (path === '/privacidade' || path === '/privacidade.html') {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/privacidade');
+                    mostrarPagina('privacidade');
+                } else if (path === '/' || path === '/index.html') {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/');
+                    mostrarPagina('home');
+                }
+            }
+        });
+
+        // Lidar com navegação pelo histórico
+        window.addEventListener('popstate', function() {
+            rotear();
+        });
 
         // ==========================================
         // MODAL DE CREDIBILIDADE
@@ -2275,7 +2611,10 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             showCheckoutForm();
         }
 
-        function voltarParaHome() { window.location.href = '/'; }
+        function voltarParaHome() { 
+            window.history.pushState({}, '', '/');
+            mostrarPagina('home');
+        }
 
         function compartilharProduto() {
             if (!produtoAtual) return;
@@ -2319,6 +2658,12 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         function abrirProdutoDireto(produto) {
             produtoAtual = produto;
             quantidadeAtual = 1;
+            
+            // Mostra a página de produto
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-produto').classList.remove('hidden');
+            document.getElementById('page-termos').classList.add('hidden');
+            document.getElementById('page-privacidade').classList.add('hidden');
             
             // Verifica se tem vídeo (produto ID 1)
             const hasVideo = produto.video && produto.id === 1;
@@ -2368,8 +2713,6 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             document.getElementById('produto-tag').textContent = produto.tag;
             document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             document.getElementById('produto-quantidade').textContent = '1';
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-produto').classList.remove('hidden');
             window.scrollTo(0, 0);
 
             const stickyPrice = document.getElementById('sticky-price');
@@ -3093,92 +3436,54 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             this.value = value;
         });
 
-       document.addEventListener('DOMContentLoaded', function() {
-    carregarProdutoPorSlug();
-    if (!window.location.pathname.includes('/produto/')) renderProdutos();
-    console.log('🚀 Voltz Gear carregada!');
-    console.log('📡 Backend URL:', API_URL);
-    console.log('🛒 Produtos disponíveis:', produtos.length);
-    selecionarMetodo('pix');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Roteamento inicial
+            rotear();
+            
+            console.log('🚀 Voltz Gear carregada!');
+            console.log('📡 Backend URL:', API_URL);
+            console.log('🛒 Produtos disponíveis:', produtos.length);
+            selecionarMetodo('pix');
 
-    // ==========================================
-    // CONFIGURAR EXIT-INTENT POPUP (PC + CELULAR)
-    // ==========================================
-    
-    // 🔵 PC/DESKTOP: Detecta quando o mouse sai da página
-    document.addEventListener('mouseleave', function(event) {
-        if (event.clientY < 0) {
-            mostrarExitPopup();
-        }
-    });
-    
-    // 🔵 PC/DESKTOP: Detecta tecla ESC
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            mostrarExitPopup();
-        }
-    });
-    
-    // 🟢 CELULAR: Detecta quando o usuário tenta voltar a página
-    window.addEventListener('popstate', function(event) {
-        if (carrinho.length > 0) {
-            mostrarExitPopup();
-            // Previne que a página volte imediatamente
-            window.history.pushState(null, '', window.location.href);
-        }
-    });
-    
-    // 🟡 CELULAR: Detecta quando o usuário sai da aba
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden && carrinho.length > 0) {
-            setTimeout(mostrarExitPopup, 1000);
-        }
-    });
-    
-    // 🟣 CELULAR: Previne o popup de aparecer quando o carrinho está vazio
-    // Adiciona um estado de histórico para prevenir o popstate
-    if (window.history && window.history.pushState) {
-        window.history.pushState(null, '', window.location.href);
-    }
-});
-
-function mostrarPagina(pagina) {
-    document.getElementById('page-home').classList.add('hidden');
-    document.getElementById('page-produto').classList.add('hidden');
-    if (pagina === 'home') {
-        document.getElementById('page-home').classList.remove('hidden');
-        renderProdutos();
-        window.scrollTo(0, 0);
-    } else if (pagina === 'produto') {
-        document.getElementById('page-produto').classList.remove('hidden');
-        window.scrollTo(0, 0);
-    }
-}
-
-window.abrirProduto = function(id) {
-    const produto = produtos.find(p => p.id === id);
-    if (!produto) return;
-    window.location.href = getProdutoUrl(produto);
-};
-           
-
-        function mostrarPagina(pagina) {
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-produto').classList.add('hidden');
-            if (pagina === 'home') {
-                document.getElementById('page-home').classList.remove('hidden');
-                renderProdutos();
-                window.scrollTo(0, 0);
-            } else if (pagina === 'produto') {
-                document.getElementById('page-produto').classList.remove('hidden');
-                window.scrollTo(0, 0);
-            }
-        }
+            // ==========================================
+            // CONFIGURAR EXIT-INTENT POPUP (PC + CELULAR)
+            // ==========================================
+            
+            // 🔵 PC/DESKTOP: Detecta quando o mouse sai da página
+            document.addEventListener('mouseleave', function(event) {
+                if (event.clientY < 0) {
+                    mostrarExitPopup();
+                }
+            });
+            
+            // 🔵 PC/DESKTOP: Detecta tecla ESC
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    mostrarExitPopup();
+                }
+            });
+            
+            // 🟢 CELULAR: Detecta quando o usuário tenta voltar a página
+            window.addEventListener('popstate', function(event) {
+                if (carrinho.length > 0) {
+                    mostrarExitPopup();
+                }
+            });
+            
+            // 🟡 CELULAR: Detecta quando o usuário sai da aba
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden && carrinho.length > 0) {
+                    setTimeout(mostrarExitPopup, 1000);
+                }
+            });
+        });
 
         window.abrirProduto = function(id) {
             const produto = produtos.find(p => p.id === id);
             if (!produto) return;
-            window.location.href = getProdutoUrl(produto);
+            const url = getProdutoUrl(produto);
+            window.history.pushState({}, '', url);
+            abrirProdutoDireto(produto);
         };
     </script>
 
