@@ -244,8 +244,7 @@ app.use(express.static(__dirname));
 // ==========================================
 // ⭐ FALLBACK - Todas as outras rotas ⭐
 // ==========================================
-// CORRIGIDO: use '/*' em vez de '*' para compatibilidade com path-to-regexp
-app.get('/*', (req, res) => {
+app.use((req, res) => {
     const filePath = path.join(__dirname, 'public', 'index.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
