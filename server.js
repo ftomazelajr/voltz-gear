@@ -1,4 +1,4 @@
-// server.js - Voltz Gear - VERSÃO COMPLETA CORRIGIDA
+// server.js - Voltz Gear - VERSÃO COMPLETA CORRIGIDA COM ROTAS SPA
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -35,7 +35,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // ==========================================
-// FUNÇÃO PARA ENVIAR E-MAIL DE CONFIRMAÇÃO (CORRIGIDA)
+// FUNÇÃO PARA ENVIAR E-MAIL DE CONFIRMAÇÃO
 // ==========================================
 async function enviarEmailConfirmacao(pedido) {
     try {
@@ -43,7 +43,6 @@ async function enviarEmailConfirmacao(pedido) {
         console.log('📧 Para:', pedido.cliente?.email || 'E-mail não informado');
         console.log('📧 Pedido:', pedido.idPedido);
 
-        // Verificar se o cliente tem e-mail
         if (!pedido.cliente || !pedido.cliente.email) {
             console.warn('⚠️ E-mail do cliente não informado. E-mail não enviado.');
             return { sucesso: false, erro: 'E-mail do cliente não informado' };
@@ -191,16 +190,15 @@ async function enviarEmailConfirmacao(pedido) {
         console.log('✅ E-mail enviado com sucesso!');
         console.log('📧 Para:', cliente.email);
         console.log('📧 ID da mensagem:', info.messageId);
-        console.log('📧 Resposta:', info.response);
 
         return { sucesso: true, messageId: info.messageId };
 
     } catch (error) {
         console.error('❌ Erro ao enviar e-mail:', error.message);
-        console.error('❌ Detalhes completos:', error);
         return { sucesso: false, erro: error.message };
     }
 }
+
 // ==========================================
 // MIDDLEWARES
 // ==========================================
@@ -209,17 +207,34 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// ROTA PARA PÁGINAS INDIVIDUAIS DE PRODUTO
 // ==========================================
+// ⭐ ROTAS SPA - PÁGINAS ESTÁTICAS ⭐
+// ==========================================
+// ==========================================
+
+// Rota para Termos de Uso
+app.get('/termos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rota para Política de Privacidade
+app.get('/privacidade', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rota para página de produto
 app.get('/produto/:slug', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ==========================================
-// ROTA: PÁGINA DE SUCESSO
-// ==========================================
+// Rota para página de sucesso
 app.get('/success', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'success.html'));
+});
+
+// Rota principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ==========================================
@@ -257,7 +272,6 @@ app.get('/api/aliexpress/callback', async (req, res) => {
             return res.status(500).send('<h2>❌ Chaves AliExpress não configuradas no servidor.</h2>');
         }
 
-        // Troca o code pelo access_token
         const tokenUrl = 'https://api-sg.aliexpress.com/rest';
         const params = {
             method:       'aliexpress.system.oauth.token',
@@ -371,16 +385,13 @@ function gerarAssinaturaAliExpress(params, secret) {
 
 // ==========================================
 // FUNÇÃO PARA DESCOBRIR O payment_method_id
-// A partir dos 6 primeiros dígitos do cartão (BIN)
 // ==========================================
 async function obterPaymentMethodId(token, bin) {
     try {
-        // Tenta identificar a bandeira pelos primeiros dígitos
         const firstDigit = bin.charAt(0);
         const firstTwo   = bin.substring(0, 2);
         const firstFour  = bin.substring(0, 4);
 
-        // Mapeamento comum de BINs
         if (firstDigit === '4') return 'visa';
         if (['51','52','53','54','55'].includes(firstTwo)) return 'master';
         if (firstTwo === '36' || firstTwo === '38' || firstTwo === '34' || firstTwo === '37') return 'amex';
@@ -390,7 +401,6 @@ async function obterPaymentMethodId(token, bin) {
         if (firstTwo === '50' || ['60','63','67'].includes(firstTwo)) return 'elo';
         if (firstTwo === '62') return 'hipercard';
 
-        // Se não conseguir identificar, tenta via API do Mercado Pago
         const response = await axios.get('https://api.mercadopago.com/v1/payment_methods', {
             headers: { 'Authorization': `Bearer ${token}` },
             timeout: 10000
@@ -415,7 +425,7 @@ async function obterPaymentMethodId(token, bin) {
 }
 
 // ==========================================
-// ROTA: CHECKOUT — CARTÃO + PIX (CORRIGIDO - ESTRUTURA CORRETA DA API)
+// ROTA: CHECKOUT — CARTÃO + PIX
 // ==========================================
 app.post('/api/checkout', async (req, res) => {
     console.log('\n📦 Nova requisição de checkout recebida!');
@@ -424,7 +434,6 @@ app.post('/api/checkout', async (req, res) => {
     try {
         const { cliente, endereco, itens, total, metodoPagamento, detalhesCartao } = req.body;
 
-        // ----- Validação básica -----
         if (!cliente || !endereco || !itens || !total) {
             return res.status(400).json({ sucesso: false, mensagem: 'Dados incompletos. Verifique cliente, endereço, itens e total.' });
         }
@@ -443,7 +452,6 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`🆔 Pedido: ${idPedido}`);
         console.log(`💳 Método: ${metodoPagamento || 'pix'}`);
 
-        // ----- Monta payload base -----
         const paymentData = {
             transaction_amount: valorTotal,
             description: `Pedido ${idPedido} - Voltz Gear`,
@@ -526,9 +534,6 @@ app.post('/api/checkout', async (req, res) => {
         const cardToken  = detalhesCartao.token;
         const installments = parseInt(detalhesCartao.parcelas) || 1;
 
-        // ==========================================
-        // USAR paymentMethodId DO FRONTEND
-        // ==========================================
         let paymentMethodId = detalhesCartao.paymentMethodId;
 
         if (!paymentMethodId) {
@@ -557,16 +562,9 @@ app.post('/api/checkout', async (req, res) => {
         console.log(`🃏 Token do cartão: ${cardToken}`);
         console.log(`📦 Parcelas: ${installments}`);
 
-        // ==========================================
-        // PAYMENT DATA PARA CARTÃO - ESTRUTURA CORRETA DA API REST
-        // ==========================================
         paymentData.payment_method_id = paymentMethodId;
         paymentData.token = cardToken;
         paymentData.installments = installments;
-
-        // 🔥 CORREÇÃO: REMOVIDOS os campos payment_method e cardholder
-        // O token já contém todas as informações do cartão (nome, CPF, etc.)
-        // A API REST do MP aceita apenas: payment_method_id, token, installments
 
         if (detalhesCartao.issuerId) {
             paymentData.issuer_id = detalhesCartao.issuerId;
@@ -714,7 +712,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             return res.status(400).json({ sucesso: false, mensagem: 'Envie o pedidoId.' });
         }
 
-        // Carrega pedido
         const pedidos = JSON.parse(fs.readFileSync(PEDIDOS_FILE));
         const pedido  = pedidos.find(p => p.idPedido === pedidoId);
 
@@ -728,7 +725,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             return res.status(400).json({ sucesso: false, mensagem: 'Pedido já foi enviado para o AliExpress.' });
         }
 
-        // Carrega token AliExpress
         const tokensFile = path.join(__dirname, 'aliexpress_tokens.json');
         if (!fs.existsSync(tokensFile)) {
             return res.status(500).json({ sucesso: false, mensagem: 'Token AliExpress não configurado. Faça a autorização OAuth primeiro.' });
@@ -749,7 +745,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
         const endereco = pedido.endereco;
         const cliente  = pedido.cliente;
 
-        // Para cada item do pedido, cria um pedido no AliExpress
         const resultados = [];
 
         for (const item of pedido.itens) {
@@ -816,7 +811,6 @@ app.post('/api/aliexpress/enviar-pedido', async (req, res) => {
             }
         }
 
-        // Atualiza pedido se pelo menos um item foi enviado
         const algumSucesso = resultados.some(r => r.sucesso);
         if (algumSucesso) {
             pedido.enviadoAliExpress = true;
@@ -937,6 +931,13 @@ app.post('/api/webhook/test', async (req, res) => {
 });
 
 // ==========================================
+// ⭐ FALLBACK - Todas as outras rotas ⭐
+// ==========================================
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ==========================================
 // INICIAR SERVIDOR
 // ==========================================
 app.listen(PORT, () => {
@@ -944,6 +945,8 @@ app.listen(PORT, () => {
     console.log('⚡ VOLTZ GEAR - SERVIDOR ONLINE');
     console.log('='.repeat(50));
     console.log(`🌐 URL: http://localhost:${PORT}`);
+    console.log(`📄 Termos: http://localhost:${PORT}/termos`);
+    console.log(`🔐 Privacidade: http://localhost:${PORT}/privacidade`);
     console.log(`🔑 Token MP: ${process.env.MERCADO_PAGO_TOKEN ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
     console.log(`🧪 Modo: ${process.env.MERCADO_PAGO_TOKEN?.startsWith('TEST-') ? 'TESTE' : 'PRODUÇÃO'}`);
     console.log(`📦 AliExpress App Key: ${process.env.ALIEXPRESS_APP_KEY ? '✅ Configurado' : '❌ NÃO CONFIGURADO'}`);
