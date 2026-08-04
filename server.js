@@ -244,8 +244,8 @@ app.use(express.static(__dirname));
 // ==========================================
 // ⭐ FALLBACK - Todas as outras rotas ⭐
 // ==========================================
-app.get('*', (req, res) => {
-    // Verifica se o arquivo existe antes de tentar servir
+// CORRIGIDO: use '/*' em vez de '*' para compatibilidade com path-to-regexp
+app.get('/*', (req, res) => {
     const filePath = path.join(__dirname, 'public', 'index.html');
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
@@ -253,6 +253,7 @@ app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'index.html'));
     }
 });
+
 // ==========================================
 // ROTA: GERAR URL DE AUTORIZAÇÃO ALIEXPRESS
 // ==========================================
@@ -949,8 +950,14 @@ app.post('/api/webhook/test', async (req, res) => {
 // ==========================================
 // ⭐ FALLBACK - Todas as outras rotas ⭐
 // ==========================================
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// CORRIGIDO: use '/*' em vez de '*' para compatibilidade com path-to-regexp
+app.get('/*', (req, res) => {
+    const filePath = path.join(__dirname, 'public', 'index.html');
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.sendFile(path.join(__dirname, 'index.html'));
+    }
 });
 
 // ==========================================
