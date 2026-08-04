@@ -204,12 +204,10 @@ async function enviarEmailConfirmacao(pedido) {
 // ==========================================
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// ==========================================
 // ⭐ ROTAS SPA - PÁGINAS ESTÁTICAS ⭐
-// ==========================================
+// (DEVEM VIR ANTES DO express.static)
 // ==========================================
 
 // Rota para Termos de Uso
@@ -237,6 +235,24 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ==========================================
+// SERVE ARQUIVOS ESTÁTICOS
+// ==========================================
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+
+// ==========================================
+// ⭐ FALLBACK - Todas as outras rotas ⭐
+// ==========================================
+app.get('*', (req, res) => {
+    // Verifica se o arquivo existe antes de tentar servir
+    const filePath = path.join(__dirname, 'public', 'index.html');
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.sendFile(path.join(__dirname, 'index.html'));
+    }
+});
 // ==========================================
 // ROTA: GERAR URL DE AUTORIZAÇÃO ALIEXPRESS
 // ==========================================
