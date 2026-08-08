@@ -2727,125 +2727,122 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
     document.getElementById('page-termos').classList.add('hidden');
     document.getElementById('page-privacidade').classList.add('hidden');
     
-    // Verifica se tem vídeo (produtos ID 1 ou 2) <-- CORRIGIDO
+    // Verifica se tem vídeo (produtos ID 1 ou 2)
     const hasVideo = produto.video && (produto.id === 1 || produto.id === 2);
-    
-    // ... resto do código
-}
             
-            if (produto.imagens && produto.imagens.length > 0) {
-                document.querySelector('.carousel-container').style.display = 'block';
-                document.getElementById('carousel-dots').style.display = 'flex';
-                document.getElementById('produto-imagem').style.display = 'none';
-                const track = document.getElementById('carousel-track');
-                track.innerHTML = '';
-                
-                // Se tiver vídeo, adiciona como primeiro slide
-                if (hasVideo) {
-                    const videoSlide = document.createElement('div');
-                    videoSlide.className = 'carousel-slide';
-                    videoSlide.innerHTML = `<video src="${produto.video}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;background:#000;"></video>`;
-                    track.appendChild(videoSlide);
-                }
-                
-                // Adiciona as imagens
-                produto.imagens.forEach((img, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
-                    slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
-                    track.appendChild(slide);
-                });
-                
-                criarDots();
-                slideIndex = 0;
-                irParaSlide(0);
-                iniciarCarrossel();
-                
-                // Mostra badge de vídeo se tiver
-                const videoBadge = document.querySelector('.video-badge');
-                if (videoBadge) {
-                    videoBadge.style.display = hasVideo ? 'flex' : 'none';
-                }
-            } else {
-                document.querySelector('.carousel-container').style.display = 'none';
-                document.getElementById('carousel-dots').style.display = 'none';
-                document.getElementById('produto-imagem').style.display = 'block';
-                document.getElementById('produto-imagem').src = produto.img;
-            }
-            
-            document.getElementById('produto-nome').textContent = produto.nome;
-            document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
-            document.getElementById('produto-tag').textContent = produto.tag;
-            document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-            document.getElementById('produto-quantidade').textContent = '1';
-            window.scrollTo(0, 0);
-
-            const stickyPrice = document.getElementById('sticky-price');
-            if (stickyPrice) {
-                stickyPrice.textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
-            }
-
-            // ==========================================
-            // SENSO DE URGÊNCIA - ADICIONAR NA PÁGINA DO PRODUTO
-            // ==========================================
-            const estoqueRestante = Math.floor(Math.random() * 8) + 3;
-            const vendasHoje = Math.floor(Math.random() * 15) + 5;
-
-            const container = document.querySelector('#produto-preco')?.closest('.border-t.border-gray-200.pt-6');
-            if (container) {
-                container.querySelectorAll('.urgente-container').forEach(el => el.remove());
-                
-                const urgenteDiv = document.createElement('div');
-                urgenteDiv.className = 'urgente-container space-y-3 mt-4';
-                urgenteDiv.innerHTML = `
-                    <div class="timer-urgente">
-                        <i class="fa-solid fa-clock"></i>
-                        <span>⏳ Oferta termina em: <strong id="timer-contador">02:00:00</strong></span>
-                    </div>
-                    <div class="vendas-hoje">
-                        <i class="fa-solid fa-arrow-up"></i>
-                        <span><strong>${vendasHoje}</strong> pessoas compraram este produto hoje</span>
-                    </div>
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">📦 Estoque disponível:</span>
-                            <span class="text-sm font-bold ${estoqueRestante <= 5 ? 'estoque-baixo' : 'text-gray-900'}">
-                                ${estoqueRestante} unidades
-                            </span>
-                        </div>
-                        ${estoqueRestante <= 5 ? `
-                        <div class="mt-2">
-                            <span class="ultimas-unidades">⚠️ ÚLTIMAS UNIDADES! Compre agora!</span>
-                        </div>
-                        ` : ''}
-                        <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 rounded-full h-2 transition-all duration-1000" 
-                                 style="width: ${(estoqueRestante / 10) * 100}%"></div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(urgenteDiv);
-            }
-
-            // Timer
-            let tempoRestante = 7200;
-            clearInterval(window._timerInterval);
-            const timerElement = document.getElementById('timer-contador');
-            if (timerElement) {
-                window._timerInterval = setInterval(() => {
-                    tempoRestante--;
-                    if (tempoRestante <= 0) {
-                        clearInterval(window._timerInterval);
-                        timerElement.textContent = '00:00:00';
-                        return;
-                    }
-                    const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
-                    const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
-                    const s = String(tempoRestante % 60).padStart(2, '0');
-                    timerElement.textContent = `${h}:${m}:${s}`;
-                }, 1000);
-            }
+    if (produto.imagens && produto.imagens.length > 0) {
+        document.querySelector('.carousel-container').style.display = 'block';
+        document.getElementById('carousel-dots').style.display = 'flex';
+        document.getElementById('produto-imagem').style.display = 'none';
+        const track = document.getElementById('carousel-track');
+        track.innerHTML = '';
+        
+        // Se tiver vídeo, adiciona como primeiro slide
+        if (hasVideo) {
+            const videoSlide = document.createElement('div');
+            videoSlide.className = 'carousel-slide';
+            videoSlide.innerHTML = `<video src="${produto.video}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;background:#000;"></video>`;
+            track.appendChild(videoSlide);
         }
+        
+        // Adiciona as imagens
+        produto.imagens.forEach((img, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `<img src="${img}" alt="${produto.nome} - Imagem ${index + 1}" loading="lazy">`;
+            track.appendChild(slide);
+        });
+        
+        criarDots();
+        slideIndex = 0;
+        irParaSlide(0);
+        iniciarCarrossel();
+        
+        // Mostra badge de vídeo se tiver
+        const videoBadge = document.querySelector('.video-badge');
+        if (videoBadge) {
+            videoBadge.style.display = hasVideo ? 'flex' : 'none';
+        }
+    } else {
+        document.querySelector('.carousel-container').style.display = 'none';
+        document.getElementById('carousel-dots').style.display = 'none';
+        document.getElementById('produto-imagem').style.display = 'block';
+        document.getElementById('produto-imagem').src = produto.img;
+    }
+    
+    document.getElementById('produto-nome').textContent = produto.nome;
+    document.getElementById('produto-desc').innerHTML = produto.descricaoCompleta || produto.desc;
+    document.getElementById('produto-tag').textContent = produto.tag;
+    document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+    document.getElementById('produto-quantidade').textContent = '1';
+    window.scrollTo(0, 0);
+
+    const stickyPrice = document.getElementById('sticky-price');
+    if (stickyPrice) {
+        stickyPrice.textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+    }
+
+    // ==========================================
+    // SENSO DE URGÊNCIA - ADICIONAR NA PÁGINA DO PRODUTO
+    // ==========================================
+    const estoqueRestante = Math.floor(Math.random() * 8) + 3;
+    const vendasHoje = Math.floor(Math.random() * 15) + 5;
+
+    const container = document.querySelector('#produto-preco')?.closest('.border-t.border-gray-200.pt-6');
+    if (container) {
+        container.querySelectorAll('.urgente-container').forEach(el => el.remove());
+        
+        const urgenteDiv = document.createElement('div');
+        urgenteDiv.className = 'urgente-container space-y-3 mt-4';
+        urgenteDiv.innerHTML = `
+            <div class="timer-urgente">
+                <i class="fa-solid fa-clock"></i>
+                <span>⏳ Oferta termina em: <strong id="timer-contador">02:00:00</strong></span>
+            </div>
+            <div class="vendas-hoje">
+                <i class="fa-solid fa-arrow-up"></i>
+                <span><strong>${vendasHoje}</strong> pessoas compraram este produto hoje</span>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">📦 Estoque disponível:</span>
+                    <span class="text-sm font-bold ${estoqueRestante <= 5 ? 'estoque-baixo' : 'text-gray-900'}">
+                        ${estoqueRestante} unidades
+                    </span>
+                </div>
+                ${estoqueRestante <= 5 ? `
+                <div class="mt-2">
+                    <span class="ultimas-unidades">⚠️ ÚLTIMAS UNIDADES! Compre agora!</span>
+                </div>
+                ` : ''}
+                <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 rounded-full h-2 transition-all duration-1000" 
+                         style="width: ${(estoqueRestante / 10) * 100}%"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(urgenteDiv);
+    }
+
+    // Timer
+    let tempoRestante = 7200;
+    clearInterval(window._timerInterval);
+    const timerElement = document.getElementById('timer-contador');
+    if (timerElement) {
+        window._timerInterval = setInterval(() => {
+            tempoRestante--;
+            if (tempoRestante <= 0) {
+                clearInterval(window._timerInterval);
+                timerElement.textContent = '00:00:00';
+                return;
+            }
+            const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
+            const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
+            const s = String(tempoRestante % 60).padStart(2, '0');
+            timerElement.textContent = `${h}:${m}:${s}`;
+        }, 1000);
+    }
+}
 
         window.addEventListener('scroll', function() {
             const productSection = document.getElementById('page-produto');
