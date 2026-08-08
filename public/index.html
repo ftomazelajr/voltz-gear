@@ -440,10 +440,15 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         @media (min-width: 640px) {
             .cart-header-info {
                 display: inline;
-                font-size: 12px;
+                font-size: 11px;
                 font-weight: 700;
                 color: #3b82f6;
                 margin-left: 4px;
+            }
+        }
+        @media (min-width: 768px) {
+            .cart-header-info {
+                font-size: 12px;
             }
         }
 
@@ -1061,47 +1066,62 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
     <span><i class="fa-solid fa-shield-halved mr-1"></i> COMPRA <strong>100% SEGURA</strong></span>
 </div>
 
-<!-- HEADER -->
+<!-- HEADER CORRIGIDO - RESPONSIVO -->
 <header class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md bg-white/95">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-center justify-between h-20 gap-4">
-            <div class="flex items-center gap-8">
-                <a href="/" class="text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4">
+        <div class="flex items-center justify-between h-16 sm:h-20 gap-1 sm:gap-2">
+            <!-- Logo e Navegação -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <a href="/" class="text-lg sm:text-2xl font-black tracking-tight text-gray-900 hover:text-blue-600 transition whitespace-nowrap">
                     VOLTZ<span class="text-blue-600">GEAR</span>
                 </a>
-                <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+                <nav class="hidden md:flex items-center gap-4 text-sm font-medium text-gray-600">
                     <a href="/" class="hover:text-blue-600 transition">Início</a>
                     <a href="/#catalogo" class="hover:text-blue-600 transition">Produtos</a>
                     <a href="/#novidades" class="hover:text-blue-600 transition">Novidades</a>
                     <a href="/#suporte" class="hover:text-blue-600 transition">Suporte</a>
                 </nav>
             </div>
-            <div class="flex-1 max-w-md mx-4 relative hidden sm:block">
+            
+            <!-- Busca Desktop -->
+            <div class="hidden sm:block flex-1 max-w-xs lg:max-w-md mx-2 relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
                 </span>
-                <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                <input type="text" id="search-input" oninput="filtrarProdutos()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-9 pr-3 py-1.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
             </div>
-            <!-- CADEADO DE SEGURANÇA -->
-            <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+            
+            <!-- Cadeado Segurança - Desktop -->
+            <div class="hidden xl:flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200 whitespace-nowrap">
                 <i class="fa-solid fa-lock text-green-600"></i>
                 <span>Compra <strong>100% Segura</strong></span>
             </div>
-            <div class="flex items-center gap-4">
-                <!-- WHATSAPP/SUPORTE -->
-                <a href="https://wa.me/5514991435438" target="_blank" class="hidden md:flex items-center gap-2 text-sm font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200 hover:bg-green-100 transition">
-                    <i class="fa-brands fa-whatsapp text-green-600 text-base"></i>
+            
+            <!-- Ações -->
+            <div class="flex items-center gap-1 sm:gap-2">
+                <!-- WhatsApp Desktop -->
+                <a href="https://wa.me/5514991435438" target="_blank" class="hidden lg:flex items-center gap-2 text-xs lg:text-sm font-semibold text-green-700 bg-green-50 px-2 lg:px-3 py-1.5 rounded-full border border-green-200 hover:bg-green-100 transition whitespace-nowrap">
+                    <i class="fa-brands fa-whatsapp text-green-600 text-sm lg:text-base"></i>
                     <span class="hidden xl:inline">Suporte: (14) 99143-5438</span>
                     <span class="xl:hidden">WhatsApp</span>
                 </a>
-                <button onclick="toggleCart()" class="relative p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition group">
-                    <i class="fa-solid fa-bag-shopping text-xl"></i>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
-                    <span id="cart-mini-total" class="cart-header-info">R$ 0,00</span>
+                
+                <!-- WhatsApp Mobile -->
+                <a href="https://wa.me/5514991435438" target="_blank" class="lg:hidden flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-50 rounded-full border border-green-200 text-green-600 hover:bg-green-100 transition">
+                    <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
+                </a>
+                
+                <!-- Carrinho -->
+                <button onclick="toggleCart()" class="relative p-1.5 sm:p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-blue-600 rounded-full transition">
+                    <i class="fa-solid fa-bag-shopping text-base sm:text-xl"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                    <span id="cart-mini-total" class="hidden sm:inline-block text-xs font-bold text-blue-600 ml-1">R$ 0,00</span>
                 </button>
             </div>
         </div>
-        <div class="pb-4 sm:hidden">
+        
+        <!-- Busca Mobile -->
+        <div class="pb-3 sm:hidden">
             <input type="text" id="search-input-mobile" oninput="filtrarProdutosMobile()" placeholder="Buscar produtos..." class="w-full bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
     </div>
