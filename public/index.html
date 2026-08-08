@@ -2615,52 +2615,52 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             return `/produto/${slug}`;
         }
 
-        function renderProdutos(listaFiltrada = produtos) {
-            const grid = document.getElementById('grid-produtos');
-            const countSpan = document.getElementById('results-count');
-            if (listaFiltrada.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12"><i class="fa-solid fa-circle-info text-3xl text-gray-300 mb-2"></i><p class="text-gray-500">Nenhum produto encontrado.</p></div>`;
-                countSpan.innerText = "Nenhum resultado";
-                return;
-            }
-            countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
-            grid.innerHTML = listaFiltrada.map(p => {
-                const valorParcela = (p.preco / MAX_PARCELAS).toFixed(2).replace('.', ',');
-                const url = getProdutoUrl(p);
-                // Verifica se o produto tem vídeo para exibir na página inicial
-                const hasVideo = p.video && p.id === 1;
-                return `<div class="product-card" onclick="window.location.href='${url}'">
-                    <div class="relative bg-gray-100">
-                        ${hasVideo ? `
-                        <video src="${p.video}" autoplay loop muted playsinline class="w-full h-64 object-cover" style="background:#000;"></video>
-                        <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
-                        <span class="absolute top-3 right-3 bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-play"></i> Vídeo</span>
-                        <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
-                        ` : `
-                        <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
-                        <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
-                        <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
-                        `}
+       function renderProdutos(listaFiltrada = produtos) {
+    const grid = document.getElementById('grid-produtos');
+    const countSpan = document.getElementById('results-count');
+    if (listaFiltrada.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12"><i class="fa-solid fa-circle-info text-3xl text-gray-300 mb-2"></i><p class="text-gray-500">Nenhum produto encontrado.</p></div>`;
+        countSpan.innerText = "Nenhum resultado";
+        return;
+    }
+    countSpan.innerText = `Mostrando ${listaFiltrada.length} produto(s)`;
+    grid.innerHTML = listaFiltrada.map(p => {
+        const valorParcela = (p.preco / MAX_PARCELAS).toFixed(2).replace('.', ',');
+        const url = getProdutoUrl(p);
+        // Verifica se o produto tem vídeo para exibir na página inicial
+        const hasVideo = p.video && (p.id === 1 || p.id === 2); // <-- CORRIGIDO
+        return `<div class="product-card" onclick="window.location.href='${url}'">
+            <div class="relative bg-gray-100">
+                ${hasVideo ? `
+                <video src="${p.video}" autoplay loop muted playsinline class="w-full h-64 object-cover" style="background:#000;"></video>
+                <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
+                <span class="absolute top-3 right-3 bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-play"></i> Vídeo</span>
+                <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
+                ` : `
+                <img src="${p.img}" alt="${p.nome}" class="w-full h-64 object-cover">
+                <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${p.tag}</span>
+                <span class="absolute bottom-3 right-3 frete-gratis-badge"><i class="fa-solid fa-truck"></i> Frete Grátis</span>
+                `}
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+                <h3 class="text-lg font-bold mb-2 text-gray-900">${p.nome}</h3>
+                <p class="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">${p.desc}</p>
+                <div class="mt-auto">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xl font-black text-gray-900">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                        <button onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">Adicionar</button>
                     </div>
-                    <div class="p-6 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold mb-2 text-gray-900">${p.nome}</h3>
-                        <p class="text-gray-500 text-xs mb-4 flex-1 line-clamp-2">${p.desc}</p>
-                        <div class="mt-auto">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-xl font-black text-gray-900">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
-                                <button onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-xs transition">Adicionar</button>
-                            </div>
-                            <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                <p class="text-xs text-green-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-credit-card text-[10px]"></i> ou 12x de R$ ${valorParcela} sem juros</p>
-                                <button onclick="event.stopPropagation(); comprarRapido(${p.id})" class="btn-comprar-rapido">
-                                    <i class="fa-solid fa-bolt"></i> Comprar Rápido
-                                </button>
-                            </div>
-                        </div>
+                    <div class="flex items-center gap-2 mt-1 flex-wrap">
+                        <p class="text-xs text-green-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-credit-card text-[10px]"></i> ou 12x de R$ ${valorParcela} sem juros</p>
+                        <button onclick="event.stopPropagation(); comprarRapido(${p.id})" class="btn-comprar-rapido">
+                            <i class="fa-solid fa-bolt"></i> Comprar Rápido
+                        </button>
                     </div>
-                </div>`;
-            }).join('');
-        }
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
 
         function comprarRapido(id) {
             const produto = produtos.find(p => p.id === id);
@@ -2718,17 +2718,20 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         }
 
         function abrirProdutoDireto(produto) {
-            produtoAtual = produto;
-            quantidadeAtual = 1;
-            
-            // Mostra a página de produto
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-produto').classList.remove('hidden');
-            document.getElementById('page-termos').classList.add('hidden');
-            document.getElementById('page-privacidade').classList.add('hidden');
-            
-            // Verifica se tem vídeo (produto ID 1)
-            const hasVideo = produto.video && produto.id === 1;
+    produtoAtual = produto;
+    quantidadeAtual = 1;
+    
+    // Mostra a página de produto
+    document.getElementById('page-home').classList.add('hidden');
+    document.getElementById('page-produto').classList.remove('hidden');
+    document.getElementById('page-termos').classList.add('hidden');
+    document.getElementById('page-privacidade').classList.add('hidden');
+    
+    // Verifica se tem vídeo (produtos ID 1 ou 2) <-- CORRIGIDO
+    const hasVideo = produto.video && (produto.id === 1 || produto.id === 2);
+    
+    // ... resto do código
+}
             
             if (produto.imagens && produto.imagens.length > 0) {
                 document.querySelector('.carousel-container').style.display = 'block';
