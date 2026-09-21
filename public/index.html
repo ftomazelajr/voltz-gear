@@ -1612,6 +1612,23 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         })(window, document, "clarity", "script", "vuc3txjxqx");
     </script>
 
+    <!-- ============================================================ -->
+    <!-- TRACKING DE VÍDEO PARA O CLARITY (correção #2)               -->
+    <!-- ============================================================ -->
+    <script>
+        // Registra no Clarity quando o usuário interage com o vídeo do produto
+        document.addEventListener('click', function(e) {
+            const video = e.target.closest('video');
+            if (video) {
+                if (window.clarity) clarity('event', 'video_click');
+                video.play().catch(() => {
+                    if (window.clarity) clarity('event', 'video_play_failed');
+                    console.warn('Vídeo não pôde ser reproduzido:', video.src);
+                });
+            }
+        });
+    </script>
+
     <script>
         // ==========================================
         // CONFIGURAÇÃO
@@ -2260,10 +2277,25 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 const track = document.getElementById('carousel-track');
                 track.innerHTML = '';
 
+                // ============================================================
+                // CORREÇÃO #1 — vídeo NÃO inicia automaticamente
+                // ============================================================
                 if (hasVideo) {
                     const videoSlide = document.createElement('div');
                     videoSlide.className = 'carousel-slide';
-                    videoSlide.innerHTML = `<video src="${produto.video}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;background:#000;"></video>`;
+                    videoSlide.innerHTML = `
+                        <video 
+                            src="${produto.video}" 
+                            controls 
+                            muted 
+                            playsinline 
+                            preload="metadata"
+                            style="width:100%;height:100%;object-fit:cover;background:#000;"
+                            onplay="if(window.clarity) clarity('event','video_play')"
+                            onpause="if(window.clarity) clarity('event','video_pause')"
+                            onerror="if(window.clarity) clarity('event','video_error')"
+                        ></video>
+                    `;
                     track.appendChild(videoSlide);
                 }
 
@@ -2398,7 +2430,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             const slidesElements = track ? track.querySelectorAll('.carousel-slide video') : [];
             slidesElements.forEach((video, i) => {
                 if (i === slideIndex) {
-                    video.play().catch(() => {});
+                    // Não força play automático — só garante que pausa quando sai
                 } else {
                     video.pause();
                 }
@@ -2942,6 +2974,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             this.value = value;
         });
 
+        // ============================================================
+        // CORREÇÃO #3 — exit-intent só dispara quando o usuário VOLTA
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             rotear();
             selecionarMetodo('pix');
@@ -2957,10 +2992,14 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             window.addEventListener('popstate', function(event) {
                 if (carrinho.length > 0) mostrarExitPopup();
             });
-            
+
+            let trocouAba = false;
             document.addEventListener('visibilitychange', function() {
-                if (document.hidden && carrinho.length > 0) {
-                    setTimeout(mostrarExitPopup, 1000);
+                if (document.hidden) {
+                    trocouAba = true;
+                } else if (trocouAba && carrinho.length > 0) {
+                    setTimeout(mostrarExitPopup, 1500);
+                    trocouAba = false;
                 }
             });
         });
