@@ -944,6 +944,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
 </head>
 <body>
 
+
     <div id="toast" class="toast"></div>
 
 <div class="bg-blue-600 text-white text-center py-2 text-xs font-semibold tracking-wider flex justify-center items-center gap-4 flex-wrap px-4">
@@ -1604,6 +1605,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         </div>
     </div>
 
+
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -1613,10 +1615,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
     </script>
 
     <!-- ============================================================ -->
-    <!-- TRACKING DE VÍDEO PARA O CLARITY (correção #2)               -->
+    <!-- TRACKING DE VÍDEO PARA O CLARITY                             -->
     <!-- ============================================================ -->
     <script>
-        // Registra no Clarity quando o usuário interage com o vídeo do produto
         document.addEventListener('click', function(e) {
             const video = e.target.closest('video');
             if (video) {
@@ -2213,6 +2214,17 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
             showCheckoutForm();
+
+            // META PIXEL — ADD TO CART
+            if (typeof fbq === 'function') {
+                fbq('track', 'AddToCart', {
+                    content_ids: [String(produto.id)],
+                    content_name: produto.nome,
+                    content_type: 'product',
+                    value: produto.preco,
+                    currency: 'BRL'
+                });
+            }
         }
 
         function voltarParaHome() { 
@@ -2277,9 +2289,6 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 const track = document.getElementById('carousel-track');
                 track.innerHTML = '';
 
-                // ============================================================
-                // CORREÇÃO #1 — vídeo NÃO inicia automaticamente
-                // ============================================================
                 if (hasVideo) {
                     const videoSlide = document.createElement('div');
                     videoSlide.className = 'carousel-slide';
@@ -2328,7 +2337,6 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             document.getElementById('produto-preco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
             document.getElementById('produto-quantidade').textContent = '1';
 
-            // Renderizar avaliações deste produto
             renderizarAvaliacoes(produto);
 
             window.scrollTo(0, 0);
@@ -2430,7 +2438,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             const slidesElements = track ? track.querySelectorAll('.carousel-slide video') : [];
             slidesElements.forEach((video, i) => {
                 if (i === slideIndex) {
-                    // Não força play automático — só garante que pausa quando sai
+                    // Não força play automático
                 } else {
                     video.pause();
                 }
@@ -2464,6 +2472,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
 
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
 
+        // ==========================================
+        // ADICIONAR AO CARRINHO — COM META PIXEL
+        // ==========================================
         function adicionarAoCarrinho(id) {
             if (!id) return;
             const prod = produtos.find(p => p.id === id);
@@ -2473,6 +2484,17 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             showToast(`${prod.nome} adicionado ao carrinho!`, 'success', 2500);
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
+
+            // META PIXEL — ADD TO CART
+            if (typeof fbq === 'function') {
+                fbq('track', 'AddToCart', {
+                    content_ids: [String(prod.id)],
+                    content_name: prod.nome,
+                    content_type: 'product',
+                    value: prod.preco,
+                    currency: 'BRL'
+                });
+            }
         }
 
         function removerDoCarrinho(index) { carrinho.splice(index, 1); atualizarCarrinho(); }
@@ -2528,10 +2550,22 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             atualizarResumoValores();
         }
 
-        function showCheckoutForm() {
+                function showCheckoutForm() {
             document.getElementById('checkout-form').classList.remove('hidden');
             document.getElementById('btn-next-step').classList.add('hidden');
             atualizarResumoValores();
+
+            // META PIXEL — INITIATE CHECKOUT
+            if (typeof fbq === 'function') {
+                const totalCarrinho = carrinho.reduce((sum, item) => sum + item.preco, 0);
+                fbq('track', 'InitiateCheckout', {
+                    content_ids: carrinho.map(item => String(item.id)),
+                    content_type: 'product',
+                    value: totalCarrinho,
+                    currency: 'BRL',
+                    num_items: carrinho.length
+                });
+            }
             
             const steps = document.querySelectorAll('.checkout-steps .step');
             const stepLines = document.querySelectorAll('.checkout-steps .step-line');
@@ -2675,6 +2709,9 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             document.getElementById('produto-quantidade').textContent = quantidadeAtual;
         }
 
+        // ==========================================
+        // COMPRAR AGORA — COM META PIXEL
+        // ==========================================
         function comprarAgora() {
             if (!produtoAtual) return;
             for (let i = 0; i < quantidadeAtual; i++) carrinho.push(produtoAtual);
@@ -2682,6 +2719,17 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
             const sidebar = document.getElementById('cart-sidebar');
             if (sidebar.classList.contains('translate-x-full')) sidebar.classList.remove('translate-x-full');
             showCheckoutForm();
+
+            // META PIXEL — ADD TO CART
+            if (typeof fbq === 'function') {
+                fbq('track', 'AddToCart', {
+                    content_ids: [String(produtoAtual.id)],
+                    content_name: produtoAtual.nome,
+                    content_type: 'product',
+                    value: produtoAtual.preco * quantidadeAtual,
+                    currency: 'BRL'
+                });
+            }
         }
 
         function filtrarProdutos() {
@@ -2901,7 +2949,19 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
                 if (resData.sucesso) {
                     document.cookie = 'compra_finalizada=true; path=/; max-age=2592000';
                     sessionStorage.setItem('compra_finalizada', 'true');
-                    
+
+                    // ==========================================
+                    // META PIXEL — PURCHASE
+                    // ==========================================
+                    if (typeof fbq === 'function') {
+                        const totalFinal = Number(resData.total) || total;
+                        fbq('track', 'Purchase', {
+                            value: totalFinal,
+                            currency: 'BRL',
+                            content_type: 'product'
+                        });
+                    }
+
                     if (metodoSelecionado === 'pix') {
                         document.getElementById('pix-qr-img').src = resData.pixQRCode;
                         document.getElementById('pix-copia-cola').value = resData.pixCopiaCola;
@@ -2975,7 +3035,7 @@ src="https://www.facebook.com/tr?id=1543045330852470&ev=PageView&noscript=1"
         });
 
         // ============================================================
-        // CORREÇÃO #3 — exit-intent só dispara quando o usuário VOLTA
+        // EXIT-INTENT + INICIALIZAÇÃO
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             rotear();
